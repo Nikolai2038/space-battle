@@ -18,7 +18,7 @@
     <ClInclude Include="SpaceBattle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SpaceBattleDlg.h">
+    <ClInclude Include="CSpaceBattleDlgMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="framework.h">
@@ -33,15 +33,33 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CSpaceBattleDlgRules.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpaceBattleDlgRecords.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpaceBattleDlgGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SpaceBattle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SpaceBattleDlg.cpp">
+    <ClCompile Include="CSpaceBattleDlgMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpaceBattleDlgRules.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpaceBattleDlgRecords.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpaceBattleDlgGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

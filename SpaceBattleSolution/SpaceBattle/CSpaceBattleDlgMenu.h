@@ -1,3 +1,7 @@
+
+// SpaceBattleDlg.h : header file
+//
+
 #pragma once
 
 // CSpaceBattleDlgMenu dialog
@@ -6,9 +10,9 @@ class CSpaceBattleDlgMenu : public CDialogEx {
 public:
   CSpaceBattleDlgMenu(CWnd* pParent = nullptr); // standard constructor
 
-  // Dialog Data
+// Dialog Data
 #ifdef AFX_DESIGN_TIME
-  enum { IDD = IDD_DIALOG_MENU };
+  enum { IDD = IDD_SPACEBATTLE_DIALOG };
 #endif
 protected:
   virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support

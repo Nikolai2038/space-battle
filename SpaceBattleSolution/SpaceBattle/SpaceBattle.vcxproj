@@ -183,14 +183,20 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CSpaceBattleDlgGame.h" />
+    <ClInclude Include="CSpaceBattleDlgRecords.h" />
+    <ClInclude Include="CSpaceBattleDlgRules.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SpaceBattle.h" />
-    <ClInclude Include="SpaceBattleDlg.h" />
+    <ClInclude Include="CSpaceBattleDlgMenu.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CSpaceBattleDlgGame.cpp" />
+    <ClCompile Include="CSpaceBattleDlgRecords.cpp" />
+    <ClCompile Include="CSpaceBattleDlgRules.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -198,7 +204,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SpaceBattle.cpp" />
-    <ClCompile Include="SpaceBattleDlg.cpp" />
+    <ClCompile Include="CSpaceBattleDlgMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SpaceBattle.rc" />
