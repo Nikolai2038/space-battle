@@ -22,6 +22,11 @@ void CSpaceBattleDlgRules::DoDataExchange(CDataExchange* pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CSpaceBattleDlgRules, CDialogEx)
+ON_BN_CLICKED(IDC_BUTTON_RETURN_TO_THE_MENU, &CSpaceBattleDlgRules::OnBnClickedButtonReturnToTheMenu)
 END_MESSAGE_MAP()
 
 // CSpaceBattleDlgRules message handlers
+
+void CSpaceBattleDlgRules::OnBnClickedButtonReturnToTheMenu() {
+  this->OnOK();
+}

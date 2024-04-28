@@ -10,8 +10,19 @@
 #define IDD_DIALOG_RECORDS              133
 #define IDC_BUTTON_PLAY                 1000
 #define IDC_BUTTON_RULES                1001
+#define IDC_BUTTON_PAUSE_GAME           1001
 #define IDC_BUTTON_EXIT                 1002
+#define IDC_BUTTON_END_GAME             1002
 #define IDC_BUTTON_RECORDS              1003
+#define IDC_LIST1                       1004
+#define IDC_LIST_RECORDS                1004
+#define IDC_BUTTON_RETURN_TO_THE_MENU   1007
+#define IDC_TEXT_POINTS_EARNED          1008
+#define IDC_TEXT_ENEMIES_DEFEATED       1009
+#define IDC_TEXT_HEALTH                 1010
+#define IDC_TEXT_TIME_PLAYING           1011
+#define IDC_GAME_SCREEN                 1012
+#define IDC_TEXT_RULES_1                1013
 
 // Next default values for new objects
 // 
@@ -19,7 +30,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1000
+#define _APS_NEXT_CONTROL_VALUE         1014
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
