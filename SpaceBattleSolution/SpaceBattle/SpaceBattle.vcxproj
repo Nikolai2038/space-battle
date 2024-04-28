@@ -186,8 +186,13 @@
     <ClInclude Include="CSpaceBattleDlgGame.h" />
     <ClInclude Include="CSpaceBattleDlgRecords.h" />
     <ClInclude Include="CSpaceBattleDlgRules.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="ICreature.h" />
+    <ClInclude Include="IEntity.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Point.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SpaceBattle.h" />
     <ClInclude Include="CSpaceBattleDlgMenu.h" />
@@ -197,12 +202,17 @@
     <ClCompile Include="CSpaceBattleDlgGame.cpp" />
     <ClCompile Include="CSpaceBattleDlgRecords.cpp" />
     <ClCompile Include="CSpaceBattleDlgRules.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="ICreature.cpp" />
+    <ClCompile Include="IEntity.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Point.cpp" />
     <ClCompile Include="SpaceBattle.cpp" />
     <ClCompile Include="CSpaceBattleDlgMenu.cpp" />
   </ItemGroup>
