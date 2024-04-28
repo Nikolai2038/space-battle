@@ -183,6 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="CSpaceBattleDlgGame.h" />
     <ClInclude Include="CSpaceBattleDlgRecords.h" />
     <ClInclude Include="CSpaceBattleDlgRules.h" />
@@ -199,6 +200,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="CSpaceBattleDlgGame.cpp" />
     <ClCompile Include="CSpaceBattleDlgRecords.cpp" />
     <ClCompile Include="CSpaceBattleDlgRules.cpp" />

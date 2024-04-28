@@ -25,6 +25,24 @@
     <Filter Include="Header Files\Entities">
       <UniqueIdentifier>{70d79a22-abb7-4df8-9a74-ba0b96cfc4b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Other">
+      <UniqueIdentifier>{89d5d785-9b04-4ced-b789-1e25b0497e01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Other">
+      <UniqueIdentifier>{bf425819-174b-49bb-ac81-eaee5087fb54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities\IEntityChilds">
+      <UniqueIdentifier>{1c5c2209-32af-4bd7-a30c-80802b15cfc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entities\IEntityChilds\ICreatureChilds">
+      <UniqueIdentifier>{54e3b82a-df23-4390-ba64-a077e6ae998d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities\IEntityChilds">
+      <UniqueIdentifier>{9b16e5ce-066b-4b28-83d6-aca3468a8f50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entities\IEntityChilds\ICreatureChilds">
+      <UniqueIdentifier>{0f8e535d-612b-4e46-b9b6-1db725d09ba4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SpaceBattle.h">
@@ -54,17 +72,23 @@
     <ClInclude Include="CSpaceBattleDlgRules.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>Header Files\Entities</Filter>
-    </ClInclude>
     <ClInclude Include="IEntity.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files\Entities</Filter>
+    <ClInclude Include="Point.h">
+      <Filter>Header Files\Other</Filter>
     </ClInclude>
     <ClInclude Include="ICreature.h">
-      <Filter>Header Files\Entities</Filter>
+      <Filter>Header Files\Entities\IEntityChilds</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Header Files\Entities\IEntityChilds\ICreatureChilds</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\Entities\IEntityChilds\ICreatureChilds</Filter>
+    </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>Header Files\Entities\IEntityChilds</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -89,14 +113,20 @@
     <ClCompile Include="IEntity.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files\Entities</Filter>
+    <ClCompile Include="Point.cpp">
+      <Filter>Source Files\Other</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
-      <Filter>Source Files\Entities</Filter>
+      <Filter>Source Files\Entities\IEntityChilds\ICreatureChilds</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Entities\IEntityChilds\ICreatureChilds</Filter>
     </ClCompile>
     <ClCompile Include="ICreature.cpp">
-      <Filter>Source Files\Entities</Filter>
+      <Filter>Source Files\Entities\IEntityChilds</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>Source Files\Entities\IEntityChilds</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
