@@ -4,8 +4,8 @@
 
 #include "CSpaceBattleDlgGame.h"
 #include "CSpaceBattleDlgRecords.h"
-#include "../framework.h"
-#include "../SpaceBattle.h"
+#include "framework.h"
+#include "SpaceBattle.h"
 
 #include "CSpaceBattleDlgRules.h"
 
@@ -73,25 +73,25 @@ HCURSOR CSpaceBattleDlgMenu::OnQueryDragIcon() {
   return static_cast<HCURSOR>(m_hIcon);
 }
 
-// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+// Событие нажатия на кнопку начала игры
 void CSpaceBattleDlgMenu::OnBnClickedButtonPlay() {
   CSpaceBattleDlgGame dialog_game;
   dialog_game.DoModal();
 }
 
-// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+// Событие нажатия на кнопку просмотра правил
 void CSpaceBattleDlgMenu::OnBnClickedButtonRules() {
   CSpaceBattleDlgRules dialog_rules;
   dialog_rules.DoModal();
 }
 
-// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+// Событие нажатия на кнопку просмотра рекордов
 void CSpaceBattleDlgMenu::OnBnClickedButtonRecords() {
   CSpaceBattleDlgRecords dialog_records;
   dialog_records.DoModal();
 }
 
-// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+// Событие нажатия на кнопку выхода
 void CSpaceBattleDlgMenu::OnBnClickedButtonExit() {
   int iResults = MessageBox(
     L"Exit the game?",

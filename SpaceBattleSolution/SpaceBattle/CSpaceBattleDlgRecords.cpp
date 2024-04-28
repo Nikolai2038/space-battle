@@ -2,7 +2,7 @@
 //
 
 #include "pch.h"
-#include "../SpaceBattle.h"
+#include "SpaceBattle.h"
 #include "afxdialogex.h"
 #include "CSpaceBattleDlgRecords.h"
 
