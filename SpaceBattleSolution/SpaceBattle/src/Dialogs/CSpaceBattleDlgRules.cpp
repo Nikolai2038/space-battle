@@ -4,7 +4,7 @@
 #include "pch.h"
 #include "afxdialogex.h"
 #include "CSpaceBattleDlgRules.h"
-#include "SpaceBattle.h"
+#include "../SpaceBattle.h"
 
 // CSpaceBattleDlgRules dialog
 

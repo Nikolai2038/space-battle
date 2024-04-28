@@ -3,7 +3,7 @@
 //
 
 #include "pch.h"
-#include "CSpaceBattleDlgMenu.h"
+#include "Dialogs/CSpaceBattleDlgMenu.h"
 #include "framework.h"
 #include "SpaceBattle.h"
 
