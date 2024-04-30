@@ -54,9 +54,13 @@ void CSpaceBattleDlgGame::OnPaint() {
   this->enemy.Draw(dc, hdc, game_screen_rectangle);
 
   ::ReleaseDC(m_hWnd, hdc);
+
+  CDialogEx::OnPaint();
 }
 
 BOOL CSpaceBattleDlgGame::OnInitDialog() {
+  CDialogEx::OnInitDialog();
+
   // ”становить системный таймер
   // - 1-й параметр: »дентификатор таймера: "1" объ€вл€ет таймер как "таймер#1".
   // - 2-й параметр: ”станавливает период в миллисекундах, с которым будет происходить сообщение WM_TIMER
@@ -73,6 +77,8 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
 }
 
 void CSpaceBattleDlgGame::OnTimer(UINT_PTR nIDEvent) {
+  CDialogEx::OnTimer(nIDEvent);
+
   if (nIDEvent == static_cast<UINT_PTR>(TIMER_ID)) {
     // ѕередвижение врага
     this->enemy.Move();
