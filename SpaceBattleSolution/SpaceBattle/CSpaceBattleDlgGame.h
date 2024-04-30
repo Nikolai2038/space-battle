@@ -1,5 +1,6 @@
 #pragma once
 #include "afxdialogex.h"
+#include "Enemy.h"
 #include "Player.h"
 
 // CSpaceBattleDlgGame dialog
@@ -27,6 +28,7 @@ class CSpaceBattleDlgGame : public CDialogEx {
     afx_msg void OnBnClickedButtonReturnToTheMenu();
     afx_msg void OnPaint();
     Player player;
+    Enemy enemy;
     virtual BOOL OnInitDialog();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
