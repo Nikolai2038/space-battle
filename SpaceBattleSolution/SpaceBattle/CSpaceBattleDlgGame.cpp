@@ -78,6 +78,11 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR nIDEvent) {
     this->enemy.Move();
 
     // Инициировать исполнение функции OnPaint()
-    Invalidate();
+    CWnd* game_screen = GetDlgItem(IDC_GAME_SCREEN);
+    CRect game_screen_rectangle;
+    game_screen->GetWindowRect(&game_screen_rectangle);
+    ScreenToClient(&game_screen_rectangle);
+
+    RedrawWindow(game_screen_rectangle);
   }
 }
