@@ -4,5 +4,5 @@
 #include "resource.h"
 
 Player::Player() :
-    Ship(IDB_PLAYER) {
+    Ship(IDB_ENEMY) {
 }
