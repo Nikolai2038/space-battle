@@ -1,5 +1,7 @@
 #pragma once
-#include "IEntity.h"
+#include "Entity.h"
 
-class Bullet : IEntity {
+class Bullet : public Entity {
+  protected:
+    Bullet();
 };

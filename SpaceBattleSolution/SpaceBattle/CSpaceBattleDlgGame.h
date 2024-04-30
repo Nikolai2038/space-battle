@@ -6,12 +6,14 @@
 
 class CSpaceBattleDlgGame : public CDialogEx {
   private:
-    Player player;
-
     DECLARE_DYNAMIC(CSpaceBattleDlgGame)
+
+    const int TIMER_ID = 1;
   public:
     CSpaceBattleDlgGame(CWnd* pParent = nullptr); // standard constructor
     virtual ~CSpaceBattleDlgGame();
+
+    void GameStart();
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
@@ -23,4 +25,8 @@ class CSpaceBattleDlgGame : public CDialogEx {
     DECLARE_MESSAGE_MAP()
   public:
     afx_msg void OnBnClickedButtonReturnToTheMenu();
+    afx_msg void OnPaint();
+    Player player;
+    virtual BOOL OnInitDialog();
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
 };

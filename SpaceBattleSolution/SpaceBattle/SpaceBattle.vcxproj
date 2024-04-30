@@ -189,8 +189,9 @@
     <ClInclude Include="CSpaceBattleDlgRules.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="ICreature.h" />
-    <ClInclude Include="IEntity.h" />
+    <ClInclude Include="GraphicsHelper.h" />
+    <ClInclude Include="Ship.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Point.h" />
@@ -205,8 +206,9 @@
     <ClCompile Include="CSpaceBattleDlgRecords.cpp" />
     <ClCompile Include="CSpaceBattleDlgRules.cpp" />
     <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="ICreature.cpp" />
-    <ClCompile Include="IEntity.cpp" />
+    <ClCompile Include="GraphicsHelper.cpp" />
+    <ClCompile Include="Ship.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -225,6 +227,9 @@
     <None Include="res\SpaceBattle.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\Graphics\Bullet.png" />
+    <Image Include="..\..\Graphics\Enemy.png" />
+    <Image Include="..\..\Graphics\Player.png" />
     <Image Include="res\SpaceBattle.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

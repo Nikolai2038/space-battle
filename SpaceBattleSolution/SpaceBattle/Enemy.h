@@ -1,5 +1,7 @@
 #pragma once
-#include "ICreature.h"
+#include "Ship.h"
 
-class Enemy : ICreature {
+class Enemy : public Ship {
+  public:
+    Enemy();
 };
