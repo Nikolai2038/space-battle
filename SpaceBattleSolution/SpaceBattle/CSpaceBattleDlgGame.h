@@ -10,11 +10,6 @@ class CSpaceBattleDlgGame : public CDialogEx {
     DECLARE_DYNAMIC(CSpaceBattleDlgGame)
 
     const int TIMER_ID = 1;
-
-    CMetaFileDC* m_pMF;
-
-    // Координаты элемента Picture относительно экрана
-    CRect m_Canvas;
   public:
     CSpaceBattleDlgGame(CWnd* pParent = nullptr); // standard constructor
     virtual ~CSpaceBattleDlgGame();
@@ -36,7 +31,4 @@ class CSpaceBattleDlgGame : public CDialogEx {
     Enemy enemy;
     virtual BOOL OnInitDialog();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
-
-    void Draw();
-    void Clear();
 };

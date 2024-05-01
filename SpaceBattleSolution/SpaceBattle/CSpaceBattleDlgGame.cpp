@@ -42,28 +42,22 @@ void CSpaceBattleDlgGame::GameStart() {
 }
 
 void CSpaceBattleDlgGame::OnPaint() {
+  CWnd* game_screen = GetDlgItem(IDC_GAME_SCREEN);
+  CRect game_screen_rectangle;
+  game_screen->GetClientRect(&game_screen_rectangle);
+
   // device context for painting
   CPaintDC dc(this);
 
-  // Закрытие метафайла
-  HMETAFILE hmf = m_pMF->Close();
-  // Воспроизведение метафайла
-  dc.PlayMetaFile(hmf);
+  // Получить указатель на DC.
+  HDC hdc = ::GetDC(game_screen->m_hWnd);
 
-  // Присваивание указателя на старый объект переменной temp
-  CMetaFileDC* temp = new CMetaFileDC;
-  // Закрытие объекта
-  temp->Create();
-  // Проигрывание метафайла
-  temp->PlayMetaFile(hmf);
+  this->player.Draw(hdc);
+  this->enemy.Draw(hdc);
 
-  // Удаление метаструктуры и метафайла
-  DeleteMetaFile(hmf);
+  ::ReleaseDC(game_screen->m_hWnd, hdc);
 
-  // Присваивание временного указателя постоянному
-  m_pMF = temp;
-
-  // CDialogEx::OnPaint();
+  CDialogEx::OnPaint();
 }
 
 BOOL CSpaceBattleDlgGame::OnInitDialog() {
@@ -87,28 +81,6 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
   this->player.SetLocation(game_screen_rectangle.Width() / 2, game_screen_rectangle.Height() / 2);
   this->enemy.SetAngle(-PI / 4);
 
-  // ========================================
-  // Компонент области рисования
-  // ========================================
-  // Получить указатель на элемент управления Picture
-  CWnd* p_Canvas = GetDlgItem(IDC_GAME_SCREEN);
-
-  // Записать координаты окна в переменную m_Canvas
-  p_Canvas->GetWindowRect(&m_Canvas);
-
-  // Сопоставить координаты для клиентской области
-  ScreenToClient(&m_Canvas);
-
-  // Изменить координаты окна
-  m_Canvas.DeflateRect(2, 2, 1, 1);
-  // ========================================
-
-  // Разместить в памяти объект метафайла
-  m_pMF = new CMetaFileDC;
-
-  // Создать МетаФайл
-  m_pMF->Create();
-
   return TRUE;
 }
 
@@ -129,62 +101,6 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR nIDEvent) {
     ScreenToClient(&game_screen_rectangle);
 
     // Инициировать исполнение функции OnPaint()
-    // RedrawWindow(game_screen_rectangle);
-    Clear();
-    Draw();
+    RedrawWindow(game_screen_rectangle);
   }
-}
-
-void CSpaceBattleDlgGame::Draw() {
-  // Получить объект контекста устройства
-  CClientDC dc(this);
-
-  // Установить атрибуты DC
-  dc.SetAttribDC(dc);
-  // dc.SelectObject(&m_Brush);
-  m_pMF->SetAttribDC(dc);
-  dc.IntersectClipRect(m_Canvas);
-  m_pMF->IntersectClipRect(m_Canvas);
-
-  CWnd* game_screen = GetDlgItem(IDC_GAME_SCREEN);
-  /*CRect game_screen_rectangle;
-  game_screen->GetClientRect(&game_screen_rectangle);*/
-
-  // Получить указатель на DC.
-  HDC hdc = ::GetDC(game_screen->m_hWnd);
-
-  this->player.Draw(hdc);
-  this->enemy.Draw(hdc);
-
-  ::ReleaseDC(game_screen->m_hWnd, hdc);
-}
-
-void CSpaceBattleDlgGame::Clear() {
-  // Получить указатель на контекст устройства
-  CClientDC dc(this);
-
-  // Закрасить область рисования белым цветом
-  dc.SelectStockObject(NULL_PEN);
-  dc.Rectangle(m_Canvas);
-  /*
-  // Закрыть метафайл
-  HMETAFILE hmf = m_pMF->Close();
-  // Удалить данные о метафайле
-  ::DeleteMetaFile(hmf);
-
-  // Создать новый метафайл
-  m_pMF = new CMetaFileDC;
-  m_pMF->Create();
-  m_pMF->SetAttribDC(dc);
-  // Закрасить область рисования белым цветом
-  dc.SelectStockObject(NULL_PEN);
-  dc.Rectangle(m_Canvas);
-
-  // Записать команды в метафайл
-  m_pMF->SelectStockObject(NULL_PEN);
-  m_pMF->Rectangle(
-    m_Canvas.left,
-    m_Canvas.top,
-    m_Canvas.right + 1,
-    m_Canvas.bottom + 1);*/
 }
