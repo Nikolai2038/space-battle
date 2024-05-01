@@ -43,27 +43,55 @@ void CSpaceBattleDlgGame::OnBnClickedButtonReturnToTheMenu() {
 void CSpaceBattleDlgGame::GameStart() {
 }
 
+void CSpaceBattleDlgGame::UpdateGameScreenInfo() {
+  if (game_screen != nullptr) {
+    // Получаем информацию об игровом поле
+    game_screen->GetClientRect(&game_screen_rectangle);
+    game_screen->GetWindowRect(&game_screen_rectangle_window);
+    ScreenToClient(&game_screen_rectangle_window);
+
+    // Указываем, что нужно очистить фон всего окна
+    need_to_clear_screen = true;
+  }
+}
+
 void CSpaceBattleDlgGame::OnPaint() {
-  CWnd* game_screen = GetDlgItem(IDC_GAME_SCREEN);
-  CRect game_screen_rectangle2;
-  game_screen->GetWindowRect(&game_screen_rectangle2);
-  GetClientRect(game_screen_rectangle2);
+  if (hdcBits != nullptr) {
+    DeleteDC(hdcBits);
+  }
+
+  hdcBits = CreateCompatibleDC(hdc);
 
   // device context for painting
   CPaintDC dc(this);
 
+  // Если нужно очистить фон всего окна - очищаем его.
+  // Требуется при изменении размеров окна.
+  if (need_to_clear_screen) {
+    // Получаем размеры окна
+    CRect game_screen_rectangle_for_dc;
+    GetWindowRect(&game_screen_rectangle_for_dc);
+    GetClientRect(game_screen_rectangle_for_dc);
+
+    // Очищаем фон всей формы
+    dc.Rectangle(game_screen_rectangle_for_dc);
+
+    // Сбрасываем необходимость очистки фона всего окна
+    need_to_clear_screen = false;
+  }
+
+  CBrush m_Brush;
+  COLORREF m_BrushColor = RGB(0, 0, 0);
+  m_Brush.CreateSolidBrush(m_BrushColor);
+  dc.SelectObject(&m_Brush);
+
   // Закрасить область рисования белым цветом
-  dc.Rectangle(game_screen_rectangle2);
+  // dc.Rectangle(game_screen_rectangle_for_dc);
+  ::SelectObject(dc, &m_Brush);
+  ::Rectangle(dc, game_screen_rectangle_window.TopLeft().x, game_screen_rectangle_window.TopLeft().y, game_screen_rectangle_window.BottomRight().x, game_screen_rectangle_window.BottomRight().y);
 
   this->enemy.Draw(hdc, hdcBits);
   this->player.Draw(hdc, hdcBits);
-
-  // HDC hdcBits2 = CreateCompatibleDC(hdc);
-
-  // DeleteDC(hdcBits);
-  // DeleteDC(hdcBits);
-  DeleteDC(hdcBits);
-  hdcBits = CreateCompatibleDC(hdc);
 
   // CDialogEx::OnPaint();
 }
@@ -95,16 +123,15 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
       MB_OK + MB_ICONERROR);
   }
 
-  CWnd* game_screen = GetDlgItem(IDC_GAME_SCREEN);
-  CRect game_screen_rectangle;
-  game_screen->GetClientRect(&game_screen_rectangle);
+  game_screen = GetDlgItem(IDC_GAME_SCREEN);
+  UpdateGameScreenInfo();
+
   this->player.SetLocation(game_screen_rectangle.Width() / 2, game_screen_rectangle.Height() / 2);
   this->enemy.SetLocation(game_screen_rectangle.Width() / 4, game_screen_rectangle.Height() / 4);
   this->enemy.SetAngle(-PI / 4);
 
   // Получить указатель на DC.
   hdc = ::GetDC(game_screen->m_hWnd);
-  hdcBits = CreateCompatibleDC(hdc);
 
   return TRUE;
 }
@@ -119,14 +146,8 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR nIDEvent) {
     // Поворачивание игрока
     this->player.SetAngle(this->player.GetAngle() + 0.1);
   } else if (nIDEvent == static_cast<UINT_PTR>(TIMER_REDRAW)) {
-    // Получаем информацию об игровом поле
-    CWnd* game_screen = GetDlgItem(IDC_GAME_SCREEN);
-    CRect game_screen_rectangle;
-    game_screen->GetWindowRect(&game_screen_rectangle);
-    ScreenToClient(&game_screen_rectangle);
-
     // Инициировать исполнение функции OnPaint()
-    RedrawWindow(game_screen_rectangle);
+    RedrawWindow(game_screen_rectangle_window);
   }
 }
 
@@ -135,7 +156,8 @@ BOOL CSpaceBattleDlgGame::OnEraseBkgnd(CDC* pDC) {
 }
 
 void CSpaceBattleDlgGame::OnSize(UINT nType, int cx, int cy) {
-  CDialogEx::OnSize(nType, cx, cy);
+  // CDialogEx::OnSize(nType, cx, cy);
 
+  UpdateGameScreenInfo();
   Invalidate(false);
 }

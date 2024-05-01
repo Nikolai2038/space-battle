@@ -14,12 +14,19 @@ class CSpaceBattleDlgGame : public CDialogEx {
       TIMER_REDRAW
     };
     HDC hdc;
-    HDC hdcBits;
+    HDC hdcBits = nullptr;
+    CWnd* game_screen;
+    CRect game_screen_rectangle;
+    CRect game_screen_rectangle_window;
+
+    // Нужно ли очистить фон всего окна перед следующей отрисовкой объектов
+    bool need_to_clear_screen = true;
   public:
     CSpaceBattleDlgGame(CWnd* pParent = nullptr); // standard constructor
     virtual ~CSpaceBattleDlgGame();
 
     void GameStart();
+    void UpdateGameScreenInfo();
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME

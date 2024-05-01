@@ -92,12 +92,12 @@ void Entity::Draw(HDC& hdc, HDC& hdcBits) {
   const int entity_center_y = entity_rectangle.top - this->height / 2;
 
   // Отрисовка картинки с заменой указанного цвета на прозрачный
-  /*TransparentBlt(hdc, entity_center_x, entity_center_y, this->width, this->height,
+  TransparentBlt(hdc, entity_center_x, entity_center_y, this->width, this->height,
                  hdcBits, 0, 0, this->width, this->height,
-                 color);*/
+                 color);
 
   // Отрисовка картинки без замены прозрачного цвета
-  BitBlt(hdc, entity_center_x, entity_center_y, this->width, this->height, hdcBits, 0, 0, SRCCOPY);
+  // BitBlt(hdc, entity_center_x, entity_center_y, this->width, this->height, hdcBits, 0, 0, SRCCOPY);
 
   // Возврат ротации поля отрисовки
   SetWorldTransform(hdc, &xform_saved);
