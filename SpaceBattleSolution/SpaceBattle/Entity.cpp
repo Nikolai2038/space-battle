@@ -56,7 +56,7 @@ void Entity::SetLocation(int new_x, int new_y) {
   this->SetY(new_y);
 }
 
-void Entity::Draw(const HDC hdc) const {
+void Entity::Draw(HDC& hdc, HDC& hdcBits) {
   // Цвет фона, который будет заменён прозрачным
   RGBQUAD rgb_quad;
   rgb_quad.rgbRed = 0;
@@ -66,7 +66,6 @@ void Entity::Draw(const HDC hdc) const {
   // Получаем код UINT цвета
   const UINT color = rgb_quad.rgbReserved << 32 | rgb_quad.rgbBlue << 16 | rgb_quad.rgbBlue << 16 | rgb_quad.rgbGreen << 8 | rgb_quad.rgbRed;
 
-  HDC hdcBits = CreateCompatibleDC(hdc);
   SelectObject(hdcBits, this->bmp_loaded);
 
   // Сохранение параметров ротации поля отрисовки
@@ -93,14 +92,15 @@ void Entity::Draw(const HDC hdc) const {
   const int entity_center_y = entity_rectangle.top - this->height / 2;
 
   // Отрисовка картинки с заменой указанного цвета на прозрачный
-  TransparentBlt(hdc, entity_center_x, entity_center_y, this->width, this->height,
+  /*TransparentBlt(hdc, entity_center_x, entity_center_y, this->width, this->height,
                  hdcBits, 0, 0, this->width, this->height,
-                 color);
+                 color);*/
+
+  // Отрисовка картинки без замены прозрачного цвета
+  BitBlt(hdc, entity_center_x, entity_center_y, this->width, this->height, hdcBits, 0, 0, SRCCOPY);
 
   // Возврат ротации поля отрисовки
   SetWorldTransform(hdc, &xform_saved);
-
-  DeleteDC(hdcBits);
 }
 
 void Entity::Move() {

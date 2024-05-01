@@ -9,7 +9,12 @@ class CSpaceBattleDlgGame : public CDialogEx {
   private:
     DECLARE_DYNAMIC(CSpaceBattleDlgGame)
 
-    const int TIMER_ID = 1;
+    enum Timers {
+      TIMER_CLOCK,
+      TIMER_REDRAW
+    };
+    HDC hdc;
+    HDC hdcBits;
   public:
     CSpaceBattleDlgGame(CWnd* pParent = nullptr); // standard constructor
     virtual ~CSpaceBattleDlgGame();
@@ -31,4 +36,6 @@ class CSpaceBattleDlgGame : public CDialogEx {
     Enemy enemy;
     virtual BOOL OnInitDialog();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
+    afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+    afx_msg void OnSize(UINT nType, int cx, int cy);
 };

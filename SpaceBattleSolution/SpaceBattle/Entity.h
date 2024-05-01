@@ -34,7 +34,7 @@ class Entity {
     void SetLocation(int new_x, int new_y);
 
     // Отрисовывает сущность
-    void Draw(HDC hdc) const;
+    void Draw(HDC& hdc, HDC& hdcBits);
 
     // Двигает сущность с её скоростью и направлением на одну единицу времени
     void Move();
