@@ -1,38 +1,47 @@
 #pragma once
-#include "Point.h"
 
 // Сущность на поле игры
 class Entity {
   private:
-    // Позиция сущности в относительных координатах
-    Point location;
+    // Позиция сущности
+    double x;
+    double y;
+
+    // Направление движения в радианах
+    double angle;
+
+    // Скорость движения
+    double speed;
 
     BITMAP bmp_info;
     HBITMAP bmp_loaded;
-
-    // Скорость движения
-    double SPEED = 2;
-
-    // Направление движения в радианах
-    double angle = 0;
 
     LONG width;
     LONG height;
   protected:
     Entity(int image_resource_id);
   public:
-    // Возвращает позицию сущности
-    Point GetLocation() const;
+    int GetIntX() const;
+    int GetIntY() const;
+
+    double GetX() const;
+    double GetY() const;
+
+    void SetX(double new_x);
+    void SetY(double new_y);
 
     // Устанавливает новую позицию сущности
-    void SetLocation(const Point new_location);
+    void SetLocation(int new_x, int new_y);
 
     // Отрисовывает сущность
-    void Draw(CPaintDC& dc, HDC hdc, CRect game_screen_rectangle);
+    void Draw(HDC hdc) const;
 
     // Двигает сущность с её скоростью и направлением на одну единицу времени
     void Move();
 
-    LONG GetWidth();
-    LONG GetHeight();
+    LONG GetWidth() const;
+    LONG GetHeight() const;
+
+    double GetAngle() const;
+    void SetAngle(double new_angle);
 };

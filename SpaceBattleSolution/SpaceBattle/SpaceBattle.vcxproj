@@ -184,17 +184,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="CSpaceBattleDlgGame.h" />
     <ClInclude Include="CSpaceBattleDlgRecords.h" />
     <ClInclude Include="CSpaceBattleDlgRules.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="GraphicsHelper.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Point.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SpaceBattle.h" />
     <ClInclude Include="CSpaceBattleDlgMenu.h" />
@@ -206,7 +206,6 @@
     <ClCompile Include="CSpaceBattleDlgRecords.cpp" />
     <ClCompile Include="CSpaceBattleDlgRules.cpp" />
     <ClCompile Include="Enemy.cpp" />
-    <ClCompile Include="GraphicsHelper.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="pch.cpp">
@@ -216,7 +215,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Point.cpp" />
     <ClCompile Include="SpaceBattle.cpp" />
     <ClCompile Include="CSpaceBattleDlgMenu.cpp" />
   </ItemGroup>

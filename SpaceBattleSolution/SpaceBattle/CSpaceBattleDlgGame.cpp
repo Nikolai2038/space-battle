@@ -4,6 +4,9 @@
 #include "pch.h"
 #include "afxdialogex.h"
 #include "CSpaceBattleDlgGame.h"
+
+#include "Config.h"
+#include "Globals.h"
 #include "SpaceBattle.h"
 
 // CSpaceBattleDlgGame dialog
@@ -49,8 +52,8 @@ void CSpaceBattleDlgGame::OnPaint() {
   // Получить указатель на DC.
   HDC hdc = ::GetDC(game_screen->m_hWnd);
 
-  this->player.Draw(dc, hdc, game_screen_rectangle);
-  this->enemy.Draw(dc, hdc, game_screen_rectangle);
+  this->player.Draw(hdc);
+  this->enemy.Draw(hdc);
 
   ::ReleaseDC(game_screen->m_hWnd, hdc);
 
@@ -64,7 +67,7 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
   // - 1-й параметр: Идентификатор таймера: "1" объявляет таймер как "таймер#1".
   // - 2-й параметр: Устанавливает период в миллисекундах, с которым будет происходить сообщение WM_TIMER
   // - 3-й параметр: Задает адрес функции, которая будет выполняться каждые 50 миллисекунд. Можно указать NULL.
-  int iInstallResult = SetTimer(TIMER_ID, 100, nullptr);
+  int iInstallResult = SetTimer(TIMER_ID, REPAINT_TIMER_LOOP_IN_MS, nullptr);
   if (iInstallResult == FALSE) {
     MessageBox(
       L"Cannot install timer",
@@ -75,7 +78,8 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
   CWnd* game_screen = GetDlgItem(IDC_GAME_SCREEN);
   CRect game_screen_rectangle;
   game_screen->GetClientRect(&game_screen_rectangle);
-  this->player.SetLocation(Point(game_screen_rectangle.Width() / 2, game_screen_rectangle.Height() / 2));
+  this->player.SetLocation(game_screen_rectangle.Width() / 2, game_screen_rectangle.Height() / 2);
+  this->enemy.SetAngle(-PI / 4);
 
   return TRUE;
 }
@@ -87,12 +91,16 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR nIDEvent) {
     // Передвижение врага
     this->enemy.Move();
 
-    // Инициировать исполнение функции OnPaint()
+    // Поворачивание игрока
+    this->player.SetAngle(this->player.GetAngle() + 0.1);
+
+    // Получаем информацию об игровом поле
     CWnd* game_screen = GetDlgItem(IDC_GAME_SCREEN);
     CRect game_screen_rectangle;
     game_screen->GetWindowRect(&game_screen_rectangle);
     ScreenToClient(&game_screen_rectangle);
 
+    // Инициировать исполнение функции OnPaint()
     RedrawWindow(game_screen_rectangle);
   }
 }

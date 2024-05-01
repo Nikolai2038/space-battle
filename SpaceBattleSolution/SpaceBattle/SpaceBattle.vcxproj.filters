@@ -25,18 +25,6 @@
     <Filter Include="Header Files\Entities">
       <UniqueIdentifier>{70d79a22-abb7-4df8-9a74-ba0b96cfc4b0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Other">
-      <UniqueIdentifier>{89d5d785-9b04-4ced-b789-1e25b0497e01}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Other">
-      <UniqueIdentifier>{bf425819-174b-49bb-ac81-eaee5087fb54}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Helpers">
-      <UniqueIdentifier>{33336b6e-4667-4691-bb85-2d8444cd9e81}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Helpers">
-      <UniqueIdentifier>{3c5f48cf-e3d3-4f42-9dc5-65c43a813ec5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Entities\EntityChilds">
       <UniqueIdentifier>{1c5c2209-32af-4bd7-a30c-80802b15cfc3}</UniqueIdentifier>
     </Filter>
@@ -48,6 +36,9 @@
     </Filter>
     <Filter Include="Source Files\Entities\EntityChilds\ShipChilds">
       <UniqueIdentifier>{0f8e535d-612b-4e46-b9b6-1db725d09ba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Other">
+      <UniqueIdentifier>{847d0b11-4656-4b5e-82f6-67738306b9fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -81,9 +72,6 @@
     <ClInclude Include="Entity.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="Point.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
     <ClInclude Include="Ship.h">
       <Filter>Header Files\Entities\EntityChilds</Filter>
     </ClInclude>
@@ -96,8 +84,11 @@
     <ClInclude Include="Bullet.h">
       <Filter>Header Files\Entities\EntityChilds</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsHelper.h">
-      <Filter>Header Files\Helpers</Filter>
+    <ClInclude Include="Globals.h">
+      <Filter>Header Files\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files\Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -122,9 +113,6 @@
     <ClCompile Include="Entity.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Point.cpp">
-      <Filter>Source Files\Other</Filter>
-    </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Source Files\Entities\EntityChilds\ShipChilds</Filter>
     </ClCompile>
@@ -136,9 +124,6 @@
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Source Files\Entities\EntityChilds</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsHelper.cpp">
-      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

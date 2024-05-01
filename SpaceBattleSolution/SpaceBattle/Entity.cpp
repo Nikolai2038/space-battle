@@ -3,12 +3,16 @@
 
 #include <stdexcept>
 
-#include "GraphicsHelper.h"
+#include "Config.h"
+#include "Globals.h"
 
 Entity::Entity(int image_resource_id) :
-    location(Point()),
+    x(0),
+    y(0),
     bmp_info(BITMAP()),
-    bmp_loaded(nullptr) {
+    bmp_loaded(nullptr),
+    speed(DEFAULT_SPEED),
+    angle(0) {
   // Загружаем изображение из ресурса
   CPngImage pngImage;
   pngImage.Load(image_resource_id, AfxGetResourceHandle());
@@ -23,124 +27,99 @@ Entity::Entity(int image_resource_id) :
   this->height = bmp_info.bmHeight;
 }
 
-Point Entity::GetLocation() const {
-  return this->location;
+int Entity::GetIntX() const {
+  return static_cast<int>(this->x);
 }
 
-void Entity::SetLocation(const Point new_location) {
-  this->location = new_location;
+int Entity::GetIntY() const {
+  return static_cast<int>(this->y);
 }
 
-void Entity::Draw(CPaintDC& dc, HDC hdc, CRect game_screen_rectangle) {
-  RGBQUAD rgbQuad = RGBQUAD();
-  rgbQuad.rgbRed = 0;
-  rgbQuad.rgbGreen = 255;
-  rgbQuad.rgbBlue = 0;
-  rgbQuad.rgbReserved = 0;
+double Entity::GetX() const {
+  return x;
+}
 
-  UINT color = (rgbQuad.rgbReserved << 32) | (rgbQuad.rgbBlue << 16) | (rgbQuad.rgbBlue << 16) | (rgbQuad.rgbGreen << 8) | rgbQuad.rgbRed;
+double Entity::GetY() const {
+  return y;
+}
 
-  // HBITMAP rotated = GraphicsHelper::GetRotatedBitmapNT(this->bmp_loaded, 2, color);
+void Entity::SetX(double new_x) {
+  this->x = new_x;
+}
 
-  HDC hdcBits = ::CreateCompatibleDC(hdc);
+void Entity::SetY(double new_y) {
+  this->y = new_y;
+}
+
+void Entity::SetLocation(int new_x, int new_y) {
+  this->SetX(new_x);
+  this->SetY(new_y);
+}
+
+void Entity::Draw(const HDC hdc) const {
+  // Цвет фона, который будет заменён прозрачным
+  RGBQUAD rgb_quad;
+  rgb_quad.rgbRed = 0;
+  rgb_quad.rgbGreen = 255;
+  rgb_quad.rgbBlue = 0;
+  rgb_quad.rgbReserved = 0;
+  // Получаем код UINT цвета
+  const UINT color = rgb_quad.rgbReserved << 32 | rgb_quad.rgbBlue << 16 | rgb_quad.rgbBlue << 16 | rgb_quad.rgbGreen << 8 | rgb_quad.rgbRed;
+
+  HDC hdcBits = CreateCompatibleDC(hdc);
   SelectObject(hdcBits, this->bmp_loaded);
 
-  // ========================================
-  HDC hdc_used = hdc;
-  CRect rect_used = game_screen_rectangle;
-  // CRect rect_used = CRect(0, 0, this->bmp_info.bmWidth, this->bmp_info.bmHeight);
-
+  // Сохранение параметров ротации поля отрисовки
   XFORM xform_saved;
-  GetWorldTransform(hdc_used, &xform_saved);
+  GetWorldTransform(hdc, &xform_saved);
 
-  SetGraphicsMode(hdc_used, GM_ADVANCED);
-  // SetMapMode(hdc_used, MM_LOENGLISH);
-
+  // Матрица ротации
   XFORM xform;
-  xform.eM11 = (FLOAT)0.8660;
-  xform.eM12 = (FLOAT)0.5000;
-  xform.eM21 = (FLOAT)-0.5000;
-  xform.eM22 = (FLOAT)0.8660;
+  xform.eM11 = static_cast<FLOAT>(cos(this->angle - PI / 2));
+  xform.eM12 = static_cast<FLOAT>(sin(this->angle + PI / 2));
+  xform.eM21 = static_cast<FLOAT>(-sin(this->angle + PI / 2));
+  xform.eM22 = static_cast<FLOAT>(cos(this->angle - PI / 2));
+  xform.eDx = static_cast<FLOAT>(0.0);
+  xform.eDy = static_cast<FLOAT>(0.0);
 
-  /*xform.eM11 = (FLOAT)0;
-  xform.eM12 = (FLOAT)0;
-  xform.eM21 = (FLOAT)0;
-  xform.eM22 = (FLOAT)0;*/
+  // Ротация поля отрисовки
+  SetGraphicsMode(hdc, GM_ADVANCED);
+  SetWorldTransform(hdc, &xform);
 
-  xform.eDx = (FLOAT)0.0;
-  xform.eDy = (FLOAT)0.0;
-  SetWorldTransform(hdc_used, &xform);
-  DPtoLP(hdc_used, (LPPOINT)&rect_used, 2);
+  // Реинтерпретирование позиции сущности на повёрнутом поле
+  auto entity_rectangle = CRect(this->GetIntX(), this->GetIntY(), this->GetIntX() + this->width, this->GetIntY() + this->height);
+  DPtoLP(hdc, reinterpret_cast<LPPOINT>(&entity_rectangle), 2);
+  const int entity_center_x = entity_rectangle.left - this->width / 2;
+  const int entity_center_y = entity_rectangle.top - this->height / 2;
 
-  // Select a hollow brush.
-  SelectObject(hdc_used, GetStockObject(HOLLOW_BRUSH));
-
-  float target_x1 = rect_used.TopLeft().x + rect_used.right / 2;
-  float target_y1 = rect_used.TopLeft().y + rect_used.bottom / 2;
-  /*target_x1 = 0;
-  target_y1 = 0;*/
-  /*target_x1 = game_screen_rectangle.TopLeft().x + this->location.GetIntX();
-  target_y1 = game_screen_rectangle.TopLeft().y + this->location.GetIntY();*/
-
-  int x = rect_used.TopLeft().x - this->width + this->location.GetIntX();
-  int y = rect_used.TopLeft().y - this->height + this->location.GetIntY();
-
-  CRect pos = CRect(this->location.GetIntX(), this->location.GetIntY(), this->location.GetIntX() + this->width, this->location.GetIntY() + this->height);
-  DPtoLP(hdc_used, (LPPOINT)&pos, 2);
-
-  x = pos.left - this->width / 2;
-  y = pos.top - this->height / 2;
-
-  /*
-  x = game_screen_rectangle.TopLeft().x - this->bmp_info.bmWidth / 2 + rect_used.right / 2;
-  y = game_screen_rectangle.TopLeft().y - this->bmp_info.bmHeight / 2 + rect_used.bottom / 2;*/
-
-  // Draw the exterior circle.
-  Ellipse(hdc_used, (target_x1 - 100), (target_y1 + 100),
-          (target_x1 + 100), (target_y1 - 100));
-  // Draw the interior circle.
-  Ellipse(hdc_used, (target_x1 - 94), (target_y1 + 94),
-          (target_x1 + 94), (target_y1 - 94));
-  // Draw the key.
-  Rectangle(hdc_used, (target_x1 - 13), (target_y1 + 113),
-            (target_x1 + 13), (target_y1 + 50));
-  Rectangle(hdc_used, (target_x1 - 13), (target_y1 + 96),
-            (target_x1 + 13), (target_y1 + 50));
-  // Draw the horizontal lines.
-  MoveToEx(hdc_used, (target_x1 - 150), (target_y1 + 0), NULL);
-  LineTo(hdc_used, (target_x1 - 16), (target_y1 + 0));
-  MoveToEx(hdc_used, (target_x1 - 13), (target_y1 + 0), NULL);
-  LineTo(hdc_used, (target_x1 + 13), (target_y1 + 0));
-  MoveToEx(hdc_used, (target_x1 + 16), (target_y1 + 0), NULL);
-  LineTo(hdc_used, (target_x1 + 150), (target_y1 + 0));
-  // Draw the vertical lines.
-  MoveToEx(hdc_used, (target_x1 + 0), (target_y1 - 150), NULL);
-  LineTo(hdc_used, (target_x1 + 0), (target_y1 - 16));
-  MoveToEx(hdc_used, (target_x1 + 0), (target_y1 - 13), NULL);
-  LineTo(hdc_used, (target_x1 + 0), (target_y1 + 13));
-  MoveToEx(hdc_used, (target_x1 + 0), (target_y1 + 16), NULL);
-  LineTo(hdc_used, (target_x1 + 0), (target_y1 + 150));
-
-  // ========================================
-
-  TransparentBlt(hdc, x, y, this->width, this->height,
+  // Отрисовка картинки с заменой указанного цвета на прозрачный
+  TransparentBlt(hdc, entity_center_x, entity_center_y, this->width, this->height,
                  hdcBits, 0, 0, this->width, this->height,
                  color);
 
-  SetWorldTransform(hdc_used, &xform_saved);
+  // Возврат ротации поля отрисовки
+  SetWorldTransform(hdc, &xform_saved);
 
   DeleteDC(hdcBits);
 }
 
 void Entity::Move() {
-  this->location.SetX(this->location.GetX() + cos(angle) * SPEED);
-  this->location.SetY(this->location.GetY() - sin(angle) * SPEED);
+  this->SetX(this->GetX() + cos(angle) * speed);
+  this->SetY(this->GetY() - sin(angle) * speed);
 }
 
-LONG Entity::GetWidth() {
+LONG Entity::GetWidth() const {
   return width;
 }
 
-LONG Entity::GetHeight() {
+LONG Entity::GetHeight() const {
   return height;
+}
+
+double Entity::GetAngle() const {
+  return this->angle;
+}
+
+void Entity::SetAngle(double new_angle) {
+  this->angle = new_angle;
 }

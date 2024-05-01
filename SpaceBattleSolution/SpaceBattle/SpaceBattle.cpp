@@ -1,7 +1,3 @@
-
-// SpaceBattle.cpp : Defines the class behaviors for the application.
-//
-
 #include "pch.h"
 #include "CSpaceBattleDlgMenu.h"
 #include "framework.h"
