@@ -41,19 +41,18 @@ void CSpaceBattleDlgGame::GameStart() {
 void CSpaceBattleDlgGame::OnPaint() {
   CWnd* game_screen = GetDlgItem(IDC_GAME_SCREEN);
   CRect game_screen_rectangle;
-  game_screen->GetWindowRect(&game_screen_rectangle);
-  ScreenToClient(&game_screen_rectangle);
+  game_screen->GetClientRect(&game_screen_rectangle);
 
   // device context for painting
   CPaintDC dc(this);
 
   // Получить указатель на DC.
-  HDC hdc = ::GetDC(m_hWnd);
+  HDC hdc = ::GetDC(game_screen->m_hWnd);
 
-  this->player.Draw(dc, hdc, game_screen_rectangle);
+  // this->player.Draw(dc, hdc, game_screen_rectangle);
   this->enemy.Draw(dc, hdc, game_screen_rectangle);
 
-  ::ReleaseDC(m_hWnd, hdc);
+  ::ReleaseDC(game_screen->m_hWnd, hdc);
 
   CDialogEx::OnPaint();
 }

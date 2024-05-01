@@ -40,93 +40,78 @@ void Entity::Draw(CPaintDC& dc, HDC hdc, CRect game_screen_rectangle) {
 
   UINT color = (rgbQuad.rgbReserved << 32) | (rgbQuad.rgbBlue << 16) | (rgbQuad.rgbBlue << 16) | (rgbQuad.rgbGreen << 8) | rgbQuad.rgbRed;
 
-  HBITMAP rotated = GraphicsHelper::GetRotatedBitmapNT(this->bmp_loaded, 2, color);
+  // HBITMAP rotated = GraphicsHelper::GetRotatedBitmapNT(this->bmp_loaded, 2, color);
 
   HDC hdcBits = ::CreateCompatibleDC(hdc);
-  SelectObject(hdcBits, rotated);
+  SelectObject(hdcBits, this->bmp_loaded);
 
   // ========================================
-  // Вывести изображение
-  // BitBlt(hdc, x, y, x + this->bmp_info.bmWidth, y + this->bmp_info.bmHeight, hdcBits, 0, 0, SRCCOPY);
+  HDC hdc_used = hdc;
+  CRect rect_used = game_screen_rectangle;
+  // CRect rect_used = CRect(0, 0, this->bmp_info.bmWidth, this->bmp_info.bmHeight);
 
+  XFORM xform_saved;
+  GetWorldTransform(hdc_used, &xform_saved);
+
+  SetGraphicsMode(hdc_used, GM_ADVANCED);
+  // SetMapMode(hdc_used, MM_LOENGLISH);
+
+  XFORM xform;
+  xform.eM11 = (FLOAT)0.8660;
+  xform.eM12 = (FLOAT)0.5000;
+  xform.eM21 = (FLOAT)-0.5000;
+  xform.eM22 = (FLOAT)0.8660;
+
+  /*xform.eM11 = (FLOAT)0;
+  xform.eM12 = (FLOAT)0;
+  xform.eM21 = (FLOAT)0;
+  xform.eM22 = (FLOAT)0;*/
+
+  xform.eDx = (FLOAT)0.0;
+  xform.eDy = (FLOAT)0.0;
+  SetWorldTransform(hdc_used, &xform);
+  DPtoLP(hdc_used, (LPPOINT)&rect_used, 2);
+
+  // Select a hollow brush.
+  SelectObject(hdc_used, GetStockObject(HOLLOW_BRUSH));
+
+  float target_x1 = rect_used.TopLeft().x + rect_used.right / 2;
+  float target_y1 = rect_used.TopLeft().y + rect_used.bottom / 2;
+  // target_x1 = 0;
+  // target_y1 = 0;
+
+  // Draw the exterior circle.
+  Ellipse(hdc_used, (target_x1 - 100), (target_y1 + 100),
+          (target_x1 + 100), (target_y1 - 100));
+  // Draw the interior circle.
+  Ellipse(hdc_used, (target_x1 - 94), (target_y1 + 94),
+          (target_x1 + 94), (target_y1 - 94));
+  // Draw the key.
+  Rectangle(hdc_used, (target_x1 - 13), (target_y1 + 113),
+            (target_x1 + 13), (target_y1 + 50));
+  Rectangle(hdc_used, (target_x1 - 13), (target_y1 + 96),
+            (target_x1 + 13), (target_y1 + 50));
+  // Draw the horizontal lines.
+  MoveToEx(hdc_used, (target_x1 - 150), (target_y1 + 0), NULL);
+  LineTo(hdc_used, (target_x1 - 16), (target_y1 + 0));
+  MoveToEx(hdc_used, (target_x1 - 13), (target_y1 + 0), NULL);
+  LineTo(hdc_used, (target_x1 + 13), (target_y1 + 0));
+  MoveToEx(hdc_used, (target_x1 + 16), (target_y1 + 0), NULL);
+  LineTo(hdc_used, (target_x1 + 150), (target_y1 + 0));
+  // Draw the vertical lines.
+  MoveToEx(hdc_used, (target_x1 + 0), (target_y1 - 150), NULL);
+  LineTo(hdc_used, (target_x1 + 0), (target_y1 - 16));
+  MoveToEx(hdc_used, (target_x1 + 0), (target_y1 - 13), NULL);
+  LineTo(hdc_used, (target_x1 + 0), (target_y1 + 13));
+  MoveToEx(hdc_used, (target_x1 + 0), (target_y1 + 16), NULL);
+  LineTo(hdc_used, (target_x1 + 0), (target_y1 + 150));
+
+  SetWorldTransform(hdc_used, &xform_saved);
   // ========================================
 
-  TransparentBlt(hdc, x, y, this->bmp_info.bmWidth, this->bmp_info.bmHeight,
+  /*TransparentBlt(hdc, x, y, this->bmp_info.bmWidth, this->bmp_info.bmHeight,
                  hdcBits, 0, 0, this->bmp_info.bmWidth, this->bmp_info.bmHeight,
-                 color);
-  // ========================================
-
-  // ========================================
-
-  /*CDC* pdc = CDC::FromHandle(dc);
-  CDC* hDC = CDC::FromHandle(hdcBits);
-
-  const CRect rc_bounds = CRect(x, y, x + this->bmp_info.bmWidth, y + this->bmp_info.bmHeight);
-  constexpr COLORREF c_transparent_color = 216;
-
-  CBitmap bm_and_back, bm_and_object, bm_and_mem, bm_work_copy;
-  CDC hdc_mem, hdc_back, hdc_object, hdc_work_copy;
-
-  // Create some DCs to hold temporary data.
-  hdc_back.CreateCompatibleDC(pdc);
-  hdc_object.CreateCompatibleDC(pdc);
-  hdc_mem.CreateCompatibleDC(pdc);
-  hdc_work_copy.CreateCompatibleDC(pdc);
-
-  // Create a bitmap for each DC. DCs are required for a number of GDI functions.
-
-  // Monochrome DC
-  bm_and_back.CreateBitmap(rc_bounds.Width(), rc_bounds.Height(), 1, 1, NULL);
-
-  // Monochrome DC
-  bm_and_object.CreateBitmap(rc_bounds.Width(), rc_bounds.Height(), 1, 1, NULL);
-
-  bm_and_mem.CreateCompatibleBitmap(pdc, rc_bounds.Width(), rc_bounds.Height());
-  bm_work_copy.CreateCompatibleBitmap(hDC, rc_bounds.Width(), rc_bounds.Height());
-
-  // Each DC must select a bitmap object to store pixel data.
-  CBitmap* pOldbmBack = hdc_back.SelectObject(&bm_and_back);
-  CBitmap* pOldbmObject = hdc_object.SelectObject(&bm_and_object);
-  CBitmap* pOldbmMem = hdc_mem.SelectObject(&bm_and_mem);
-
-  // Transfer bitmap to working object
-  CBitmap* pOldbmWorkCopy = hdc_work_copy.SelectObject(&bm_work_copy);
-  hdc_work_copy.BitBlt(0, 0, rc_bounds.Width(), rc_bounds.Height(), hDC, 0, 0, SRCCOPY);
-
-  hdc_work_copy.AlphaBlend()
-
-  // Set the background color of the source DC to the color contained in the parts of the bitmap that should be transparent
-  hdc_work_copy.SetBkColor(c_transparent_color);
-
-  // Create the object mask for the bitmap by performing a BitBlt
-  // from the source bitmap to a monochrome bitmap.
-  hdc_object.BitBlt(0, 0, rc_bounds.Width(), rc_bounds.Height(), &hdc_work_copy, 0, 0, SRCCOPY);
-
-  // Set the background color of the source DC back to the original color.
-  hdc_work_copy.SetBkColor(hDC->GetBkColor());
-
-  // Create the inverse of the object mask.
-  hdc_back.BitBlt(0, 0, rc_bounds.Width(), rc_bounds.Height(), &hdc_object, 0, 0, NOTSRCCOPY);
-
-  // Copy the background of the main DC to the destination.
-  hdc_mem.BitBlt(0, 0, rc_bounds.Width(), rc_bounds.Height(), pdc, rc_bounds.left, rc_bounds.top, SRCCOPY);
-
-  // Mask out the places where the bitmap will be placed.
-  hdc_mem.BitBlt(0, 0, rc_bounds.Width(), rc_bounds.Height(), &hdc_object, 0, 0, SRCAND);
-
-  // Mask out the transparent colored pixels on the bitmap.
-  hdc_work_copy.BitBlt(0, 0, rc_bounds.Width(), rc_bounds.Height(), &hdc_back, 0, 0, SRCAND);
-
-  // XOR the bitmap with the background on the destination DC.
-  hdc_mem.BitBlt(0, 0, rc_bounds.Width(), rc_bounds.Height(), &hdc_work_copy, 0, 0, SRCPAINT);
-
-  // Copy the destination to the screen.
-  pdc->BitBlt(rc_bounds.left, rc_bounds.top, rc_bounds.Width(), rc_bounds.Height(), &hdc_mem, 0, 0, SRCCOPY);
-
-  hdc_back.SelectObject(pOldbmBack);
-  hdc_object.SelectObject(pOldbmObject);
-  hdc_mem.SelectObject(pOldbmMem);
-  hdc_work_copy.SelectObject(pOldbmWorkCopy);*/
+                 color);*/
 
   DeleteDC(hdcBits);
 }
