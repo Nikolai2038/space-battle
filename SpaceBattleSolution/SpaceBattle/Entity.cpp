@@ -3,6 +3,8 @@
 
 #include <stdexcept>
 
+#include "GraphicsHelper.h"
+
 Entity::Entity(int image_resource_id) :
     location(Point()),
     bmp_info(BITMAP()),
@@ -30,14 +32,6 @@ void Entity::Draw(CPaintDC& dc, HDC hdc, CRect game_screen_rectangle) {
   int x = game_screen_rectangle.TopLeft().x + this->location.GetIntX();
   int y = game_screen_rectangle.TopLeft().y + this->location.GetIntY();
 
-  HDC hdcBits = ::CreateCompatibleDC(hdc);
-  SelectObject(hdcBits, this->bmp_loaded);
-
-  // ========================================
-  // Вывести изображение
-  // BitBlt(hdc, x, y, x + this->bmp_info.bmWidth, y + this->bmp_info.bmHeight, hdcBits, 0, 0, SRCCOPY);
-
-  // ========================================
   RGBQUAD rgbQuad = RGBQUAD();
   rgbQuad.rgbRed = 0;
   rgbQuad.rgbGreen = 255;
@@ -45,6 +39,17 @@ void Entity::Draw(CPaintDC& dc, HDC hdc, CRect game_screen_rectangle) {
   rgbQuad.rgbReserved = 0;
 
   UINT color = (rgbQuad.rgbReserved << 32) | (rgbQuad.rgbBlue << 16) | (rgbQuad.rgbBlue << 16) | (rgbQuad.rgbGreen << 8) | rgbQuad.rgbRed;
+
+  HBITMAP rotated = GraphicsHelper::GetRotatedBitmapNT(this->bmp_loaded, 2, color);
+
+  HDC hdcBits = ::CreateCompatibleDC(hdc);
+  SelectObject(hdcBits, rotated);
+
+  // ========================================
+  // Вывести изображение
+  // BitBlt(hdc, x, y, x + this->bmp_info.bmWidth, y + this->bmp_info.bmHeight, hdcBits, 0, 0, SRCCOPY);
+
+  // ========================================
 
   TransparentBlt(hdc, x, y, this->bmp_info.bmWidth, this->bmp_info.bmHeight,
                  hdcBits, 0, 0, this->bmp_info.bmWidth, this->bmp_info.bmHeight,
