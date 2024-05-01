@@ -18,6 +18,9 @@ Entity::Entity(int image_resource_id) :
 
   // Получаем информацию об изображении
   GetObject(this->bmp_loaded, sizeof(BITMAP), (LPSTR) & this->bmp_info);
+
+  this->width = bmp_info.bmWidth;
+  this->height = bmp_info.bmHeight;
 }
 
 Point Entity::GetLocation() const {
@@ -29,9 +32,6 @@ void Entity::SetLocation(const Point new_location) {
 }
 
 void Entity::Draw(CPaintDC& dc, HDC hdc, CRect game_screen_rectangle) {
-  int x = game_screen_rectangle.TopLeft().x + this->location.GetIntX();
-  int y = game_screen_rectangle.TopLeft().y + this->location.GetIntY();
-
   RGBQUAD rgbQuad = RGBQUAD();
   rgbQuad.rgbRed = 0;
   rgbQuad.rgbGreen = 255;
@@ -77,8 +77,23 @@ void Entity::Draw(CPaintDC& dc, HDC hdc, CRect game_screen_rectangle) {
 
   float target_x1 = rect_used.TopLeft().x + rect_used.right / 2;
   float target_y1 = rect_used.TopLeft().y + rect_used.bottom / 2;
-  // target_x1 = 0;
-  // target_y1 = 0;
+  /*target_x1 = 0;
+  target_y1 = 0;*/
+  /*target_x1 = game_screen_rectangle.TopLeft().x + this->location.GetIntX();
+  target_y1 = game_screen_rectangle.TopLeft().y + this->location.GetIntY();*/
+
+  int x = rect_used.TopLeft().x - this->width + this->location.GetIntX();
+  int y = rect_used.TopLeft().y - this->height + this->location.GetIntY();
+
+  CRect pos = CRect(this->location.GetIntX(), this->location.GetIntY(), this->location.GetIntX() + this->width, this->location.GetIntY() + this->height);
+  DPtoLP(hdc_used, (LPPOINT)&pos, 2);
+
+  x = pos.left - this->width / 2;
+  y = pos.top - this->height / 2;
+
+  /*
+  x = game_screen_rectangle.TopLeft().x - this->bmp_info.bmWidth / 2 + rect_used.right / 2;
+  y = game_screen_rectangle.TopLeft().y - this->bmp_info.bmHeight / 2 + rect_used.bottom / 2;*/
 
   // Draw the exterior circle.
   Ellipse(hdc_used, (target_x1 - 100), (target_y1 + 100),
@@ -106,12 +121,13 @@ void Entity::Draw(CPaintDC& dc, HDC hdc, CRect game_screen_rectangle) {
   MoveToEx(hdc_used, (target_x1 + 0), (target_y1 + 16), NULL);
   LineTo(hdc_used, (target_x1 + 0), (target_y1 + 150));
 
-  SetWorldTransform(hdc_used, &xform_saved);
   // ========================================
 
-  /*TransparentBlt(hdc, x, y, this->bmp_info.bmWidth, this->bmp_info.bmHeight,
-                 hdcBits, 0, 0, this->bmp_info.bmWidth, this->bmp_info.bmHeight,
-                 color);*/
+  TransparentBlt(hdc, x, y, this->width, this->height,
+                 hdcBits, 0, 0, this->width, this->height,
+                 color);
+
+  SetWorldTransform(hdc_used, &xform_saved);
 
   DeleteDC(hdcBits);
 }
@@ -119,4 +135,12 @@ void Entity::Draw(CPaintDC& dc, HDC hdc, CRect game_screen_rectangle) {
 void Entity::Move() {
   this->location.SetX(this->location.GetX() + cos(angle) * SPEED);
   this->location.SetY(this->location.GetY() - sin(angle) * SPEED);
+}
+
+LONG Entity::GetWidth() {
+  return width;
+}
+
+LONG Entity::GetHeight() {
+  return height;
 }

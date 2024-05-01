@@ -15,6 +15,9 @@ class Entity {
 
     // Направление движения в радианах
     double angle = 0;
+
+    LONG width;
+    LONG height;
   protected:
     Entity(int image_resource_id);
   public:
@@ -29,4 +32,7 @@ class Entity {
 
     // Двигает сущность с её скоростью и направлением на одну единицу времени
     void Move();
+
+    LONG GetWidth();
+    LONG GetHeight();
 };

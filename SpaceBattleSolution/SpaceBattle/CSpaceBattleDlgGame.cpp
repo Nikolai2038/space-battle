@@ -49,7 +49,7 @@ void CSpaceBattleDlgGame::OnPaint() {
   // Получить указатель на DC.
   HDC hdc = ::GetDC(game_screen->m_hWnd);
 
-  // this->player.Draw(dc, hdc, game_screen_rectangle);
+  this->player.Draw(dc, hdc, game_screen_rectangle);
   this->enemy.Draw(dc, hdc, game_screen_rectangle);
 
   ::ReleaseDC(game_screen->m_hWnd, hdc);
@@ -71,6 +71,11 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
       L"Error message",
       MB_OK + MB_ICONERROR);
   }
+
+  CWnd* game_screen = GetDlgItem(IDC_GAME_SCREEN);
+  CRect game_screen_rectangle;
+  game_screen->GetClientRect(&game_screen_rectangle);
+  this->player.SetLocation(Point(game_screen_rectangle.Width() / 2, game_screen_rectangle.Height() / 2));
 
   return TRUE;
 }
