@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 #include <vector>
 
 // Сущность на поле игры
@@ -58,6 +59,8 @@ class Entity {
 
     // Помечает сущность как уничтоженную
     void Destroy();
+
+    bool IsIntersectsWith(Entity entity) const;
   protected:
     /// Создаёт новую сущность
     /// @param image_resource_id ID ресурса изображения сущности
@@ -67,10 +70,8 @@ class Entity {
     // Скорость движения
     double speed;
 
-    std::vector<Entity*> childs;
+    Entity* owner;
   public:
-    ~Entity();
-
     // Возвращает позицию X сущности
     double GetX() const;
 
@@ -98,7 +99,7 @@ class Entity {
     void Draw(HDC& hdc, HDC& hdc_bits) const;
 
     // Двигает сущность с её скоростью и направлением на одну единицу времени
-    void ProcessActions(CRect game_field);
+    void ProcessActions(std::list<Entity*> entities, CRect game_field);
 
     // Возвращает ширину сущности
     LONG GetWidth() const;

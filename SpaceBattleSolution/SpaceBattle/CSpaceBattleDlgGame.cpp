@@ -232,7 +232,7 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR nIDEvent) {
     if (nIDEvent == static_cast<UINT_PTR>(Timers::TIMER_CLOCK)) {
       // Обработка действий всех сущностей
       for (auto entity : this->entities) {
-        entity->ProcessActions(this->game_screen_rectangle);
+        entity->ProcessActions(this->entities, this->game_screen_rectangle);
       }
     } else if (nIDEvent == static_cast<UINT_PTR>(Timers::TIMER_REDRAW)) {
       // Инициировать исполнение функции OnPaint()
@@ -275,7 +275,7 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* pMsg) {
           this->player->SetActionRotation(Ship::ActionRotation::Right);
           break;
         case VK_SPACE:
-          this->player->Shoot();
+          this->player->Shoot(this->entities);
         default:
           break;
       }

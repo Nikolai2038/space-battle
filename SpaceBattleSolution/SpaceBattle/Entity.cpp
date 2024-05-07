@@ -3,11 +3,24 @@
 
 #include <stdexcept>
 
+#include "Bullet.h"
 #include "Config.h"
 #include "Globals.h"
 
 void Entity::Destroy() {
   this->is_destroyed = true;
+}
+
+bool Entity::IsIntersectsWith(Entity entity) const {
+  // Если одна из сущностей уничтожена - сущности не сталкиваются
+  if (this->IsDestroyed() || entity.IsDestroyed()) {
+    return false;
+  }
+
+  // Иначе - проверяем расстояние между их точками коллизии
+  double distance_to_collide = this->GetIntersectRadius() + entity.GetIntersectRadius();
+  double real_distance = sqrt(pow(this->x - entity.x, 2) + pow(this->y - entity.y, 2));
+  return real_distance <= distance_to_collide;
 }
 
 Entity::Entity(int image_resource_id, double scale) :
@@ -19,7 +32,7 @@ Entity::Entity(int image_resource_id, double scale) :
     action_movement(ActionMovement::None),
     is_destroyed(false),
     speed(DEFAULT_SPEED),
-    childs(std::vector<Entity*>()) {
+    owner(nullptr) {
   // Загружаем изображение из ресурса
   CPngImage pngImage;
   pngImage.Load(image_resource_id, AfxGetResourceHandle());
@@ -32,12 +45,6 @@ Entity::Entity(int image_resource_id, double scale) :
 
   this->width = bmp_info.bmWidth;
   this->height = bmp_info.bmHeight;
-}
-
-Entity::~Entity() {
-  for (const auto child : this->childs) {
-    delete child;
-  }
 }
 
 int Entity::GetIntX() const {
@@ -70,11 +77,6 @@ void Entity::SetLocation(const double new_x, const double new_y) {
 }
 
 void Entity::Draw(HDC& hdc, HDC& hdc_bits) const {
-  // Сначала рисуем дочерние сущности
-  for (auto child : this->childs) {
-    child->Draw(hdc, hdc_bits);
-  }
-
   if (this->is_destroyed) {
     return;
   }
@@ -136,26 +138,42 @@ void Entity::Draw(HDC& hdc, HDC& hdc_bits) const {
   SetWorldTransform(hdc, &xform_saved);
 }
 
-void Entity::ProcessActions(CRect game_field) {
-  // Сначала обрабатываем дочерние сущности
-  for (auto child : this->childs) {
-    child->ProcessActions(game_field);
-  }
-
+void Entity::ProcessActions(std::list<Entity*> entities, CRect game_field) {
+  // Уничтоженные сущности игнорируем
   if (this->is_destroyed) {
     return;
+  }
+
+  // Проверяем сущности на столкновения
+  for (auto entity : entities) {
+    // Сущность сама с собой не столкнётся
+    if (this == entity) {
+      continue;
+    }
+
+    // Если одна сущность является владельцем другой - они друг на друга не влияют.
+    // Пример - пуля не может уничтожить корабль, из которого вылетела.
+    if (this->owner == entity || entity->owner == this) {
+      continue;
+    }
+
+    if (this->IsIntersectsWith(*entity)) {
+      this->Destroy();
+      entity->Destroy();
+      return;
+    }
   }
 
   if (this->action_movement == ActionMovement::ToAngle) {
     double new_x = x + cos(angle) * speed;
     if ((new_x + width * scale / 2 <= 0) || (new_x - width * scale / 2 >= game_field.Width())) {
-      Destroy();
+      this->Destroy();
       return;
     }
 
     double new_y = y - sin(angle) * speed;
     if ((new_y + height * scale / 2 <= 0) || (new_y - height * scale / 2 >= game_field.Height())) {
-      Destroy();
+      this->Destroy();
       return;
     }
 
@@ -216,7 +234,7 @@ void Entity::SetActionMovement(const ActionMovement new_action_movement) {
 }
 
 int Entity::GetIntersectRadius() const {
-  return static_cast<int>(max(width, height) * scale * INTERSECT_RADIUS_SCALE) / 2;
+  return static_cast<int>(max(width, height) * scale * INTERSECT_RADIUS_SCALE / 2);
 }
 
 bool Entity::IsDestroyed() const {

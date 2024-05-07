@@ -1,7 +1,6 @@
 #pragma once
-#include <vector>
+#include <list>
 
-#include "Bullet.h"
 #include "Entity.h"
 
 // Корабль
@@ -11,5 +10,5 @@ class Ship : public Entity {
   protected:
     Ship(int image_resource_id);
   public:
-    void Shoot();
+    void Shoot(std::list<Entity *> &entities);
 };
