@@ -15,11 +15,16 @@ IMPLEMENT_DYNAMIC(CSpaceBattleDlgGame, CDialogEx)
 
 CSpaceBattleDlgGame::CSpaceBattleDlgGame(CWnd* pParent /*=nullptr*/) :
     CDialogEx(IDD_DIALOG_GAME, pParent) {
-  this->player = Player();
-  this->enemy = Enemy();
+  this->entities = std::vector<Entity*>();
+
+  this->player = new Player();
+  this->entities.push_back(player);
 }
 
 CSpaceBattleDlgGame::~CSpaceBattleDlgGame() {
+  for (auto entity : this->entities) {
+    delete entity;
+  }
 }
 
 void CSpaceBattleDlgGame::DoDataExchange(CDataExchange* pDX) {
@@ -92,8 +97,9 @@ void CSpaceBattleDlgGame::OnPaint() {
   ::SelectObject(dc, &m_Brush);
   ::Rectangle(dc, game_screen_rectangle_window.TopLeft().x, game_screen_rectangle_window.TopLeft().y, game_screen_rectangle_window.BottomRight().x, game_screen_rectangle_window.BottomRight().y);
 
-  this->enemy.Draw(hdc, hdcBits);
-  this->player.Draw(hdc, hdcBits);
+  for (auto entity : this->entities) {
+    entity->Draw(hdc, hdcBits);
+  }
 
   // CDialogEx::OnPaint();
 }
@@ -128,9 +134,10 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
   game_screen = GetDlgItem(IDC_GAME_SCREEN);
   UpdateGameScreenInfo();
 
-  this->player.SetLocation(game_screen_rectangle.Width() / 2, game_screen_rectangle.Height() / 2);
-  this->enemy.SetLocation(game_screen_rectangle.Width() / 4, game_screen_rectangle.Height() / 4);
-  this->enemy.SetAngle(-PI / 4);
+  // Располагаем игрока по центру экрана
+  this->player->SetLocation(game_screen_rectangle.Width() / 2, game_screen_rectangle.Height() / 2);
+
+  CreateNewEnemy();
 
   // Получить указатель на DC.
   hdc = ::GetDC(game_screen->m_hWnd);
@@ -142,9 +149,10 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR nIDEvent) {
   // CDialogEx::OnTimer(nIDEvent);
 
   if (nIDEvent == static_cast<UINT_PTR>(TIMER_CLOCK)) {
-    // Обработка действий кораблей
-    this->enemy.ProcessActions();
-    this->player.ProcessActions();
+    // Обработка действий всех сущностей
+    for (auto entity : this->entities) {
+      entity->ProcessActions();
+    }
   } else if (nIDEvent == static_cast<UINT_PTR>(TIMER_REDRAW)) {
     // Инициировать исполнение функции OnPaint()
     RedrawWindow(game_screen_rectangle_window);
@@ -168,11 +176,11 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* pMsg) {
       switch (pMsg->wParam) {
         case 'Q':
           // Поворачиваем игрока налево
-          this->player.SetActionRotation(Ship::ActionRotation::Left);
+          this->player->SetActionRotation(Ship::ActionRotation::Left);
           break;
         case 'E':
           // Поворачиваем игрока направо
-          this->player.SetActionRotation(Ship::ActionRotation::Right);
+          this->player->SetActionRotation(Ship::ActionRotation::Right);
           break;
         default:
           break;
@@ -183,7 +191,7 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* pMsg) {
         case 'Q':
         case 'E':
           // Перестаём поворачивать игрока
-          this->player.SetActionRotation(Ship::ActionRotation::None);
+          this->player->SetActionRotation(Ship::ActionRotation::None);
           break;
         default:
           break;
@@ -192,4 +200,11 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* pMsg) {
     default:
       return CDialogEx::PreTranslateMessage(pMsg);
   }
+}
+
+void CSpaceBattleDlgGame::CreateNewEnemy() {
+  Enemy* enemy = new Enemy();
+  enemy->SetLocation(game_screen_rectangle.Width() / 4, game_screen_rectangle.Height() / 4);
+  enemy->SetAngle(-PI / 4);
+  this->entities.push_back(enemy);
 }

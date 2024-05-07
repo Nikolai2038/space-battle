@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 #include "afxdialogex.h"
 #include "Enemy.h"
 #include "Player.h"
@@ -39,8 +41,12 @@ class CSpaceBattleDlgGame : public CDialogEx {
   public:
     afx_msg void OnBnClickedButtonReturnToTheMenu();
     afx_msg void OnPaint();
-    Player player;
-    Enemy enemy;
+
+    // Игрок
+    Player* player;
+    // Список всех сущностей (включая игрока)
+    std::vector<Entity*> entities;
+
     virtual BOOL OnInitDialog();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg BOOL OnEraseBkgnd(CDC* pDC);
@@ -48,4 +54,6 @@ class CSpaceBattleDlgGame : public CDialogEx {
     afx_msg
       afx_msg virtual BOOL
       PreTranslateMessage(MSG* pMsg);
+  private:
+    void CreateNewEnemy();
 };
