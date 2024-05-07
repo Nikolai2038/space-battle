@@ -14,13 +14,13 @@
 #define IDI_POINT                       141
 #define IDI_ENEMIES                     142
 #define IDI_TIME                        143
-#define IDI_ICON3                       144
 #define IDI_HEALTH                      144
 #define IDC_BUTTON_PLAY                 1000
 #define IDC_BUTTON_RULES                1001
 #define IDC_BUTTON_PAUSE_GAME           1001
+#define IDC_BUTTON_PAUSE_OR_RESUME_GAME 1001
 #define IDC_BUTTON_EXIT                 1002
-#define IDC_BUTTON_END_GAME             1002
+#define IDC_BUTTON_START_OR_END_GAME    1002
 #define IDC_BUTTON_RECORDS              1003
 #define IDC_LIST_RECORDS                1004
 #define IDC_BUTTON_RETURN_TO_THE_MENU   1007

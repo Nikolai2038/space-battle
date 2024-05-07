@@ -13,7 +13,8 @@ class CSpaceBattleDlgGame : public CDialogEx {
 
     enum Timers {
       TIMER_CLOCK,
-      TIMER_REDRAW
+      TIMER_REDRAW,
+      TIMER_GAMETIME
     };
     HDC hdc;
     HDC hdcBits = nullptr;
@@ -23,11 +24,26 @@ class CSpaceBattleDlgGame : public CDialogEx {
 
     // Нужно ли очистить фон всего окна перед следующей отрисовкой объектов
     bool need_to_clear_screen = true;
+
+    enum class GameState {
+      CREATED,
+      PAUSED,
+      PLAYING,
+      FINISHED,
+    };
+
+    GameState game_state;
+
+    CButton button_pause_or_resume_game;
+    CButton button_start_or_end_game;
+
+    int time_playing_seconds_passed;
+    CStatic text_time_playing;
   public:
     CSpaceBattleDlgGame(CWnd* pParent = nullptr); // standard constructor
     virtual ~CSpaceBattleDlgGame();
 
-    void GameStart();
+    void GameResume();
     void UpdateGameScreenInfo();
 
 // Dialog Data
@@ -56,4 +72,7 @@ class CSpaceBattleDlgGame : public CDialogEx {
       PreTranslateMessage(MSG* pMsg);
   private:
     void CreateNewEnemy();
+  public:
+    afx_msg void OnBnClickedButtonPauseOrResumeGame();
+    afx_msg void OnBnClickedButtonStartOrEndGame();
 };
