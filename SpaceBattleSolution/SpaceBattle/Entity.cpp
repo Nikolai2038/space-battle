@@ -6,17 +6,20 @@
 #include "Config.h"
 #include "Globals.h"
 
+void Entity::Destroy() {
+  this->is_destroyed = true;
+}
+
 Entity::Entity(int image_resource_id, double scale) :
     x(0),
     y(0),
-    bmp_info(BITMAP()),
-    bmp_loaded(nullptr),
-    speed(DEFAULT_SPEED),
-    angle(0),
+    angle(DEFAULT_ANGLE),
     scale(scale),
     action_rotation(ActionRotation::None),
     action_movement(ActionMovement::None),
-    childs(std::vector<Entity*>()) {
+    speed(DEFAULT_SPEED),
+    childs(std::vector<Entity*>()),
+    is_destroyed(false) {
   // Загружаем изображение из ресурса
   CPngImage pngImage;
   pngImage.Load(image_resource_id, AfxGetResourceHandle());
@@ -70,6 +73,10 @@ void Entity::Draw(HDC& hdc, HDC& hdcBits) {
   // Сначала рисуем дочерние сущности
   for (auto child : this->childs) {
     child->Draw(hdc, hdcBits);
+  }
+
+  if (this->is_destroyed) {
+    return;
   }
 
   // Цвет фона, который будет заменён прозрачным
@@ -130,19 +137,33 @@ void Entity::Draw(HDC& hdc, HDC& hdcBits) {
   SetWorldTransform(hdc, &xform_saved);
 }
 
-void Entity::ProcessActions() {
+void Entity::ProcessActions(CRect game_field) {
   // Сначала обрабатываем дочерние сущности
   for (auto child : this->childs) {
-    child->ProcessActions();
+    child->ProcessActions(game_field);
   }
 
-  switch (this->action_movement) {
-    case ActionMovement::ToAngle:
-      this->SetX(this->GetX() + cos(angle) * speed);
-      this->SetY(this->GetY() - sin(angle) * speed);
-      break;
-    default:
-      break;
+  if (this->is_destroyed) {
+    return;
+  }
+
+  if (this->action_movement == ActionMovement::ToAngle) {
+    double intersect_radius = GetIntersectRadius();
+
+    double new_x = x + cos(angle) * speed;
+    if ((new_x - intersect_radius <= 0) || (new_x + intersect_radius >= game_field.Width())) {
+      Destroy();
+      return;
+    }
+
+    double new_y = y - sin(angle) * speed;
+    if ((new_y - intersect_radius <= 0) || (new_y + intersect_radius >= game_field.Height())) {
+      Destroy();
+      return;
+    }
+
+    x = new_x;
+    y = new_y;
   }
 
   switch (this->action_rotation) {
@@ -195,4 +216,12 @@ Entity::ActionMovement Entity::GetActionMovement() {
 
 void Entity::SetActionMovement(ActionMovement new_action_movement) {
   this->action_movement = new_action_movement;
+}
+
+int Entity::GetIntersectRadius() {
+  return static_cast<int>(min(width, height) * scale * INTERSECT_RADIUS_SCALE);
+}
+
+bool Entity::IsDestroyed() {
+  return is_destroyed;
 }

@@ -41,6 +41,10 @@ class Entity {
     ActionRotation action_rotation;
 
     ActionMovement action_movement;
+
+    bool is_destroyed;
+
+    void Destroy();
   protected:
     /// Создаёт новую сущность
     /// @param image_resource_id ID ресурса изображения сущности
@@ -79,7 +83,7 @@ class Entity {
     void Draw(HDC& hdc, HDC& hdcBits);
 
     // Двигает сущность с её скоростью и направлением на одну единицу времени
-    void ProcessActions();
+    void ProcessActions(CRect game_field);
 
     // Возвращает ширину сущности
     LONG GetWidth() const;
@@ -106,4 +110,9 @@ class Entity {
     ActionMovement GetActionMovement();
 
     void SetActionMovement(ActionMovement new_action_movement);
+
+    // Возвращает радиус круга коллизии объекта (от его центра)
+    int GetIntersectRadius();
+
+    bool IsDestroyed();
 };

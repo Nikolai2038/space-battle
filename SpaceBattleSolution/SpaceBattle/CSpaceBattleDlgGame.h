@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 #include <vector>
 
 #include "afxdialogex.h"
@@ -11,7 +12,7 @@ class CSpaceBattleDlgGame : public CDialogEx {
   private:
     DECLARE_DYNAMIC(CSpaceBattleDlgGame)
 
-    enum Timers {
+    enum class Timers {
       TIMER_CLOCK,
       TIMER_REDRAW,
       TIMER_GAMETIME
@@ -19,7 +20,11 @@ class CSpaceBattleDlgGame : public CDialogEx {
     HDC hdc;
     HDC hdcBits = nullptr;
     CWnd* game_screen;
+
+    // Область отрисовки игрового поля
     CRect game_screen_rectangle;
+
+    // Область всего диалога с игровым полем
     CRect game_screen_rectangle_window;
 
     // Нужно ли очистить фон всего окна перед следующей отрисовкой объектов
@@ -39,6 +44,11 @@ class CSpaceBattleDlgGame : public CDialogEx {
 
     int time_playing_seconds_passed;
     CStatic text_time_playing;
+
+    void PauseGame();
+    void ResumeGame();
+    void EndGameAndDoNotSaveRecord();
+    void EndGameAndSaveRecord();
   public:
     CSpaceBattleDlgGame(CWnd* pParent = nullptr); // standard constructor
     virtual ~CSpaceBattleDlgGame();
@@ -61,7 +71,7 @@ class CSpaceBattleDlgGame : public CDialogEx {
     // Игрок
     Player* player;
     // Список всех сущностей (включая игрока)
-    std::vector<Entity*> entities;
+    std::list<Entity*> entities;
 
     virtual BOOL OnInitDialog();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
@@ -75,4 +85,5 @@ class CSpaceBattleDlgGame : public CDialogEx {
   public:
     afx_msg void OnBnClickedButtonPauseOrResumeGame();
     afx_msg void OnBnClickedButtonStartOrEndGame();
+    afx_msg void OnClose();
 };

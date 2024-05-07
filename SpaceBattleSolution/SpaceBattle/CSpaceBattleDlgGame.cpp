@@ -15,11 +15,32 @@
 
 IMPLEMENT_DYNAMIC(CSpaceBattleDlgGame, CDialogEx)
 
+void CSpaceBattleDlgGame::PauseGame() {
+  this->game_state = GameState::PAUSED;
+  this->button_pause_or_resume_game.SetWindowTextW(L"Resume game");
+}
+
+void CSpaceBattleDlgGame::ResumeGame() {
+  this->game_state = GameState::PLAYING;
+  this->button_pause_or_resume_game.SetWindowTextW(L"Pause game");
+}
+
+void CSpaceBattleDlgGame::EndGameAndDoNotSaveRecord() {
+  OnOK();
+}
+
+void CSpaceBattleDlgGame::EndGameAndSaveRecord() {
+  // TODO: Save record
+  // ...
+
+  OnOK();
+}
+
 CSpaceBattleDlgGame::CSpaceBattleDlgGame(CWnd* pParent /*=nullptr*/) :
     CDialogEx(IDD_DIALOG_GAME, pParent) {
   this->game_state = GameState::CREATED;
 
-  this->entities = std::vector<Entity*>();
+  this->entities = std::list<Entity*>();
 
   this->player = new Player();
   this->entities.push_back(player);
@@ -48,30 +69,31 @@ ON_WM_KEYDOWN()
 ON_WM_KEYUP()
 ON_BN_CLICKED(IDC_BUTTON_PAUSE_OR_RESUME_GAME, &CSpaceBattleDlgGame::OnBnClickedButtonPauseOrResumeGame)
 ON_BN_CLICKED(IDC_BUTTON_START_OR_END_GAME, &CSpaceBattleDlgGame::OnBnClickedButtonStartOrEndGame)
+ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 // CSpaceBattleDlgGame message handlers
 
 void CSpaceBattleDlgGame::OnBnClickedButtonReturnToTheMenu() {
-  int iResults = MessageBox(
+  PauseGame();
+  int dialog_result = MessageBox(
     L"Return to the menu?\nYour progress will be lost!",
     L"Return to the menu",
     MB_YESNO + MB_ICONQUESTION);
-
-  if (iResults == IDYES) {
-    OnOK();
+  if (dialog_result == IDYES) {
+    EndGameAndDoNotSaveRecord();
+  } else {
+    ResumeGame();
   }
 }
 
 void CSpaceBattleDlgGame::OnBnClickedButtonPauseOrResumeGame() {
   switch (this->game_state) {
     case GameState::PAUSED:
-      this->game_state = GameState::PLAYING;
-      this->button_pause_or_resume_game.SetWindowTextW(L"Pause game");
+      ResumeGame();
       break;
     case GameState::PLAYING:
-      this->game_state = GameState::PAUSED;
-      this->button_pause_or_resume_game.SetWindowTextW(L"Resume game");
+      PauseGame();
       break;
     default:
       break;
@@ -86,13 +108,16 @@ void CSpaceBattleDlgGame::OnBnClickedButtonStartOrEndGame() {
       this->button_start_or_end_game.SetWindowTextW(L"End game");
       break;
     default:
-      int iResults = MessageBox(
+      PauseGame();
+      int dialog_result = MessageBox(
         L"End the game?\nYour progress will be saved in records.",
         L"End the game",
         MB_YESNO + MB_ICONQUESTION);
 
-      if (iResults == IDYES) {
-        OnOK();
+      if (dialog_result == IDYES) {
+        EndGameAndSaveRecord();
+      } else {
+        ResumeGame();
       }
       break;
   }
@@ -169,11 +194,7 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
   // Получить указатель на DC.
   hdc = ::GetDC(game_screen->m_hWnd);
 
-  // Установить системный таймер
-  // - 1-й параметр: Идентификатор таймера: "1" объявляет таймер как "таймер#1".
-  // - 2-й параметр: Устанавливает период в миллисекундах, с которым будет происходить сообщение WM_TIMER
-  // - 3-й параметр: Задает адрес функции, которая будет выполняться каждые N миллисекунд. Можно указать NULL.
-  int iInstallResult = SetTimer(TIMER_CLOCK, TIMER_CLOCK_LOOP_IN_MS, nullptr);
+  int iInstallResult = SetTimer(static_cast<UINT_PTR>(Timers::TIMER_CLOCK), TIMER_CLOCK_LOOP_IN_MS, nullptr);
   if (iInstallResult == FALSE) {
     MessageBox(
       L"Cannot install timer",
@@ -182,11 +203,7 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
   }
   time_playing_seconds_passed = 0;
 
-  // Установить системный таймер
-  // - 1-й параметр: Идентификатор таймера: "1" объявляет таймер как "таймер#1".
-  // - 2-й параметр: Устанавливает период в миллисекундах, с которым будет происходить сообщение WM_TIMER
-  // - 3-й параметр: Задает адрес функции, которая будет выполняться каждые N миллисекунд. Можно указать NULL.
-  iInstallResult = SetTimer(TIMER_REDRAW, TIMER_REDRAW_LOOP_IN_MS, nullptr);
+  iInstallResult = SetTimer(static_cast<UINT_PTR>(Timers::TIMER_REDRAW), TIMER_REDRAW_LOOP_IN_MS, nullptr);
   if (iInstallResult == FALSE) {
     MessageBox(
       L"Cannot install timer",
@@ -194,7 +211,7 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
       MB_OK + MB_ICONERROR);
   }
 
-  iInstallResult = SetTimer(TIMER_GAMETIME, TIMER_GAMETIME_LOOP_IN_MS, nullptr);
+  iInstallResult = SetTimer(static_cast<UINT_PTR>(Timers::TIMER_GAMETIME), TIMER_GAMETIME_LOOP_IN_MS, nullptr);
   if (iInstallResult == FALSE) {
     MessageBox(
       L"Cannot install timer",
@@ -209,15 +226,15 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR nIDEvent) {
   // CDialogEx::OnTimer(nIDEvent);
 
   if (this->game_state == GameState::PLAYING) {
-    if (nIDEvent == static_cast<UINT_PTR>(TIMER_CLOCK)) {
+    if (nIDEvent == static_cast<UINT_PTR>(Timers::TIMER_CLOCK)) {
       // Обработка действий всех сущностей
       for (auto entity : this->entities) {
-        entity->ProcessActions();
+        entity->ProcessActions(this->game_screen_rectangle);
       }
-    } else if (nIDEvent == static_cast<UINT_PTR>(TIMER_REDRAW)) {
+    } else if (nIDEvent == static_cast<UINT_PTR>(Timers::TIMER_REDRAW)) {
       // Инициировать исполнение функции OnPaint()
       RedrawWindow(game_screen_rectangle_window);
-    } else if (nIDEvent == static_cast<UINT_PTR>(TIMER_GAMETIME)) {
+    } else if (nIDEvent == static_cast<UINT_PTR>(Timers::TIMER_GAMETIME)) {
       time_playing_seconds_passed++;
 
       int seconds = time_playing_seconds_passed % 60;
@@ -281,4 +298,8 @@ void CSpaceBattleDlgGame::CreateNewEnemy() {
   enemy->SetLocation(game_screen_rectangle.Width() / 4, game_screen_rectangle.Height() / 4);
   enemy->SetAngle(-PI / 4);
   this->entities.push_back(enemy);
+}
+
+void CSpaceBattleDlgGame::OnClose() {
+  OnBnClickedButtonReturnToTheMenu();
 }
