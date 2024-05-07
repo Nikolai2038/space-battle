@@ -37,7 +37,10 @@ void CSpaceBattleDlgGame::EndGameAndSaveRecord() {
 }
 
 CSpaceBattleDlgGame::CSpaceBattleDlgGame(CWnd* pParent /*=nullptr*/) :
-    CDialogEx(IDD_DIALOG_GAME, pParent) {
+    CDialogEx(IDD_DIALOG_GAME, pParent),
+    hdc(nullptr),
+    game_screen(nullptr),
+    time_playing_seconds_passed(0) {
   this->game_state = GameState::CREATED;
 
   this->entities = std::list<Entity*>();
@@ -187,15 +190,15 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
   UpdateGameScreenInfo();
 
   // Располагаем игрока по центру экрана
-  this->player->SetLocation(game_screen_rectangle.Width() / 2, game_screen_rectangle.Height() / 2);
+  this->player->SetLocation(static_cast<double>(game_screen_rectangle.Width()) / 2, static_cast<double>(game_screen_rectangle.Height()) / 2);
 
   CreateNewEnemy();
 
   // Получить указатель на DC.
   hdc = ::GetDC(game_screen->m_hWnd);
 
-  int iInstallResult = SetTimer(static_cast<UINT_PTR>(Timers::TIMER_CLOCK), TIMER_CLOCK_LOOP_IN_MS, nullptr);
-  if (iInstallResult == FALSE) {
+  UINT_PTR create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TIMER_CLOCK), TIMER_CLOCK_LOOP_IN_MS, nullptr);
+  if (create_timer_result == FALSE) {
     MessageBox(
       L"Cannot install timer",
       L"Error message",
@@ -203,16 +206,16 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
   }
   time_playing_seconds_passed = 0;
 
-  iInstallResult = SetTimer(static_cast<UINT_PTR>(Timers::TIMER_REDRAW), TIMER_REDRAW_LOOP_IN_MS, nullptr);
-  if (iInstallResult == FALSE) {
+  create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TIMER_REDRAW), TIMER_REDRAW_LOOP_IN_MS, nullptr);
+  if (create_timer_result == FALSE) {
     MessageBox(
       L"Cannot install timer",
       L"Error message",
       MB_OK + MB_ICONERROR);
   }
 
-  iInstallResult = SetTimer(static_cast<UINT_PTR>(Timers::TIMER_GAMETIME), TIMER_GAMETIME_LOOP_IN_MS, nullptr);
-  if (iInstallResult == FALSE) {
+  create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TIMER_GAMETIME), TIMER_GAMETIME_LOOP_IN_MS, nullptr);
+  if (create_timer_result == FALSE) {
     MessageBox(
       L"Cannot install timer",
       L"Error message",
@@ -295,7 +298,7 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* pMsg) {
 
 void CSpaceBattleDlgGame::CreateNewEnemy() {
   Enemy* enemy = new Enemy();
-  enemy->SetLocation(game_screen_rectangle.Width() / 4, game_screen_rectangle.Height() / 4);
+  enemy->SetLocation(static_cast<double>(game_screen_rectangle.Width()) / 4, static_cast<double>(game_screen_rectangle.Height()) / 4);
   enemy->SetAngle(-PI / 4);
   this->entities.push_back(enemy);
 }

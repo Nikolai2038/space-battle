@@ -17,9 +17,9 @@ Entity::Entity(int image_resource_id, double scale) :
     scale(scale),
     action_rotation(ActionRotation::None),
     action_movement(ActionMovement::None),
+    is_destroyed(false),
     speed(DEFAULT_SPEED),
-    childs(std::vector<Entity*>()),
-    is_destroyed(false) {
+    childs(std::vector<Entity*>()) {
   // Загружаем изображение из ресурса
   CPngImage pngImage;
   pngImage.Load(image_resource_id, AfxGetResourceHandle());
@@ -28,14 +28,14 @@ Entity::Entity(int image_resource_id, double scale) :
   this->bmp_loaded = static_cast<HBITMAP>(pngImage.Detach());
 
   // Получаем информацию об изображении
-  GetObject(this->bmp_loaded, sizeof(BITMAP), (LPSTR) & this->bmp_info);
+  GetObject(this->bmp_loaded, sizeof(BITMAP), &this->bmp_info);
 
   this->width = bmp_info.bmWidth;
   this->height = bmp_info.bmHeight;
 }
 
 Entity::~Entity() {
-  for (auto child : this->childs) {
+  for (const auto child : this->childs) {
     delete child;
   }
 }
@@ -56,23 +56,23 @@ double Entity::GetY() const {
   return y;
 }
 
-void Entity::SetX(double new_x) {
+void Entity::SetX(const double new_x) {
   this->x = new_x;
 }
 
-void Entity::SetY(double new_y) {
+void Entity::SetY(const double new_y) {
   this->y = new_y;
 }
 
-void Entity::SetLocation(double new_x, double new_y) {
+void Entity::SetLocation(const double new_x, const double new_y) {
   this->SetX(new_x);
   this->SetY(new_y);
 }
 
-void Entity::Draw(HDC& hdc, HDC& hdcBits) {
+void Entity::Draw(HDC& hdc, HDC& hdc_bits) {
   // Сначала рисуем дочерние сущности
   for (auto child : this->childs) {
-    child->Draw(hdc, hdcBits);
+    child->Draw(hdc, hdc_bits);
   }
 
   if (this->is_destroyed) {
@@ -80,22 +80,21 @@ void Entity::Draw(HDC& hdc, HDC& hdcBits) {
   }
 
   // Цвет фона, который будет заменён прозрачным
-  RGBQUAD rgb_quad;
+  auto rgb_quad = RGBQUAD();
   rgb_quad.rgbRed = 0;
   rgb_quad.rgbGreen = 255;
   rgb_quad.rgbBlue = 0;
-  rgb_quad.rgbReserved = 0;
   // Получаем код UINT цвета
-  const UINT color = rgb_quad.rgbReserved << 32 | rgb_quad.rgbBlue << 16 | rgb_quad.rgbBlue << 16 | rgb_quad.rgbGreen << 8 | rgb_quad.rgbRed;
+  const UINT color = rgb_quad.rgbBlue << 16 | rgb_quad.rgbGreen << 8 | rgb_quad.rgbRed;
 
-  SelectObject(hdcBits, this->bmp_loaded);
+  SelectObject(hdc_bits, this->bmp_loaded);
 
   // Сохранение параметров ротации поля отрисовки
   XFORM xform_saved;
   GetWorldTransform(hdc, &xform_saved);
 
   // Матрица ротации
-  XFORM xform_rotation;
+  auto xform_rotation = XFORM();
   xform_rotation.eM11 = static_cast<FLOAT>(cos(this->angle - PI / 2));
   xform_rotation.eM12 = static_cast<FLOAT>(sin(this->angle + PI / 2));
   xform_rotation.eM21 = static_cast<FLOAT>(-sin(this->angle + PI / 2));
@@ -108,7 +107,7 @@ void Entity::Draw(HDC& hdc, HDC& hdcBits) {
   SetWorldTransform(hdc, &xform_rotation);
 
   // Матрица масштабирования
-  XFORM xform_scale;
+  auto xform_scale = XFORM();
   xform_scale.eM11 = static_cast<FLOAT>(this->scale);
   xform_scale.eM12 = static_cast<FLOAT>(0.0);
   xform_scale.eM21 = static_cast<FLOAT>(0.0);
@@ -127,7 +126,7 @@ void Entity::Draw(HDC& hdc, HDC& hdcBits) {
 
   // Отрисовка картинки с заменой указанного цвета на прозрачный
   TransparentBlt(hdc, entity_center_x, entity_center_y, this->width, this->height,
-                 hdcBits, 0, 0, this->width, this->height,
+                 hdc_bits, 0, 0, this->width, this->height,
                  color);
 
   // Отрисовка картинки без замены прозрачного цвета
@@ -190,7 +189,7 @@ double Entity::GetAngle() const {
   return this->angle;
 }
 
-void Entity::SetAngle(double new_angle) {
+void Entity::SetAngle(const double new_angle) {
   this->angle = new_angle;
 }
 
@@ -198,30 +197,30 @@ double Entity::GetScale() const {
   return this->scale;
 }
 
-void Entity::SetScale(double new_scale) {
+void Entity::SetScale(const double new_scale) {
   this->scale = new_scale;
 }
 
-Entity::ActionRotation Entity::GetActionRotation() {
+Entity::ActionRotation Entity::GetActionRotation() const {
   return this->action_rotation;
 }
 
-void Entity::SetActionRotation(ActionRotation new_action_rotation) {
+void Entity::SetActionRotation(const ActionRotation new_action_rotation) {
   this->action_rotation = new_action_rotation;
 }
 
-Entity::ActionMovement Entity::GetActionMovement() {
+Entity::ActionMovement Entity::GetActionMovement() const {
   return this->action_movement;
 }
 
-void Entity::SetActionMovement(ActionMovement new_action_movement) {
+void Entity::SetActionMovement(const ActionMovement new_action_movement) {
   this->action_movement = new_action_movement;
 }
 
-int Entity::GetIntersectRadius() {
+int Entity::GetIntersectRadius() const {
   return static_cast<int>(min(width, height) * scale * INTERSECT_RADIUS_SCALE);
 }
 
-bool Entity::IsDestroyed() {
+bool Entity::IsDestroyed() const {
   return is_destroyed;
 }
