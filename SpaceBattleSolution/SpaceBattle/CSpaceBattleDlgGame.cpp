@@ -254,6 +254,8 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* pMsg) {
           // Поворачиваем игрока направо
           this->player->SetActionRotation(Ship::ActionRotation::Right);
           break;
+        case VK_SPACE:
+          this->player->Shoot();
         default:
           break;
       }

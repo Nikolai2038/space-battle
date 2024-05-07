@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 // Сущность на поле игры
 class Entity {
@@ -21,9 +22,6 @@ class Entity {
 
     // Направление движения в радианах
     double angle;
-
-    // Скорость движения
-    double speed;
 
     // Информация об изображении сущности
     BITMAP bmp_info;
@@ -48,7 +46,14 @@ class Entity {
     /// @param image_resource_id ID ресурса изображения сущности
     /// @param scale Параметр масштабирования сущности (1.0 - без масштабирования)
     Entity(int image_resource_id, double scale = 1);
+
+    // Скорость движения
+    double speed;
+
+    std::vector<Entity*> childs;
   public:
+    ~Entity();
+
     // Возвращает позицию X сущности
     double GetX() const;
 
@@ -68,7 +73,7 @@ class Entity {
     void SetY(double new_y);
 
     // Устанавливает новую позицию сущности
-    void SetLocation(int new_x, int new_y);
+    void SetLocation(double new_x, double new_y);
 
     // Отрисовывает сущность
     void Draw(HDC& hdc, HDC& hdcBits);

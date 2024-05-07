@@ -15,7 +15,8 @@ Entity::Entity(int image_resource_id, double scale) :
     angle(0),
     scale(scale),
     action_rotation(ActionRotation::None),
-    action_movement(ActionMovement::None) {
+    action_movement(ActionMovement::None),
+    childs(std::vector<Entity*>()) {
   // Загружаем изображение из ресурса
   CPngImage pngImage;
   pngImage.Load(image_resource_id, AfxGetResourceHandle());
@@ -28,6 +29,12 @@ Entity::Entity(int image_resource_id, double scale) :
 
   this->width = bmp_info.bmWidth;
   this->height = bmp_info.bmHeight;
+}
+
+Entity::~Entity() {
+  for (auto child : this->childs) {
+    delete child;
+  }
 }
 
 int Entity::GetIntX() const {
@@ -54,12 +61,17 @@ void Entity::SetY(double new_y) {
   this->y = new_y;
 }
 
-void Entity::SetLocation(int new_x, int new_y) {
+void Entity::SetLocation(double new_x, double new_y) {
   this->SetX(new_x);
   this->SetY(new_y);
 }
 
 void Entity::Draw(HDC& hdc, HDC& hdcBits) {
+  // Сначала рисуем дочерние сущности
+  for (auto child : this->childs) {
+    child->Draw(hdc, hdcBits);
+  }
+
   // Цвет фона, который будет заменён прозрачным
   RGBQUAD rgb_quad;
   rgb_quad.rgbRed = 0;
@@ -119,6 +131,11 @@ void Entity::Draw(HDC& hdc, HDC& hdcBits) {
 }
 
 void Entity::ProcessActions() {
+  // Сначала обрабатываем дочерние сущности
+  for (auto child : this->childs) {
+    child->ProcessActions();
+  }
+
   switch (this->action_movement) {
     case ActionMovement::ToAngle:
       this->SetX(this->GetX() + cos(angle) * speed);

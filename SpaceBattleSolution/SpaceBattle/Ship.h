@@ -1,4 +1,7 @@
 #pragma once
+#include <vector>
+
+#include "Bullet.h"
 #include "Entity.h"
 
 // Корабль
@@ -7,4 +10,6 @@ class Ship : public Entity {
     double health;
   protected:
     Ship(int image_resource_id);
+  public:
+    void Shoot();
 };

@@ -3,6 +3,6 @@
 
 // Снаряд
 class Bullet : public Entity {
-  protected:
+  public:
     Bullet();
 };
