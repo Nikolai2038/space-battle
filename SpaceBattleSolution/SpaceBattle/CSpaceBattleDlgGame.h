@@ -45,4 +45,7 @@ class CSpaceBattleDlgGame : public CDialogEx {
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg BOOL OnEraseBkgnd(CDC* pDC);
     afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg
+      afx_msg virtual BOOL
+      PreTranslateMessage(MSG* pMsg);
 };

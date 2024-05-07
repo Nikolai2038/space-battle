@@ -13,7 +13,9 @@ Entity::Entity(int image_resource_id, double scale) :
     bmp_loaded(nullptr),
     speed(DEFAULT_SPEED),
     angle(0),
-    scale(scale) {
+    scale(scale),
+    action_rotation(ActionRotation::None),
+    action_movement(ActionMovement::None) {
   // Загружаем изображение из ресурса
   CPngImage pngImage;
   pngImage.Load(image_resource_id, AfxGetResourceHandle());
@@ -116,9 +118,26 @@ void Entity::Draw(HDC& hdc, HDC& hdcBits) {
   SetWorldTransform(hdc, &xform_saved);
 }
 
-void Entity::Move() {
-  this->SetX(this->GetX() + cos(angle) * speed);
-  this->SetY(this->GetY() - sin(angle) * speed);
+void Entity::ProcessActions() {
+  switch (this->action_movement) {
+    case ActionMovement::ToAngle:
+      this->SetX(this->GetX() + cos(angle) * speed);
+      this->SetY(this->GetY() - sin(angle) * speed);
+      break;
+    default:
+      break;
+  }
+
+  switch (this->action_rotation) {
+    case ActionRotation::Right:
+      this->SetAngle(this->GetAngle() - 0.1);
+      break;
+    case ActionRotation::Left:
+      this->SetAngle(this->GetAngle() + 0.1);
+      break;
+    default:
+      break;
+  }
 }
 
 LONG Entity::GetWidth() const {
@@ -143,4 +162,20 @@ double Entity::GetScale() const {
 
 void Entity::SetScale(double new_scale) {
   this->scale = new_scale;
+}
+
+Entity::ActionRotation Entity::GetActionRotation() {
+  return this->action_rotation;
+}
+
+void Entity::SetActionRotation(ActionRotation new_action_rotation) {
+  this->action_rotation = new_action_rotation;
+}
+
+Entity::ActionMovement Entity::GetActionMovement() {
+  return this->action_movement;
+}
+
+void Entity::SetActionMovement(ActionMovement new_action_movement) {
+  this->action_movement = new_action_movement;
 }

@@ -32,6 +32,8 @@ ON_WM_PAINT()
 ON_WM_TIMER()
 ON_WM_ERASEBKGND()
 ON_WM_SIZE()
+ON_WM_KEYDOWN()
+ON_WM_KEYUP()
 END_MESSAGE_MAP()
 
 // CSpaceBattleDlgGame message handlers
@@ -140,11 +142,9 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR nIDEvent) {
   // CDialogEx::OnTimer(nIDEvent);
 
   if (nIDEvent == static_cast<UINT_PTR>(TIMER_CLOCK)) {
-    // Передвижение врага
-    this->enemy.Move();
-
-    // Поворачивание игрока
-    this->player.SetAngle(this->player.GetAngle() + 0.1);
+    // Обработка действий кораблей
+    this->enemy.ProcessActions();
+    this->player.ProcessActions();
   } else if (nIDEvent == static_cast<UINT_PTR>(TIMER_REDRAW)) {
     // Инициировать исполнение функции OnPaint()
     RedrawWindow(game_screen_rectangle_window);
@@ -160,4 +160,36 @@ void CSpaceBattleDlgGame::OnSize(UINT nType, int cx, int cy) {
 
   UpdateGameScreenInfo();
   Invalidate(false);
+}
+
+BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* pMsg) {
+  switch (pMsg->message) {
+    case WM_KEYDOWN:
+      switch (pMsg->wParam) {
+        case 'Q':
+          // Поворачиваем игрока налево
+          this->player.SetActionRotation(Ship::ActionRotation::Left);
+          break;
+        case 'E':
+          // Поворачиваем игрока направо
+          this->player.SetActionRotation(Ship::ActionRotation::Right);
+          break;
+        default:
+          break;
+      }
+      return true;
+    case WM_KEYUP:
+      switch (pMsg->wParam) {
+        case 'Q':
+        case 'E':
+          // Перестаём поворачивать игрока
+          this->player.SetActionRotation(Ship::ActionRotation::None);
+          break;
+        default:
+          break;
+      }
+      return true;
+    default:
+      return CDialogEx::PreTranslateMessage(pMsg);
+  }
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "Entity.h"
 
+// Корабль
 class Ship : public Entity {
   private:
     double health;
