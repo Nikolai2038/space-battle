@@ -149,5 +149,26 @@
     <Image Include="..\..\Graphics\Player.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\icons\coin.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icons\point.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icons\point.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icons\enemies.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icons\time.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icons\health.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

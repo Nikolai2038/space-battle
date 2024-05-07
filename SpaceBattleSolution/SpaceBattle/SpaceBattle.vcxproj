@@ -228,6 +228,13 @@
     <Image Include="..\..\Graphics\Bullet.png" />
     <Image Include="..\..\Graphics\Enemy.png" />
     <Image Include="..\..\Graphics\Player.png" />
+    <Image Include="res\icon1.ico" />
+    <Image Include="res\icons\coin.png" />
+    <Image Include="res\icons\enemies.ico" />
+    <Image Include="res\icons\health.ico" />
+    <Image Include="res\icons\point.ico" />
+    <Image Include="res\icons\point.png" />
+    <Image Include="res\icons\time.ico" />
     <Image Include="res\SpaceBattle.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
