@@ -95,7 +95,7 @@ class Entity {
     void SetLocation(double new_x, double new_y);
 
     // Отрисовывает сущность
-    void Draw(HDC& hdc, HDC& hdc_bits);
+    void Draw(HDC& hdc, HDC& hdc_bits) const;
 
     // Двигает сущность с её скоростью и направлением на одну единицу времени
     void ProcessActions(CRect game_field);

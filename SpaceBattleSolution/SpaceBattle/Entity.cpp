@@ -69,7 +69,7 @@ void Entity::SetLocation(const double new_x, const double new_y) {
   this->SetY(new_y);
 }
 
-void Entity::Draw(HDC& hdc, HDC& hdc_bits) {
+void Entity::Draw(HDC& hdc, HDC& hdc_bits) const {
   // Сначала рисуем дочерние сущности
   for (auto child : this->childs) {
     child->Draw(hdc, hdc_bits);
@@ -147,16 +147,14 @@ void Entity::ProcessActions(CRect game_field) {
   }
 
   if (this->action_movement == ActionMovement::ToAngle) {
-    double intersect_radius = GetIntersectRadius();
-
     double new_x = x + cos(angle) * speed;
-    if ((new_x - intersect_radius <= 0) || (new_x + intersect_radius >= game_field.Width())) {
+    if ((new_x + width * scale / 2 <= 0) || (new_x - width * scale / 2 >= game_field.Width())) {
       Destroy();
       return;
     }
 
     double new_y = y - sin(angle) * speed;
-    if ((new_y - intersect_radius <= 0) || (new_y + intersect_radius >= game_field.Height())) {
+    if ((new_y + height * scale / 2 <= 0) || (new_y - height * scale / 2 >= game_field.Height())) {
       Destroy();
       return;
     }
@@ -218,7 +216,7 @@ void Entity::SetActionMovement(const ActionMovement new_action_movement) {
 }
 
 int Entity::GetIntersectRadius() const {
-  return static_cast<int>(min(width, height) * scale * INTERSECT_RADIUS_SCALE);
+  return static_cast<int>(max(width, height) * scale * INTERSECT_RADIUS_SCALE) / 2;
 }
 
 bool Entity::IsDestroyed() const {
