@@ -18,8 +18,10 @@ class Entity {
 
     LONG width;
     LONG height;
+
+    double scale;
   protected:
-    Entity(int image_resource_id);
+    Entity(int image_resource_id, double scale = 1);
   public:
     int GetIntX() const;
     int GetIntY() const;
@@ -39,9 +41,21 @@ class Entity {
     // Двигает сущность с её скоростью и направлением на одну единицу времени
     void Move();
 
+    // Возвращает ширину сущности
     LONG GetWidth() const;
+
+    // Возвращает высоту сущности
     LONG GetHeight() const;
 
+    // Возвращает угол поворота сущности (в радианах)
     double GetAngle() const;
+
+    // Устанавливает угол поворота сущности (в радианах)
     void SetAngle(double new_angle);
+
+    // Возвращает масштаб сущности
+    double GetScale() const;
+
+    // Устанавливает масштаб сущности
+    void SetScale(double new_scale);
 };

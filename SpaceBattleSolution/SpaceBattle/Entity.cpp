@@ -6,13 +6,14 @@
 #include "Config.h"
 #include "Globals.h"
 
-Entity::Entity(int image_resource_id) :
+Entity::Entity(int image_resource_id, double scale) :
     x(0),
     y(0),
     bmp_info(BITMAP()),
     bmp_loaded(nullptr),
     speed(DEFAULT_SPEED),
-    angle(0) {
+    angle(0),
+    scale(scale) {
   // Загружаем изображение из ресурса
   CPngImage pngImage;
   pngImage.Load(image_resource_id, AfxGetResourceHandle());
@@ -73,17 +74,29 @@ void Entity::Draw(HDC& hdc, HDC& hdcBits) {
   GetWorldTransform(hdc, &xform_saved);
 
   // Матрица ротации
-  XFORM xform;
-  xform.eM11 = static_cast<FLOAT>(cos(this->angle - PI / 2));
-  xform.eM12 = static_cast<FLOAT>(sin(this->angle + PI / 2));
-  xform.eM21 = static_cast<FLOAT>(-sin(this->angle + PI / 2));
-  xform.eM22 = static_cast<FLOAT>(cos(this->angle - PI / 2));
-  xform.eDx = static_cast<FLOAT>(0.0);
-  xform.eDy = static_cast<FLOAT>(0.0);
+  XFORM xform_rotation;
+  xform_rotation.eM11 = static_cast<FLOAT>(cos(this->angle - PI / 2));
+  xform_rotation.eM12 = static_cast<FLOAT>(sin(this->angle + PI / 2));
+  xform_rotation.eM21 = static_cast<FLOAT>(-sin(this->angle + PI / 2));
+  xform_rotation.eM22 = static_cast<FLOAT>(cos(this->angle - PI / 2));
+  xform_rotation.eDx = static_cast<FLOAT>(0.0);
+  xform_rotation.eDy = static_cast<FLOAT>(0.0);
 
-  // Ротация поля отрисовки
+  // Применение ротации
   SetGraphicsMode(hdc, GM_ADVANCED);
-  SetWorldTransform(hdc, &xform);
+  SetWorldTransform(hdc, &xform_rotation);
+
+  // Матрица масштабирования
+  XFORM xform_scale;
+  xform_scale.eM11 = static_cast<FLOAT>(this->scale);
+  xform_scale.eM12 = static_cast<FLOAT>(0.0);
+  xform_scale.eM21 = static_cast<FLOAT>(0.0);
+  xform_scale.eM22 = static_cast<FLOAT>(this->scale);
+  xform_scale.eDx = static_cast<FLOAT>(0.0);
+  xform_scale.eDy = static_cast<FLOAT>(0.0);
+
+  // Перемножение матриц - применение масштабирования
+  ModifyWorldTransform(hdc, &xform_scale, MWT_RIGHTMULTIPLY);
 
   // Реинтерпретирование позиции сущности на повёрнутом поле
   auto entity_rectangle = CRect(this->GetIntX(), this->GetIntY(), this->GetIntX() + this->width, this->GetIntY() + this->height);
@@ -122,4 +135,12 @@ double Entity::GetAngle() const {
 
 void Entity::SetAngle(double new_angle) {
   this->angle = new_angle;
+}
+
+double Entity::GetScale() const {
+  return this->scale;
+}
+
+void Entity::SetScale(double new_scale) {
+  this->scale = new_scale;
 }
