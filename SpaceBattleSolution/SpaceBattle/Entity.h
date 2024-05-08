@@ -1,142 +1,143 @@
 #pragma once
+
 #include <list>
-#include <vector>
 
 // Сущность на поле игры
 class Entity {
-  public:
-    // Действие поворота сущности
-    enum class ActionRotation {
-      // Сущность не поворачивается
-      None,
-      // Сущность поворачивается по часовой стрелке (направо)
-      Right,
-      // Сущность поворачивается против часовой стрелки (налево)
-      Left
-    };
+public:
+  // Действие поворота сущности
+  enum class ActionRotation {
+    // Сущность не поворачивается
+    None,
+    // Сущность поворачивается по часовой стрелке (направо)
+    Right,
+    // Сущность поворачивается против часовой стрелки (налево)
+    Left
+  };
+protected:
+  // Действие движения сущности
+  enum class ActionMovement {
+    // Сущность не двигается
+    None,
+    // Сущность двигается в направлении, в котором она смотрит (куда повёрнута)
+    ToAngle
+  };
+private:
+  // Позиция X сущности (относительно левого верхнего угла)
+  double x;
 
-    // Действие движения сущности
-    enum class ActionMovement {
-      // Сущность не двигается
-      None,
-      // Сущность двигается в направлении, в котором она смотрит (куда повёрнута)
-      ToAngle
-    };
-  private:
-    // Позиция X сущности (относительно левого верхнего угла)
-    double x;
+  // Позиция Y сущности (относительно левого верхнего угла)
+  double y;
 
-    // Позиция Y сущности (относительно левого верхнего угла)
-    double y;
+  // Направление движения в радианах
+  double angle;
 
-    // Направление движения в радианах
-    double angle;
+  // Действие поворота, производимое сущностью в данный момент
+  ActionRotation action_rotation;
 
-    // Информация об изображении сущности
-    BITMAP bmp_info;
+  // Действие движения, производимое сущностью в данный момент
+  ActionMovement action_movement;
 
-    // Изображение сущности
-    HBITMAP bmp_loaded;
+  // Является ли сущность уничтоженной.
+  // Уничтоженная сущность не производит действий и не рисуется.
+  bool is_destroyed;
 
-    // Ширина сущности
-    LONG width;
+  // Информация об изображении сущности
+  BITMAP bmp_info;
 
-    // Высота сущности
-    LONG height;
+  // Изображение сущности
+  HBITMAP bmp_loaded;
 
-    // Параметр масштабирования сущности (1.0 - без масштабирования)
-    double scale;
+  // Ширина сущности
+  LONG width;
 
-    // Действие поворота, производимое сущностью в данный момент
-    ActionRotation action_rotation;
+  // Высота сущности
+  LONG height;
+protected:
+  /// Создаёт новую сущность
+  /// @param image_resource_id ID ресурса изображения сущности
+  explicit Entity(int image_resource_id);
 
-    // Действие движения, производимое сущностью в данный момент
-    ActionMovement action_movement;
+  Entity* owner;
 
-    // Является ли сущность уничтоженной.
-    // Уничтоженная сущность не производит действий и не рисуется.
-    bool is_destroyed;
+  // Параметр масштабирования сущности (1.0 - без масштабирования)
+  double scale;
 
-    // Помечает сущность как уничтоженную
-    void Destroy();
+  // Скорость движения
+  double speed;
 
-    bool IsIntersectsWith(Entity entity) const;
-  protected:
-    /// Создаёт новую сущность
-    /// @param image_resource_id ID ресурса изображения сущности
-    /// @param scale Параметр масштабирования сущности (1.0 - без масштабирования)
-    Entity(int image_resource_id, double scale = 1);
+  // Количество единиц здоровья.
+  // Одно столкновение отбирает одну единицу здоровья.
+  int health;
+public:
+  // Возвращает позицию X сущности
+  double GetX() const;
 
-    // Скорость движения
-    double speed;
+  // Возвращает позицию X сущности (целым числом)
+  int GetIntX() const;
 
-    Entity* owner;
-  public:
-    // Возвращает позицию X сущности
-    double GetX() const;
+  /// Устанавливает позицию X сущности
+  /// @param new_x Новая позиция X
+  void SetX(double new_x);
 
-    // Возвращает позицию X сущности (целым числом)
-    int GetIntX() const;
+  // Возвращает позицию Y сущности
+  double GetY() const;
 
-    // Возвращает позицию Y сущности
-    double GetY() const;
+  // Возвращает позицию Y сущности (целым числом)
+  int GetIntY() const;
 
-    // Возвращает позицию Y сущности (целым числом)
-    int GetIntY() const;
+  /// Устанавливает позицию Y сущности
+  /// @param new_y Новая позиция Y
+  void SetY(double new_y);
 
-    /// Устанавливает позицию X сущности
-    /// @param new_x Новая позиция X
-    void SetX(double new_x);
+  // Устанавливает новую позицию сущности
+  /// @param new_x Новая позиция X
+  /// @param new_y Новая позиция Y
+  void SetLocation(double new_x, double new_y);
 
-    /// Устанавливает позицию Y сущности
-    /// @param new_x Новая позиция Y
-    void SetY(double new_y);
+  // Возвращает угол поворота сущности (в радианах)
+  double GetAngle() const;
 
-    // Устанавливает новую позицию сущности
-    void SetLocation(double new_x, double new_y);
+  // Устанавливает угол поворота сущности (в радианах)
+  void SetAngle(double new_angle);
 
-    // Отрисовывает сущность
-    void Draw(HDC& hdc, HDC& hdc_bits) const;
+  // Возвращает действие поворота, производимое сущностью в данный момент
+  ActionRotation GetActionRotation() const;
 
-    // Двигает сущность с её скоростью и направлением на одну единицу времени
-    void ProcessActions(std::list<Entity*> entities, CRect game_field);
+  // Устанавливает действие поворота, производимое сущностью в данный момент
+  /// @param new_action_rotation Новое действие поворота
+  void SetActionRotation(ActionRotation new_action_rotation);
 
-    // Возвращает ширину сущности
-    LONG GetWidth() const;
+  // Возвращает действие движения, производимое сущностью в данный момент
+  ActionMovement GetActionMovement() const;
 
-    // Возвращает высоту сущности
-    LONG GetHeight() const;
+  // Устанавливает действие движения, производимое сущностью в данный момент
+  /// @param new_action_movement Новое действие движения
+  void SetActionMovement(ActionMovement new_action_movement);
 
-    // Возвращает угол поворота сущности (в радианах)
-    double GetAngle() const;
+  // Возвращает ширину сущности
+  LONG GetWidth() const;
 
-    // Устанавливает угол поворота сущности (в радианах)
-    void SetAngle(double new_angle);
+  // Возвращает высоту сущности
+  LONG GetHeight() const;
 
-    // Возвращает параметр масштабирования сущности
-    double GetScale() const;
+  // Возвращает параметр масштабирования сущности
+  double GetScale() const;
 
-    // Устанавливает параметр масштабирования сущности
-    void SetScale(double new_scale);
+  // Устанавливает параметр масштабирования сущности
+  void SetScale(double new_scale);
 
-    // Возвращает действие поворота, производимое сущностью в данный момент
-    ActionRotation GetActionRotation() const;
+  // Возвращает радиус круга коллизии объекта (от его центра)
+  int GetIntersectRadius() const;
 
-    // Устанавливает действие поворота, производимое сущностью в данный момент
-    /// @param new_action_rotation Новое действие поворота
-    void SetActionRotation(ActionRotation new_action_rotation);
+  // Отрисовывает сущность
+  void Draw(const HDC& hdc, const HDC& hdc_bits) const;
 
-    // Возвращает действие движения, производимое сущностью в данный момент
-    ActionMovement GetActionMovement() const;
+  // Обрабатывает действия сущности в текущую единицу времени
+  void ProcessActions(const std::list<Entity*>& entities, const CRect& game_field);
+private:
+  // Помечает сущность как уничтоженную
+  void Destroy();
 
-    // Устанавливает действие движения, производимое сущностью в данный момент
-    /// @param new_action_movement Новое действие движения
-    void SetActionMovement(ActionMovement new_action_movement);
-
-    // Возвращает радиус круга коллизии объекта (от его центра)
-    int GetIntersectRadius() const;
-
-    // Является ли сущность уничтоженной.
-    // Уничтоженная сущность не производит действий и не рисуется.
-    bool IsDestroyed() const;
+  bool IsIntersectsWith(const Entity& entity) const;
 };

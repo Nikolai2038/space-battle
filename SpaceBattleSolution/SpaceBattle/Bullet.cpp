@@ -1,11 +1,12 @@
 #include "pch.h"
 #include "Bullet.h"
-
 #include "Config.h"
 #include "resource.h"
 
 Bullet::Bullet(Ship* new_owner) :
-    Entity(IDB_BULLET, 0.5) {
-  this->speed = DEFAULT_SPEED * 2;
+    Entity(IDB_BULLET) {
   this->owner = new_owner;
+  this->scale = BULLET_IMAGE_SCALE;
+  this->speed = BULLET_SPEED;
+  this->health = DEFAULT_BULLET_HEALTH;
 }

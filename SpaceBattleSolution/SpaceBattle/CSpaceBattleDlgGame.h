@@ -1,72 +1,138 @@
 #pragma once
-#include <list>
 
 #include "afxdialogex.h"
 #include "Player.h"
+#include <list>
 
 class CSpaceBattleDlgGame : public CDialogEx {
-  private:
-    enum class Timers;
-    enum class GameState;
+private:
+  DECLARE_DYNAMIC(CSpaceBattleDlgGame)
 
-    DECLARE_DYNAMIC(CSpaceBattleDlgGame)
+  // Идентификаторы таймеров
+  enum class Timers {
+    // Идентификатор таймера действий сущностей
+    TimerClock,
 
-    HDC hdc;
-    HDC hdcBits = nullptr;
-    CWnd* game_screen;
+    // Идентификатор таймера отрисовки
+    TimerRedraw,
 
-    // Область отрисовки игрового поля
-    CRect game_screen_rectangle;
+    // Идентификатор таймера времени игры
+    TimerPlaying
+  };
 
-    // Область всего диалога с игровым полем
-    CRect game_screen_rectangle_window;
+  // Идентификаторы состояний игры
+  enum class GameState {
+    // Игра создана
+    Created,
 
-    // Нужно ли очистить фон всего окна перед следующей отрисовкой объектов
-    bool need_to_clear_screen = true;
+    // Игра приостановлена (пауза)
+    Paused,
 
-    GameState game_state;
+    // Игра идёт
+    Playing,
 
-    CButton button_pause_or_resume_game;
-    CButton button_start_or_end_game;
+    // Игра завершена
+    Finished,
+  };
 
-    int time_playing_seconds_passed;
-    CStatic text_time_playing;
+  HDC hdc;
 
-    void PauseGame();
-    void ResumeGame();
-    void EndGameAndDoNotSaveRecord();
-    void EndGameAndSaveRecord();
-    void CreateNewEnemy();
-  protected:
-    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+  HDC hdc_bits = nullptr;
 
-    DECLARE_MESSAGE_MAP()
-  public:
-    CSpaceBattleDlgGame(CWnd* pParent = nullptr); // standard constructor
-    virtual ~CSpaceBattleDlgGame();
+  CWnd* game_screen;
 
-    void GameResume();
-    void UpdateGameScreenInfo();
+  // Область отрисовки игрового поля
+  CRect game_screen_rectangle;
+
+  // Область всего диалога с игровым полем
+  CRect game_screen_rectangle_window;
+
+  // Нужно ли очистить фон всего окна перед следующей отрисовкой объектов
+  bool need_to_clear_screen = true;
+
+  // Состояние игры
+  GameState game_state;
+
+  int time_playing_seconds_passed;
+
+  // Кнопка паузы/продолжения игры
+  CButton button_pause_or_resume_game;
+
+  // Кнопка начала/завершения игры
+  CButton button_start_or_end_game;
+
+  // Текстовое поле со временем игры
+  CStatic text_time_playing;
+
+  // Список всех сущностей (включая игрока)
+  std::list<Entity*> entities;
+
+  // Игрок
+  Player* player;
+protected:
+  void DoDataExchange(CDataExchange* p_dx) override; // DDX/DDV support
+
+  DECLARE_MESSAGE_MAP()
+public:
+  // Конструктор
+  explicit CSpaceBattleDlgGame(CWnd* p_parent = nullptr);
+
+  // Деструктор
+  ~CSpaceBattleDlgGame() override;
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
-    enum { IDD = IDD_DIALOG_GAME };
+  enum { IDD = IDD_DIALOG_GAME };
 #endif
 
-    afx_msg void OnBnClickedButtonReturnToTheMenu();
-    afx_msg void OnPaint();
+  // Событие создания диалогового окна
+  afx_msg BOOL OnInitDialog() override;
 
-    // Игрок
-    Player* player;
-    // Список всех сущностей (включая игрока)
-    std::list<Entity*> entities;
+  // Событие изменения размеров формы
+  afx_msg void OnSize(UINT n_type, int cx, int cy);
 
-    virtual BOOL OnInitDialog();
-    afx_msg void OnTimer(UINT_PTR nIDEvent);
-    afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-    afx_msg void OnSize(UINT nType, int cx, int cy);
-    afx_msg virtual BOOL PreTranslateMessage(MSG* pMsg);
-    afx_msg void OnBnClickedButtonPauseOrResumeGame();
-    afx_msg void OnBnClickedButtonStartOrEndGame();
-    afx_msg void OnClose();
+  // Событие очистки фона.
+  // Убираем обработку по умолчанию, так как у нас реализована своя отрисовка.
+  afx_msg BOOL OnEraseBkgnd(CDC* p_dc);
+
+  // Событие отрисовки формы
+  afx_msg void OnPaint();
+
+  // Метод обработки событий формы.
+  // Используем его для захвата нажатий клавиш, так как в OnKeyDown они не захватываются.
+  afx_msg BOOL PreTranslateMessage(MSG* p_msg) override;
+
+  // Событие возникновения таймера
+  afx_msg void OnTimer(UINT_PTR n_id_event);
+
+  // Событие закрытия окна
+  afx_msg void OnClose();
+
+  // Событие нажатия на кнопку возврата в меню
+  afx_msg void OnBnClickedButtonReturnToTheMenu();
+
+  // Событие нажатия на кнопку паузы/возобновления игры
+  afx_msg void OnBnClickedButtonPauseOrResumeGame();
+
+  // Событие нажатия на кнопку начала/завершения игры
+  afx_msg void OnBnClickedButtonStartOrEndGame();
+private:
+  // Обновляет информацию об игровом поле
+  // (например, при изменении его размеров - пересчитывает область отрисовки)
+  void UpdateGameScreenInfo();
+
+  // Приостанавливает игру (пауза)
+  void PauseGame();
+
+  // Возобновляет приостановленную игру
+  void ResumeGame();
+
+  // Завершает игру без сохранения рекорда
+  void EndGameAndDoNotSaveRecord();
+
+  // Завершает игру с сохранением рекорда
+  void EndGameAndSaveRecord();
+
+  // Создаёт нового врага на поле
+  void CreateNewEnemy();
 };

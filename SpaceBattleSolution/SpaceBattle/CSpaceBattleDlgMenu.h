@@ -1,14 +1,8 @@
-
-// SpaceBattleDlg.h : header file
-//
-
 #pragma once
 
-// CSpaceBattleDlgMenu dialog
 class CSpaceBattleDlgMenu : public CDialogEx {
-  // Construction
 public:
-  CSpaceBattleDlgMenu(CWnd* pParent = nullptr); // standard constructor
+  CSpaceBattleDlgMenu(CWnd* pParent = nullptr);
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
@@ -16,8 +10,6 @@ public:
 #endif
 protected:
   virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
-
-  // Implementation
 protected:
   HICON m_hIcon;
 

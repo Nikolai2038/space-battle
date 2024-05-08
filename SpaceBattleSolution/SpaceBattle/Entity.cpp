@@ -1,36 +1,19 @@
 #include "pch.h"
-#include "Entity.h"
-
-#include <stdexcept>
-
 #include "Bullet.h"
 #include "Config.h"
+#include "Entity.h"
 #include "Globals.h"
+#include <stdexcept>
 
-void Entity::Destroy() {
-  this->is_destroyed = true;
-}
-
-bool Entity::IsIntersectsWith(Entity entity) const {
-  // Если одна из сущностей уничтожена - сущности не сталкиваются
-  if (this->IsDestroyed() || entity.IsDestroyed()) {
-    return false;
-  }
-
-  // Иначе - проверяем расстояние между их точками коллизии
-  double distance_to_collide = this->GetIntersectRadius() + entity.GetIntersectRadius();
-  double real_distance = sqrt(pow(this->x - entity.x, 2) + pow(this->y - entity.y, 2));
-  return real_distance <= distance_to_collide;
-}
-
-Entity::Entity(int image_resource_id, double scale) :
+Entity::Entity(const int image_resource_id) :
     x(0),
     y(0),
     angle(DEFAULT_ANGLE),
-    scale(scale),
     action_rotation(ActionRotation::None),
     action_movement(ActionMovement::None),
+    health(DEFAULT_ENTITY_HEALTH),
     is_destroyed(false),
+    scale(DEFAULT_IMAGE_SCALE),
     speed(DEFAULT_SPEED),
     owner(nullptr) {
   // Загружаем изображение из ресурса
@@ -47,24 +30,24 @@ Entity::Entity(int image_resource_id, double scale) :
   this->height = bmp_info.bmHeight;
 }
 
+double Entity::GetX() const {
+  return x;
+}
+
 int Entity::GetIntX() const {
   return static_cast<int>(this->x);
 }
 
-int Entity::GetIntY() const {
-  return static_cast<int>(this->y);
-}
-
-double Entity::GetX() const {
-  return x;
+void Entity::SetX(const double new_x) {
+  this->x = new_x;
 }
 
 double Entity::GetY() const {
   return y;
 }
 
-void Entity::SetX(const double new_x) {
-  this->x = new_x;
+int Entity::GetIntY() const {
+  return static_cast<int>(this->y);
 }
 
 void Entity::SetY(const double new_y) {
@@ -76,7 +59,51 @@ void Entity::SetLocation(const double new_x, const double new_y) {
   this->SetY(new_y);
 }
 
-void Entity::Draw(HDC& hdc, HDC& hdc_bits) const {
+double Entity::GetAngle() const {
+  return this->angle;
+}
+
+void Entity::SetAngle(const double new_angle) {
+  this->angle = new_angle;
+}
+
+Entity::ActionRotation Entity::GetActionRotation() const {
+  return this->action_rotation;
+}
+
+void Entity::SetActionRotation(const ActionRotation new_action_rotation) {
+  this->action_rotation = new_action_rotation;
+}
+
+Entity::ActionMovement Entity::GetActionMovement() const {
+  return this->action_movement;
+}
+
+void Entity::SetActionMovement(const ActionMovement new_action_movement) {
+  this->action_movement = new_action_movement;
+}
+
+LONG Entity::GetWidth() const {
+  return width;
+}
+
+LONG Entity::GetHeight() const {
+  return height;
+}
+
+double Entity::GetScale() const {
+  return this->scale;
+}
+
+void Entity::SetScale(const double new_scale) {
+  this->scale = new_scale;
+}
+
+int Entity::GetIntersectRadius() const {
+  return static_cast<int>(max(width, height) * scale * INTERSECT_RADIUS_SCALE / 2);
+}
+
+void Entity::Draw(const HDC& hdc, const HDC& hdc_bits) const {
   if (this->is_destroyed) {
     return;
   }
@@ -138,7 +165,7 @@ void Entity::Draw(HDC& hdc, HDC& hdc_bits) const {
   SetWorldTransform(hdc, &xform_saved);
 }
 
-void Entity::ProcessActions(std::list<Entity*> entities, CRect game_field) {
+void Entity::ProcessActions(const std::list<Entity*>& entities, const CRect& game_field) {
   // Уничтоженные сущности игнорируем
   if (this->is_destroyed) {
     return;
@@ -188,55 +215,25 @@ void Entity::ProcessActions(std::list<Entity*> entities, CRect game_field) {
     case ActionRotation::Left:
       this->SetAngle(this->GetAngle() + 0.1);
       break;
+    case ActionRotation::None:
+      break;
     default:
       break;
   }
 }
 
-LONG Entity::GetWidth() const {
-  return width;
+void Entity::Destroy() {
+  this->is_destroyed = true;
 }
 
-LONG Entity::GetHeight() const {
-  return height;
-}
+bool Entity::IsIntersectsWith(const Entity& entity) const {
+  // Если одна из сущностей уничтожена - сущности не сталкиваются
+  if (this->is_destroyed || entity.is_destroyed) {
+    return false;
+  }
 
-double Entity::GetAngle() const {
-  return this->angle;
-}
-
-void Entity::SetAngle(const double new_angle) {
-  this->angle = new_angle;
-}
-
-double Entity::GetScale() const {
-  return this->scale;
-}
-
-void Entity::SetScale(const double new_scale) {
-  this->scale = new_scale;
-}
-
-Entity::ActionRotation Entity::GetActionRotation() const {
-  return this->action_rotation;
-}
-
-void Entity::SetActionRotation(const ActionRotation new_action_rotation) {
-  this->action_rotation = new_action_rotation;
-}
-
-Entity::ActionMovement Entity::GetActionMovement() const {
-  return this->action_movement;
-}
-
-void Entity::SetActionMovement(const ActionMovement new_action_movement) {
-  this->action_movement = new_action_movement;
-}
-
-int Entity::GetIntersectRadius() const {
-  return static_cast<int>(max(width, height) * scale * INTERSECT_RADIUS_SCALE / 2);
-}
-
-bool Entity::IsDestroyed() const {
-  return is_destroyed;
+  // Иначе - проверяем расстояние между их точками коллизии
+  const double distance_to_collide = this->GetIntersectRadius() + entity.GetIntersectRadius();
+  const double real_distance = sqrt(pow(this->x - entity.x, 2) + pow(this->y - entity.y, 2));
+  return real_distance <= distance_to_collide;
 }
