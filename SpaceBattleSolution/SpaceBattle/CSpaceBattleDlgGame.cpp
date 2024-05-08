@@ -32,7 +32,10 @@ void CSpaceBattleDlgGame::DoDataExchange(CDataExchange* p_dx) {
   CDialogEx::DoDataExchange(p_dx);
   DDX_Control(p_dx, IDC_BUTTON_PAUSE_OR_RESUME_GAME, button_pause_or_resume_game);
   DDX_Control(p_dx, IDC_BUTTON_START_OR_END_GAME, button_start_or_end_game);
-  DDX_Control(p_dx, IDC_TEXT_TIME_PLAYING, text_time_playing);
+  DDX_Control(p_dx, IDC_TEXT_POINTS_EARNED, cstatic_points_earned);
+  DDX_Control(p_dx, IDC_TEXT_ENEMIES_DEFEATED, cstatic_enemies_defeated);
+  DDX_Control(p_dx, IDC_TEXT_HEALTH_LEFT, cstatic_health_left);
+  DDX_Control(p_dx, IDC_TEXT_TIME_PLAYING, cstatic_time_playing);
 }
 
 BEGIN_MESSAGE_MAP(CSpaceBattleDlgGame, CDialogEx)
@@ -188,6 +191,18 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR n_id_event) {
     } else if (n_id_event == static_cast<UINT_PTR>(Timers::TimerRedraw)) {
       // Инициировать исполнение функции OnPaint()
       RedrawWindow(game_screen_rectangle_window);
+
+      CString text_points_earned;
+      text_points_earned.Format(L"Points earned: %d", this->player->GetPointsEarned());
+      cstatic_points_earned.SetWindowText(text_points_earned);
+
+      CString text_enemies_defeated;
+      text_enemies_defeated.Format(L"Enemies defeated: %d", this->player->GetEntitiesDestroyed());
+      cstatic_enemies_defeated.SetWindowText(text_enemies_defeated);
+
+      CString text_health_left;
+      text_health_left.Format(L"Health: %d", this->player->GetHealth());
+      cstatic_health_left.SetWindowText(text_health_left);
     } else if (n_id_event == static_cast<UINT_PTR>(Timers::TimerPlaying)) {
       time_playing_seconds_passed++;
 
@@ -197,7 +212,7 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR n_id_event) {
 
       CString time_playing;
       time_playing.Format(L"Time playing: %.2d:%.2d:%.2d", hours, minutes, seconds);
-      text_time_playing.SetWindowText(time_playing);
+      cstatic_time_playing.SetWindowText(time_playing);
     }
   }
 }
@@ -268,13 +283,17 @@ void CSpaceBattleDlgGame::UpdateGameScreenInfo() {
 }
 
 void CSpaceBattleDlgGame::PauseGame() {
-  this->game_state = GameState::Paused;
-  this->button_pause_or_resume_game.SetWindowTextW(L"Resume game");
+  if (this->game_state == GameState::Playing) {
+    this->game_state = GameState::Paused;
+    this->button_pause_or_resume_game.SetWindowTextW(L"Resume game");
+  }
 }
 
 void CSpaceBattleDlgGame::ResumeGame() {
-  this->game_state = GameState::Playing;
-  this->button_pause_or_resume_game.SetWindowTextW(L"Pause game");
+  if (this->game_state == GameState::Paused) {
+    this->game_state = GameState::Playing;
+    this->button_pause_or_resume_game.SetWindowTextW(L"Pause game");
+  }
 }
 
 void CSpaceBattleDlgGame::EndGameAndDoNotSaveRecord() {

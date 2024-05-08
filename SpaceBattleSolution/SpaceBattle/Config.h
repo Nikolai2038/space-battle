@@ -18,5 +18,7 @@ static constexpr double BULLET_IMAGE_SCALE = 0.5;
 
 static constexpr int DEFAULT_ENTITY_HEALTH = 1;
 static constexpr int DEFAULT_PLAYER_HEALTH = 10;
-static constexpr int DEFAULT_ENEMY_HEALTH = 1;
+static constexpr int DEFAULT_ENEMY_HEALTH = 3;
 static constexpr int DEFAULT_BULLET_HEALTH = 1;
+
+static constexpr int DEFAULT_ENTITY_SELF_POINTS = 10;

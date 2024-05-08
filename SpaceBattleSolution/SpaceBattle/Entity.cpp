@@ -14,7 +14,10 @@ Entity::Entity(const int image_resource_id) :
     owner(nullptr),
     scale(DEFAULT_IMAGE_SCALE),
     speed(DEFAULT_SPEED),
-    health(DEFAULT_ENTITY_HEALTH) {
+    health(DEFAULT_ENTITY_HEALTH),
+    entities_destroyed(0),
+    points_earned(0),
+    self_points(DEFAULT_ENTITY_SELF_POINTS) {
   // Загружаем изображение из ресурса
   CPngImage pngImage;
   pngImage.Load(image_resource_id, AfxGetResourceHandle());
@@ -82,12 +85,34 @@ LONG Entity::GetHeight() const {
   return height;
 }
 
+int Entity::GetPointsEarned() const {
+  return this->points_earned;
+}
+
+int Entity::GetEntitiesDestroyed() const {
+  return this->entities_destroyed;
+}
+
+Entity* Entity::GetMainOwner() {
+  if (this->owner != nullptr) {
+    const Entity* found_owner = this->owner->GetMainOwner();
+    if (found_owner != this) {
+      return this->owner;
+    }
+  }
+  return nullptr;
+}
+
 double Entity::GetScale() const {
   return this->scale;
 }
 
 void Entity::SetScale(const double new_scale) {
   this->scale = new_scale;
+}
+
+int Entity::GetHealth() const {
+  return this->health;
 }
 
 int Entity::GetIntersectRadius() const {
@@ -176,12 +201,13 @@ void Entity::ProcessActions(const std::list<Entity*>& entities, const CRect& gam
     }
 
     if (this->IsIntersectsWith(*entity)) {
-      this->Destroy();
-      entity->Destroy();
+      this->Hit(entity);
+      entity->Hit(this);
       return;
     }
   }
 
+  // Сущность уничтожается при выходе за пределы игрового экрана
   if (this->action_movement == ActionMovement::ToAngle) {
     double new_x = x + cos(angle) * speed;
     if ((new_x + width * scale / 2 <= 0) || (new_x - width * scale / 2 >= game_field.Width())) {
@@ -209,8 +235,30 @@ void Entity::ProcessActions(const std::list<Entity*>& entities, const CRect& gam
   }
 }
 
-void Entity::Destroy() {
+void Entity::Hit(Entity* by_whom) {
+  this->health--;
+  if (this->health <= 0) {
+    this->Destroy(by_whom);
+  }
+}
+
+void Entity::Destroy(Entity* by_whom) {
   this->is_destroyed = true;
+
+  // Если сущность не была уничтожена кем-либо - просто выходим
+  if (by_whom == nullptr) {
+    return;
+  }
+
+  // Иначе - добавим очки сущности, что уничтожила эту - уничтожителю
+  Entity* points_from_whom = this->GetMainOwner();
+  Entity* points_to_who = by_whom->GetMainOwner();
+  // Также проверяем, что сущность не была дочерней от уничтожителя.
+  // Иначе можно было бы создавать свои объекты и уничтожать их, получая очки.
+  if (points_to_who != nullptr && points_from_whom != points_to_who) {
+    points_to_who->entities_destroyed++;
+    points_to_who->points_earned += this->self_points;
+  }
 }
 
 bool Entity::IsIntersectsWith(const Entity& entity) const {

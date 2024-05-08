@@ -61,8 +61,17 @@ private:
   // Кнопка начала/завершения игры
   CButton button_start_or_end_game;
 
+  // Текстовое поле с количеством заработанных очков
+  CStatic cstatic_points_earned;
+
+  // Текстовое поле с количеством уничтоженных врагов
+  CStatic cstatic_enemies_defeated;
+
+  // Текстовое поле с количеством здоровья игрока
+  CStatic cstatic_health_left;
+
   // Текстовое поле со временем игры
-  CStatic text_time_playing;
+  CStatic cstatic_time_playing;
 
   // Список всех сущностей (включая игрока)
   std::list<Entity*> entities;

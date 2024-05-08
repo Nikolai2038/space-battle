@@ -46,11 +46,16 @@ private:
 
   // Высота сущности
   LONG height;
-protected:
-  /// Создаёт новую сущность
-  /// @param image_resource_id ID ресурса изображения сущности
-  explicit Entity(int image_resource_id);
 
+  // Сколько очков заработала эта сущность
+  int points_earned;
+
+  // Сколько сущностей уничтожила эта сущность
+  int entities_destroyed;
+
+  // Сколько очков стоит эта сущность
+  int self_points;
+protected:
   Entity* owner;
 
   // Параметр масштабирования сущности (1.0 - без масштабирования)
@@ -62,6 +67,10 @@ protected:
   // Количество единиц здоровья.
   // Одно столкновение отбирает одну единицу здоровья.
   int health;
+
+  /// Создаёт новую сущность
+  /// @param image_resource_id ID ресурса изображения сущности
+  explicit Entity(int image_resource_id);
 public:
   // Возвращает позицию X сущности
   double GetX() const;
@@ -127,11 +136,23 @@ public:
   // Возвращает высоту сущности
   LONG GetHeight() const;
 
+  // Возвращает количество заработанных очков
+  int GetPointsEarned() const;
+
+  // Возвращает количество уничтоженных сущностей этой сущностью
+  int GetEntitiesDestroyed() const;
+
+  // Возвращает самого первого владельца этой сущности (рекурсивно)
+  Entity* GetMainOwner();
+
   // Возвращает параметр масштабирования сущности
   double GetScale() const;
 
   // Устанавливает параметр масштабирования сущности
   void SetScale(double new_scale);
+
+  // Возвращает количество здоровья сущности
+  int GetHealth() const;
 
   // Возвращает радиус круга коллизии объекта (от его центра)
   int GetIntersectRadius() const;
@@ -142,8 +163,13 @@ public:
   // Обрабатывает действия сущности в текущую единицу времени
   void ProcessActions(const std::list<Entity*>& entities, const CRect& game_field);
 private:
-  // Помечает сущность как уничтоженную
-  void Destroy();
+  // Уменьшает здоровье сущности на одну единицу.
+  // Если здоровья не останется - сущность будет уничтожена.
+  void Hit(Entity* by_whom);
 
+  // Помечает сущность как уничтоженную
+  void Destroy(Entity* by_whom = nullptr);
+
+  // Проверяет, пересекается ли эта сущность с указанной
   bool IsIntersectsWith(const Entity& entity) const;
 };
