@@ -146,11 +146,11 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* p_msg) {
       switch (p_msg->wParam) {
         case 'Q':
           // Поворачиваем игрока налево
-          this->player->SetActionRotation(Ship::ActionRotation::Left);
+          this->player->StartRotatingLeft();
           break;
         case 'E':
           // Поворачиваем игрока направо
-          this->player->SetActionRotation(Ship::ActionRotation::Right);
+          this->player->StartRotatingRight();
           break;
         case VK_SPACE:
           this->player->Shoot(this->entities);
@@ -161,9 +161,11 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* p_msg) {
     case WM_KEYUP:
       switch (p_msg->wParam) {
         case 'Q':
+          // Перестаём поворачивать игрока
+          this->player->StopRotatingLeft();
         case 'E':
           // Перестаём поворачивать игрока
-          this->player->SetActionRotation(Ship::ActionRotation::None);
+          this->player->StopRotatingRight();
           break;
         default:
           break;

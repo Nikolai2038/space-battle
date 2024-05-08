@@ -9,13 +9,12 @@ Entity::Entity(const int image_resource_id) :
     x(0),
     y(0),
     angle(DEFAULT_ANGLE),
-    action_rotation(ActionRotation::None),
     action_movement(ActionMovement::None),
-    health(DEFAULT_ENTITY_HEALTH),
     is_destroyed(false),
+    owner(nullptr),
     scale(DEFAULT_IMAGE_SCALE),
     speed(DEFAULT_SPEED),
-    owner(nullptr) {
+    health(DEFAULT_ENTITY_HEALTH) {
   // Загружаем изображение из ресурса
   CPngImage pngImage;
   pngImage.Load(image_resource_id, AfxGetResourceHandle());
@@ -65,14 +64,6 @@ double Entity::GetAngle() const {
 
 void Entity::SetAngle(const double new_angle) {
   this->angle = new_angle;
-}
-
-Entity::ActionRotation Entity::GetActionRotation() const {
-  return this->action_rotation;
-}
-
-void Entity::SetActionRotation(const ActionRotation new_action_rotation) {
-  this->action_rotation = new_action_rotation;
 }
 
 Entity::ActionMovement Entity::GetActionMovement() const {
@@ -208,17 +199,13 @@ void Entity::ProcessActions(const std::list<Entity*>& entities, const CRect& gam
     y = new_y;
   }
 
-  switch (this->action_rotation) {
-    case ActionRotation::Right:
-      this->SetAngle(this->GetAngle() - 0.1);
-      break;
-    case ActionRotation::Left:
-      this->SetAngle(this->GetAngle() + 0.1);
-      break;
-    case ActionRotation::None:
-      break;
-    default:
-      break;
+  // Если сущность поворачивается направо
+  if (this->is_rotating_right && !this->is_rotating_left) {
+    this->SetAngle(this->GetAngle() - 0.1);
+  }
+  // Если сущность поворачивается налево
+  else if (!this->is_rotating_right && this->is_rotating_left) {
+    this->SetAngle(this->GetAngle() + 0.1);
   }
 }
 

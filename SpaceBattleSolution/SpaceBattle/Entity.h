@@ -4,16 +4,6 @@
 
 // Сущность на поле игры
 class Entity {
-public:
-  // Действие поворота сущности
-  enum class ActionRotation {
-    // Сущность не поворачивается
-    None,
-    // Сущность поворачивается по часовой стрелке (направо)
-    Right,
-    // Сущность поворачивается против часовой стрелки (налево)
-    Left
-  };
 protected:
   // Действие движения сущности
   enum class ActionMovement {
@@ -32,8 +22,11 @@ private:
   // Направление движения в радианах
   double angle;
 
-  // Действие поворота, производимое сущностью в данный момент
-  ActionRotation action_rotation;
+  // Вращается ли сущность в правую сторону
+  bool is_rotating_right;
+
+  // Вращается ли сущность в левую сторону
+  bool is_rotating_left;
 
   // Действие движения, производимое сущностью в данный момент
   ActionMovement action_movement;
@@ -101,12 +94,25 @@ public:
   // Устанавливает угол поворота сущности (в радианах)
   void SetAngle(double new_angle);
 
-  // Возвращает действие поворота, производимое сущностью в данный момент
-  ActionRotation GetActionRotation() const;
+  // Сущность начнёт поворачиваться направо
+  void StartRotatingRight() {
+    this->is_rotating_right = true;
+  }
 
-  // Устанавливает действие поворота, производимое сущностью в данный момент
-  /// @param new_action_rotation Новое действие поворота
-  void SetActionRotation(ActionRotation new_action_rotation);
+  // Сущность перестанет поворачиваться направо
+  void StopRotatingRight() {
+    this->is_rotating_right = false;
+  }
+
+  // Сущность начнёт поворачиваться налево
+  void StartRotatingLeft() {
+    this->is_rotating_left = true;
+  }
+
+  // Сущность перестанет поворачиваться налево
+  void StopRotatingLeft() {
+    this->is_rotating_left = false;
+  }
 
   // Возвращает действие движения, производимое сущностью в данный момент
   ActionMovement GetActionMovement() const;
