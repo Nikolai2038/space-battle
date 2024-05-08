@@ -1,5 +1,4 @@
 #pragma once
-#include "Globals.h"
 
 // Время в миллисекундах для между итерациями таймера действий сущностей
 static constexpr int TIMER_CLOCK_LOOP_IN_MS = 10;
@@ -27,9 +26,6 @@ static constexpr double DEFAULT_DE_ACCELERATION = 0.2;
 
 // Скорость пуль по умолчанию
 static constexpr double BULLET_SPEED = DEFAULT_SPEED * 3;
-
-// Угол поворота сущностей по умолчанию
-static const double DEFAULT_ANGLE = PI / 2;
 
 // Множитель для радиуса коллизии сущностей
 static constexpr double INTERSECT_RADIUS_SCALE = 0.8;

@@ -159,6 +159,10 @@ void Entity::SetScale(const double new_scale) {
   this->scale = new_scale;
 }
 
+double Entity::GetSpeed() const {
+  return this->speed;
+}
+
 int Entity::GetHealth() const {
   return this->health;
 }

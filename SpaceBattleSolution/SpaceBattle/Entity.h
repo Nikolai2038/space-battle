@@ -178,6 +178,9 @@ public:
   // Устанавливает параметр масштабирования сущности
   void SetScale(double new_scale);
 
+  // Возвращает скорость сущности
+  double GetSpeed() const;
+
   // Возвращает количество здоровья сущности
   int GetHealth() const;
 
