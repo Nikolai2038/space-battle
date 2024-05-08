@@ -15,8 +15,16 @@ IMPLEMENT_DYNAMIC(CSpaceBattleDlgGame, CDialogEx)
 CSpaceBattleDlgGame::CSpaceBattleDlgGame(CWnd* p_parent) :
     CDialogEx(IDD_DIALOG_GAME, p_parent),
     hdc(nullptr),
+    hdc_bits(nullptr),
     game_screen(nullptr),
-    time_playing_seconds_passed(0) {
+    need_to_clear_screen(true),
+    time_playing_seconds_passed(0),
+    waves_passed(0),
+    wave_time(0),
+    wave_enemies_count(0),
+    seconds_passed_since_last_wave(0),
+    waves_passed_since_last_wave_time_decrease(0),
+    waves_passed_since_last_wave_enemies_count_increase(0) {
   this->game_state = GameState::Created;
 
   this->entities = std::list<Entity*>();
@@ -26,9 +34,14 @@ CSpaceBattleDlgGame::CSpaceBattleDlgGame(CWnd* p_parent) :
 }
 
 CSpaceBattleDlgGame::~CSpaceBattleDlgGame() {
+  DeleteObject(this->hdc);
+  DeleteObject(this->hdc_bits);
+  DeleteObject(this->game_screen);
+
   for (auto entity : this->entities) {
     delete entity;
   }
+  DeleteObject(this->player);
 }
 
 void CSpaceBattleDlgGame::DoDataExchange(CDataExchange* p_dx) {
@@ -198,6 +211,16 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR n_id_event) {
       CString time_playing;
       time_playing.Format(L"Time playing: %.2d:%.2d:%.2d", hours, minutes, seconds);
       cstatic_time_playing.SetWindowText(time_playing);
+    } else if (n_id_event == static_cast<UINT_PTR>(Timers::TimerGarbageCollector)) {
+      // Удаляем из памяти уничтоженные сущности
+      entities.erase(std::remove_if(entities.begin(), entities.end(), [](const Entity* entity) {
+                       if (entity->IsDestroyed()) {
+                         delete entity;
+                         return true;
+                       }
+                       return false;
+                     }),
+                     entities.end());
     }
   }
 }
@@ -260,6 +283,14 @@ void CSpaceBattleDlgGame::OnBnClickedButtonStartOrEndGame() {
     }
 
     create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerPlaying), 1000, nullptr);
+    if (create_timer_result == FALSE) {
+      MessageBox(
+        L"Cannot install timer",
+        L"Error message",
+        MB_OK + MB_ICONERROR);
+    }
+
+    create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerGarbageCollector), TIMER_GARBAGE_COLLECTOR_LOOP_IN_MS, nullptr);
     if (create_timer_result == FALSE) {
       MessageBox(
         L"Cannot install timer",
@@ -385,5 +416,5 @@ void CSpaceBattleDlgGame::CreateNewEnemy() {
   const auto enemy = new Enemy();
   enemy->SetLocation(random_x, random_y);
   enemy->SetAngle(-PI / 4);
-  enemy->AddOrReplaceInList(this->entities);
+  enemy->AddToList(this->entities);
 }

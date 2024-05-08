@@ -12,5 +12,5 @@ void Ship::Shoot(std::list<Entity *> &entities) {
   bullet->SetLocation(this->GetX(), this->GetY());
   bullet->SetAngle(this->GetAngle());
   bullet->SetActionMovement(ActionMovement::ToAngle);
-  bullet->AddOrReplaceInList(entities);
+  bullet->AddToList(entities);
 }

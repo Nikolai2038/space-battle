@@ -72,6 +72,8 @@ protected:
   /// @param image_resource_id ID ресурса изображения сущности
   explicit Entity(int image_resource_id);
 public:
+  ~Entity();
+
   // Возвращает позицию X сущности
   double GetX() const;
 
@@ -177,5 +179,5 @@ private:
   bool IsIntersectsWith(const Entity& entity) const;
 public:
   // Добавляет эту сущность в указанный список (заменит любую уничтоженную сущность в этом списке)
-  void AddOrReplaceInList(std::list<Entity*>& entities);
+  void AddToList(std::list<Entity*>& entities);
 };

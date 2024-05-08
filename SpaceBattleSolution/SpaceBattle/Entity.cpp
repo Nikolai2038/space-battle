@@ -32,6 +32,10 @@ Entity::Entity(const int image_resource_id) :
   this->height = bmp_info.bmHeight;
 }
 
+Entity::~Entity() {
+  DeleteObject(this->bmp_loaded);
+}
+
 double Entity::GetX() const {
   return x;
 }
@@ -277,24 +281,7 @@ bool Entity::IsIntersectsWith(const Entity& entity) const {
   return real_distance <= distance_to_collide;
 }
 
-void Entity::AddOrReplaceInList(std::list<Entity*>& entities) {
-  bool was_replaced = false;
-  for (auto entity : entities) {
-    if (entity != nullptr && entity->IsDestroyed()) {
-      // delete entity;
-    }
-  }
-  /*
-  for (auto entity : entities) {
-    if (entity == nullptr) {
-      entity = this;
-      was_replaced = true;
-      break;
-    }
-  }*/
-
-  if (!was_replaced) {
-    // ƒобавл€ем в начало, так как при отрисовке, последние сущности будут перекрывать новые
-    entities.push_front(this);
-  }
+void Entity::AddToList(std::list<Entity*>& entities) {
+  // ƒобавл€ем в начало, так как при отрисовке, последние сущности будут перекрывать новые
+  entities.push_front(this);
 }

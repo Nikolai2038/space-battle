@@ -17,7 +17,10 @@ private:
     TimerRedraw,
 
     // Идентификатор таймера времени игры
-    TimerPlaying
+    TimerPlaying,
+
+    // Идентификатор таймера чистки мусора в памяти
+    TimerGarbageCollector
   };
 
   // Идентификаторы состояний игры
@@ -37,7 +40,7 @@ private:
 
   HDC hdc;
 
-  HDC hdc_bits = nullptr;
+  HDC hdc_bits;
 
   CWnd* game_screen;
 
@@ -48,7 +51,7 @@ private:
   CRect game_screen_rectangle_window;
 
   // Нужно ли очистить фон всего окна перед следующей отрисовкой объектов
-  bool need_to_clear_screen = true;
+  bool need_to_clear_screen;
 
   // Состояние игры
   GameState game_state;

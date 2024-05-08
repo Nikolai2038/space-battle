@@ -1,8 +1,14 @@
 #pragma once
 #include "Globals.h"
 
-static constexpr int TIMER_CLOCK_LOOP_IN_MS = 1;
+// Время в миллисекундах для между итерациями таймера действий сущностей
+static constexpr int TIMER_CLOCK_LOOP_IN_MS = 10;
+
+// Время в миллисекундах для между итерациями таймера отрисовки
 static constexpr int TIMER_REDRAW_LOOP_IN_MS = 10;
+
+// Время в миллисекундах для между итерациями таймера чистки мусора в памяти
+static constexpr int TIMER_GARBAGE_COLLECTOR_LOOP_IN_MS = 1000;
 
 static constexpr double DEFAULT_SPEED = 1;
 static constexpr double BULLET_SPEED = DEFAULT_SPEED * 2;
