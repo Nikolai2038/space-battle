@@ -1,6 +1,3 @@
-// CSpaceBattleDlgGame.cpp : implementation file
-//
-
 #include "pch.h"
 #include "afxdialogex.h"
 #include "CSpaceBattleDlgGame.h"
@@ -8,12 +5,24 @@
 #include <string>
 
 #include "Config.h"
+#include "Enemy.h"
 #include "Globals.h"
 #include "SpaceBattle.h"
 
-// CSpaceBattleDlgGame dialog
-
 IMPLEMENT_DYNAMIC(CSpaceBattleDlgGame, CDialogEx)
+
+enum class CSpaceBattleDlgGame::Timers {
+  TIMER_CLOCK,
+  TIMER_REDRAW,
+  TIMER_GAMETIME
+};
+
+enum class CSpaceBattleDlgGame::GameState {
+  CREATED,
+  PAUSED,
+  PLAYING,
+  FINISHED,
+};
 
 void CSpaceBattleDlgGame::PauseGame() {
   this->game_state = GameState::PAUSED;

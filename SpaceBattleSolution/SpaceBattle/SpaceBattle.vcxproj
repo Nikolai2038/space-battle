@@ -222,19 +222,17 @@
     <ResourceCompile Include="SpaceBattle.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.clang-format" />
     <None Include="res\SpaceBattle.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\Graphics\Bullet.png" />
-    <Image Include="..\..\Graphics\Enemy.png" />
-    <Image Include="..\..\Graphics\Player.png" />
-    <Image Include="res\icon1.ico" />
-    <Image Include="res\icons\coin.png" />
-    <Image Include="res\icons\enemies.ico" />
-    <Image Include="res\icons\health.ico" />
-    <Image Include="res\icons\point.ico" />
-    <Image Include="res\icons\point.png" />
-    <Image Include="res\icons\time.ico" />
+    <Image Include="res\Images\Bullet.png" />
+    <Image Include="res\Images\Enemy.png" />
+    <Image Include="res\Images\Player.png" />
+    <Image Include="res\Icons\Enemies.ico" />
+    <Image Include="res\Icons\Health.ico" />
+    <Image Include="res\Icons\Point.ico" />
+    <Image Include="res\Icons\Time.ico" />
     <Image Include="res\SpaceBattle.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

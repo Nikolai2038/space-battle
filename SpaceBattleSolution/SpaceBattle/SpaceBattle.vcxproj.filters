@@ -40,6 +40,15 @@
     <Filter Include="Header Files\Other">
       <UniqueIdentifier>{847d0b11-4656-4b5e-82f6-67738306b9fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Icons">
+      <UniqueIdentifier>{f55afec6-2e34-45ed-85d8-adca11149a44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Icons\Buttons">
+      <UniqueIdentifier>{23c0f803-5cd6-47a8-90d8-9b9f5bfa995d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Images">
+      <UniqueIdentifier>{3115e583-90ce-4ed1-935f-04f8d5ef6f75}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SpaceBattle.h">
@@ -135,39 +144,34 @@
     <None Include="res\SpaceBattle.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\.clang-format" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\Icons\Enemies.ico">
+      <Filter>Resource Files\Icons\Buttons</Filter>
+    </Image>
+    <Image Include="res\Icons\Health.ico">
+      <Filter>Resource Files\Icons\Buttons</Filter>
+    </Image>
+    <Image Include="res\Icons\Point.ico">
+      <Filter>Resource Files\Icons\Buttons</Filter>
+    </Image>
+    <Image Include="res\Icons\Time.ico">
+      <Filter>Resource Files\Icons\Buttons</Filter>
+    </Image>
     <Image Include="res\SpaceBattle.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Icons</Filter>
     </Image>
-    <Image Include="..\..\Graphics\Bullet.png">
-      <Filter>Resource Files</Filter>
+    <Image Include="res\Images\Bullet.png">
+      <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="..\..\Graphics\Enemy.png">
-      <Filter>Resource Files</Filter>
+    <Image Include="res\Images\Enemy.png">
+      <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="..\..\Graphics\Player.png">
-      <Filter>Resource Files</Filter>
+    <Image Include="res\Images\Player.png">
+      <Filter>Resource Files\Images</Filter>
     </Image>
-    <Image Include="res\icons\coin.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\icons\point.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\icon1.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\icons\point.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\icons\enemies.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\icons\time.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\icons\health.ico">
+    <Image Include="res\icons\bitmap1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -1,22 +1,16 @@
 #pragma once
 #include <list>
-#include <vector>
 
 #include "afxdialogex.h"
-#include "Enemy.h"
 #include "Player.h"
-
-// CSpaceBattleDlgGame dialog
 
 class CSpaceBattleDlgGame : public CDialogEx {
   private:
+    enum class Timers;
+    enum class GameState;
+
     DECLARE_DYNAMIC(CSpaceBattleDlgGame)
 
-    enum class Timers {
-      TIMER_CLOCK,
-      TIMER_REDRAW,
-      TIMER_GAMETIME
-    };
     HDC hdc;
     HDC hdcBits = nullptr;
     CWnd* game_screen;
@@ -30,13 +24,6 @@ class CSpaceBattleDlgGame : public CDialogEx {
     // Нужно ли очистить фон всего окна перед следующей отрисовкой объектов
     bool need_to_clear_screen = true;
 
-    enum class GameState {
-      CREATED,
-      PAUSED,
-      PLAYING,
-      FINISHED,
-    };
-
     GameState game_state;
 
     CButton button_pause_or_resume_game;
@@ -49,6 +36,11 @@ class CSpaceBattleDlgGame : public CDialogEx {
     void ResumeGame();
     void EndGameAndDoNotSaveRecord();
     void EndGameAndSaveRecord();
+    void CreateNewEnemy();
+  protected:
+    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+
+    DECLARE_MESSAGE_MAP()
   public:
     CSpaceBattleDlgGame(CWnd* pParent = nullptr); // standard constructor
     virtual ~CSpaceBattleDlgGame();
@@ -60,11 +52,7 @@ class CSpaceBattleDlgGame : public CDialogEx {
 #ifdef AFX_DESIGN_TIME
     enum { IDD = IDD_DIALOG_GAME };
 #endif
-  protected:
-    virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
 
-    DECLARE_MESSAGE_MAP()
-  public:
     afx_msg void OnBnClickedButtonReturnToTheMenu();
     afx_msg void OnPaint();
 
@@ -77,12 +65,7 @@ class CSpaceBattleDlgGame : public CDialogEx {
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg BOOL OnEraseBkgnd(CDC* pDC);
     afx_msg void OnSize(UINT nType, int cx, int cy);
-    afx_msg
-      afx_msg virtual BOOL
-      PreTranslateMessage(MSG* pMsg);
-  private:
-    void CreateNewEnemy();
-  public:
+    afx_msg virtual BOOL PreTranslateMessage(MSG* pMsg);
     afx_msg void OnBnClickedButtonPauseOrResumeGame();
     afx_msg void OnBnClickedButtonStartOrEndGame();
     afx_msg void OnClose();
