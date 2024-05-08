@@ -130,6 +130,9 @@ public:
   /// @param new_action_movement Новое действие движения
   void SetActionMovement(ActionMovement new_action_movement);
 
+  // Является ли сущность уничтоженной
+  bool IsDestroyed() const;
+
   // Возвращает ширину сущности
   LONG GetWidth() const;
 
@@ -172,4 +175,7 @@ private:
 
   // Проверяет, пересекается ли эта сущность с указанной
   bool IsIntersectsWith(const Entity& entity) const;
+public:
+  // Добавляет эту сущность в указанный список (заменит любую уничтоженную сущность в этом списке)
+  void AddOrReplaceInList(std::list<Entity*>& entities);
 };

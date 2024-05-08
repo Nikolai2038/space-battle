@@ -11,13 +11,13 @@ Entity::Entity(const int image_resource_id) :
     angle(DEFAULT_ANGLE),
     action_movement(ActionMovement::None),
     is_destroyed(false),
+    points_earned(0),
+    entities_destroyed(0),
+    self_points(DEFAULT_ENTITY_SELF_POINTS),
     owner(nullptr),
     scale(DEFAULT_IMAGE_SCALE),
     speed(DEFAULT_SPEED),
-    health(DEFAULT_ENTITY_HEALTH),
-    entities_destroyed(0),
-    points_earned(0),
-    self_points(DEFAULT_ENTITY_SELF_POINTS) {
+    health(DEFAULT_ENTITY_HEALTH) {
   // «агружаем изображение из ресурса
   CPngImage pngImage;
   pngImage.Load(image_resource_id, AfxGetResourceHandle());
@@ -75,6 +75,10 @@ Entity::ActionMovement Entity::GetActionMovement() const {
 
 void Entity::SetActionMovement(const ActionMovement new_action_movement) {
   this->action_movement = new_action_movement;
+}
+
+bool Entity::IsDestroyed() const {
+  return this->is_destroyed;
 }
 
 LONG Entity::GetWidth() const {
@@ -271,4 +275,26 @@ bool Entity::IsIntersectsWith(const Entity& entity) const {
   const double distance_to_collide = this->GetIntersectRadius() + entity.GetIntersectRadius();
   const double real_distance = sqrt(pow(this->x - entity.x, 2) + pow(this->y - entity.y, 2));
   return real_distance <= distance_to_collide;
+}
+
+void Entity::AddOrReplaceInList(std::list<Entity*>& entities) {
+  bool was_replaced = false;
+  for (auto entity : entities) {
+    if (entity != nullptr && entity->IsDestroyed()) {
+      // delete entity;
+    }
+  }
+  /*
+  for (auto entity : entities) {
+    if (entity == nullptr) {
+      entity = this;
+      was_replaced = true;
+      break;
+    }
+  }*/
+
+  if (!was_replaced) {
+    // ƒобавл€ем в начало, так как при отрисовке, последние сущности будут перекрывать новые
+    entities.push_front(this);
+  }
 }

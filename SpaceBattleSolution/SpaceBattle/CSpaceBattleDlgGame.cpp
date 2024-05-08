@@ -2,6 +2,9 @@
 #include "afxdialogex.h"
 #include "Config.h"
 #include "CSpaceBattleDlgGame.h"
+
+#include <stdexcept>
+
 #include "Enemy.h"
 #include "Globals.h"
 #include "SpaceBattle.h"
@@ -162,6 +165,9 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR n_id_event) {
       for (auto entity : this->entities) {
         entity->ProcessActions(this->entities, this->game_screen_rectangle);
       }
+      if (this->player->IsDestroyed()) {
+        EndGameAndSaveRecord();
+      }
     } else if (n_id_event == static_cast<UINT_PTR>(Timers::TimerRedraw)) {
       // Инициировать исполнение функции OnPaint()
       RedrawWindow(game_screen_rectangle_window);
@@ -179,6 +185,11 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR n_id_event) {
       cstatic_health_left.SetWindowText(text_health_left);
     } else if (n_id_event == static_cast<UINT_PTR>(Timers::TimerPlaying)) {
       time_playing_seconds_passed++;
+      seconds_passed_since_last_wave++;
+
+      if (seconds_passed_since_last_wave >= wave_time) {
+        CreateNewEnemiesWave();
+      }
 
       int seconds = time_playing_seconds_passed % 60;
       int minutes = (time_playing_seconds_passed - seconds) / 60 % 60;
@@ -227,7 +238,9 @@ void CSpaceBattleDlgGame::OnBnClickedButtonStartOrEndGame() {
     this->button_pause_or_resume_game.EnableWindow(true);
     this->button_start_or_end_game.SetWindowTextW(L"End game");
 
-    CreateNewEnemy();
+    waves_passed = 0;
+    wave_time = INITIAL_WAVE_TIME;
+    wave_enemies_count = INITIAL_WAVE_ENEMIES_COUNT;
 
     UINT_PTR create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerClock), TIMER_CLOCK_LOOP_IN_MS, nullptr);
     if (create_timer_result == FALSE) {
@@ -253,6 +266,8 @@ void CSpaceBattleDlgGame::OnBnClickedButtonStartOrEndGame() {
         L"Error message",
         MB_OK + MB_ICONERROR);
     }
+
+    CreateNewEnemiesWave();
   } else {
     PauseGame();
     const int dialog_result = MessageBox(
@@ -308,16 +323,67 @@ void CSpaceBattleDlgGame::EndGameAndSaveRecord() {
   OnOK();
 }
 
-void CSpaceBattleDlgGame::CreateNewEnemy() {
-  auto enemy = new Enemy();
-  enemy->SetLocation(static_cast<double>(game_screen_rectangle.Width()) / 4, static_cast<double>(game_screen_rectangle.Height()) / 4);
-  enemy->SetAngle(-PI / 4);
-  this->entities.push_back(enemy);
-}
-
 void CSpaceBattleDlgGame::CenterPlayer() const {
   // Центрируем игрока только, если игра не началась
   if (this->game_state == GameState::Created) {
     this->player->SetLocation(static_cast<double>(game_screen_rectangle.Width()) / 2, static_cast<double>(game_screen_rectangle.Height()) / 2);
   }
+}
+
+void CSpaceBattleDlgGame::CreateNewEnemiesWave() {
+  waves_passed++;
+  waves_passed_since_last_wave_time_decrease++;
+  waves_passed_since_last_wave_enemies_count_increase++;
+
+  seconds_passed_since_last_wave = 0;
+
+  // Уменьшаем время до следующей волны
+  if (waves_passed_since_last_wave_time_decrease >= WAVES_TILL_DECREASE_WAVE_TIME && wave_time - DECREASE_WAVE_TIME >= MIN_WAVE_TIME) {
+    waves_passed_since_last_wave_time_decrease = 0;
+    wave_time -= DECREASE_WAVE_TIME;
+  }
+
+  // Увеличиваем количество врагов
+  if (waves_passed_since_last_wave_enemies_count_increase >= WAVES_TILL_INCREASE_WAVE_ENEMIES_COUNT && wave_enemies_count + INCREASE_WAVE_ENEMIES_COUNT <= MAX_WAVE_ENEMIES_COUNT) {
+    waves_passed_since_last_wave_enemies_count_increase = 0;
+    wave_enemies_count += INCREASE_WAVE_ENEMIES_COUNT;
+  }
+
+  // Создаём необходимое количество врагов
+  for (int i = 0; i < wave_enemies_count; ++i) {
+    CreateNewEnemy();
+  }
+}
+
+void CSpaceBattleDlgGame::CreateNewEnemy() {
+  const auto side = static_cast<SideToSpawn>(GetRandom(0, 3));
+
+  double random_x;
+  double random_y;
+
+  switch (side) {
+    case SideToSpawn::Left:
+      random_x = 50;
+      random_y = GetRandom(0, game_screen_rectangle.Height());
+      break;
+    case SideToSpawn::Right:
+      random_x = game_screen_rectangle.Width() - 50;
+      random_y = GetRandom(0, game_screen_rectangle.Height());
+      break;
+    case SideToSpawn::Top:
+      random_x = GetRandom(0, game_screen_rectangle.Width());
+      random_y = 50;
+      break;
+    case SideToSpawn::Bottom:
+      random_x = GetRandom(0, game_screen_rectangle.Width());
+      random_y = game_screen_rectangle.Height() - 50;
+      break;
+    default:
+      throw new std::runtime_error("side is unknown!");
+  }
+
+  const auto enemy = new Enemy();
+  enemy->SetLocation(random_x, random_y);
+  enemy->SetAngle(-PI / 4);
+  enemy->AddOrReplaceInList(this->entities);
 }

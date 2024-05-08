@@ -78,6 +78,24 @@ private:
 
   // Игрок
   Player* player;
+
+  // Количество пройденных волн
+  int waves_passed;
+
+  // Время в секундах, спустя которое запускается новая волна
+  int wave_time;
+
+  // Количество генерируемых врагов за один раз
+  int wave_enemies_count;
+
+  // Количество секунд, прошедших с последней волны
+  int seconds_passed_since_last_wave;
+
+  // Количество пройденных волн с момента последнего уменьшения времени до следующей волны
+  int waves_passed_since_last_wave_time_decrease;
+
+  // Количество пройденных волн с момента последнего увеличения количества врагов волны
+  int waves_passed_since_last_wave_enemies_count_increase;
 protected:
   void DoDataExchange(CDataExchange* p_dx) override; // DDX/DDV support
 
@@ -142,9 +160,12 @@ private:
   // Завершает игру с сохранением рекорда
   void EndGameAndSaveRecord();
 
-  // Создаёт нового врага на поле
-  void CreateNewEnemy();
-
   // Располагает игрока по центру экрана
   void CenterPlayer() const;
+
+  // Запускает новую волну врагов
+  void CreateNewEnemiesWave();
+
+  // Создаёт нового врага на поле
+  void CreateNewEnemy();
 };
