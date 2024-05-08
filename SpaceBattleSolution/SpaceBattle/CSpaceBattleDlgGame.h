@@ -144,4 +144,7 @@ private:
 
   // Создаёт нового врага на поле
   void CreateNewEnemy();
+
+  // Располагает игрока по центру экрана
+  void CenterPlayer() const;
 };

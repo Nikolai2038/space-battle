@@ -55,40 +55,12 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
   CDialogEx::OnInitDialog();
 
   game_screen = GetDlgItem(IDC_GAME_SCREEN);
-  UpdateGameScreenInfo();
 
-  // Располагаем игрока по центру экрана
-  this->player->SetLocation(static_cast<double>(game_screen_rectangle.Width()) / 2, static_cast<double>(game_screen_rectangle.Height()) / 2);
-
-  CreateNewEnemy();
-
-  // Получить указатель на DC.
   hdc = ::GetDC(game_screen->m_hWnd);
 
-  UINT_PTR create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerClock), TIMER_CLOCK_LOOP_IN_MS, nullptr);
-  if (create_timer_result == FALSE) {
-    MessageBox(
-      L"Cannot install timer",
-      L"Error message",
-      MB_OK + MB_ICONERROR);
-  }
-  time_playing_seconds_passed = 0;
+  UpdateGameScreenInfo();
 
-  create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerRedraw), TIMER_REDRAW_LOOP_IN_MS, nullptr);
-  if (create_timer_result == FALSE) {
-    MessageBox(
-      L"Cannot install timer",
-      L"Error message",
-      MB_OK + MB_ICONERROR);
-  }
-
-  create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerPlaying), 1000, nullptr);
-  if (create_timer_result == FALSE) {
-    MessageBox(
-      L"Cannot install timer",
-      L"Error message",
-      MB_OK + MB_ICONERROR);
-  }
+  CenterPlayer();
 
   return TRUE;
 }
@@ -98,6 +70,8 @@ void CSpaceBattleDlgGame::OnSize(UINT n_type, int cx, int cy) {
 
   UpdateGameScreenInfo();
   Invalidate(false);
+
+  CenterPlayer();
 }
 
 BOOL CSpaceBattleDlgGame::OnEraseBkgnd(CDC* p_dc) {
@@ -248,25 +222,49 @@ void CSpaceBattleDlgGame::OnBnClickedButtonPauseOrResumeGame() {
 }
 
 void CSpaceBattleDlgGame::OnBnClickedButtonStartOrEndGame() {
-  switch (this->game_state) {
-    case GameState::Created:
-      this->game_state = GameState::Playing;
-      this->button_pause_or_resume_game.EnableWindow(true);
-      this->button_start_or_end_game.SetWindowTextW(L"End game");
-      break;
-    default:
-      PauseGame();
-      const int dialog_result = MessageBox(
-        L"End the game?\nYour progress will be saved in records.",
-        L"End the game",
-        MB_YESNO + MB_ICONQUESTION);
+  if (this->game_state == GameState::Created) {
+    this->game_state = GameState::Playing;
+    this->button_pause_or_resume_game.EnableWindow(true);
+    this->button_start_or_end_game.SetWindowTextW(L"End game");
 
-      if (dialog_result == IDYES) {
-        EndGameAndSaveRecord();
-      } else {
-        ResumeGame();
-      }
-      break;
+    CreateNewEnemy();
+
+    UINT_PTR create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerClock), TIMER_CLOCK_LOOP_IN_MS, nullptr);
+    if (create_timer_result == FALSE) {
+      MessageBox(
+        L"Cannot install timer",
+        L"Error message",
+        MB_OK + MB_ICONERROR);
+    }
+    time_playing_seconds_passed = 0;
+
+    create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerRedraw), TIMER_REDRAW_LOOP_IN_MS, nullptr);
+    if (create_timer_result == FALSE) {
+      MessageBox(
+        L"Cannot install timer",
+        L"Error message",
+        MB_OK + MB_ICONERROR);
+    }
+
+    create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerPlaying), 1000, nullptr);
+    if (create_timer_result == FALSE) {
+      MessageBox(
+        L"Cannot install timer",
+        L"Error message",
+        MB_OK + MB_ICONERROR);
+    }
+  } else {
+    PauseGame();
+    const int dialog_result = MessageBox(
+      L"End the game?\nYour progress will be saved in records.",
+      L"End the game",
+      MB_YESNO + MB_ICONQUESTION);
+
+    if (dialog_result == IDYES) {
+      EndGameAndSaveRecord();
+    } else {
+      ResumeGame();
+    }
   }
 }
 
@@ -315,4 +313,11 @@ void CSpaceBattleDlgGame::CreateNewEnemy() {
   enemy->SetLocation(static_cast<double>(game_screen_rectangle.Width()) / 4, static_cast<double>(game_screen_rectangle.Height()) / 4);
   enemy->SetAngle(-PI / 4);
   this->entities.push_back(enemy);
+}
+
+void CSpaceBattleDlgGame::CenterPlayer() const {
+  // Центрируем игрока только, если игра не началась
+  if (this->game_state == GameState::Created) {
+    this->player->SetLocation(static_cast<double>(game_screen_rectangle.Width()) / 2, static_cast<double>(game_screen_rectangle.Height()) / 2);
+  }
 }
