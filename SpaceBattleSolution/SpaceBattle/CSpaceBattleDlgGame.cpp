@@ -145,6 +145,14 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* p_msg) {
           // Поворачиваем игрока направо
           this->player->StartRotatingRight();
           break;
+        case 'W':
+          // Ускоряем игрока
+          this->player->StartAccelerating();
+          break;
+        case 'S':
+          // Замедляем игрока
+          this->player->StartDeAccelerating();
+          break;
         case VK_SPACE:
           this->player->Shoot(this->entities);
         default:
@@ -159,6 +167,14 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* p_msg) {
         case 'E':
           // Перестаём поворачивать игрока
           this->player->StopRotatingRight();
+          break;
+        case 'W':
+          // Перестаём ускорять игрока
+          this->player->StopAccelerating();
+          break;
+        case 'S':
+          // Перестаём замедлять игрока
+          this->player->StopDeAccelerating();
           break;
         default:
           break;

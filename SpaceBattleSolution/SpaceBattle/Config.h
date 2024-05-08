@@ -10,23 +10,55 @@ static constexpr int TIMER_REDRAW_LOOP_IN_MS = 10;
 // Время в миллисекундах для между итерациями таймера чистки мусора в памяти
 static constexpr int TIMER_GARBAGE_COLLECTOR_LOOP_IN_MS = 1000;
 
+// Скорость сущностей по умолчанию
 static constexpr double DEFAULT_SPEED = 1;
-static constexpr double BULLET_SPEED = DEFAULT_SPEED * 2;
 
+// Минимальная скорость сущностей по умолчанию
+static constexpr double DEFAULT_SPEED_MIN = -1;
+
+// Максимальная скорость сущностей по умолчанию
+static constexpr double DEFAULT_SPEED_MAX = 4;
+
+// Ускорение по умолчанию - насколько сущность может повысить скорость за единицу времени
+static constexpr double DEFAULT_ACCELERATION = 0.1;
+
+// Замедление по умолчанию - насколько сущность может понизить скорость за единицу времени
+static constexpr double DEFAULT_DE_ACCELERATION = 0.2;
+
+// Скорость пуль по умолчанию
+static constexpr double BULLET_SPEED = DEFAULT_SPEED * 3;
+
+// Угол поворота сущностей по умолчанию
 static const double DEFAULT_ANGLE = PI / 2;
 
+// Множитель для радиуса коллизии сущностей
 static constexpr double INTERSECT_RADIUS_SCALE = 0.8;
 
+// Коэффициент масштабирования изображений сущностей по умолчанию
 static constexpr double DEFAULT_IMAGE_SCALE = 1.0;
+
+// Коэффициент масштабирования изображения для игрока
 static constexpr double PLAYER_IMAGE_SCALE = 0.2;
+
+// Коэффициент масштабирования изображения для врага
 static constexpr double ENEMY_IMAGE_SCALE = 0.2;
+
+// Коэффициент масштабирования изображения для пули
 static constexpr double BULLET_IMAGE_SCALE = 0.5;
 
+// Количество единиц здоровья по умолчанию у сущности
 static constexpr int DEFAULT_ENTITY_HEALTH = 1;
+
+// Количество единиц здоровья по умолчанию у игрока
 static constexpr int DEFAULT_PLAYER_HEALTH = 10;
+
+// Количество единиц здоровья по умолчанию у врага
 static constexpr int DEFAULT_ENEMY_HEALTH = 3;
+
+// Количество единиц здоровья по умолчанию у пули
 static constexpr int DEFAULT_BULLET_HEALTH = 1;
 
+// Количество очков по умолчанию, которое даст сущность при уничтожении
 static constexpr int DEFAULT_ENTITY_SELF_POINTS = 10;
 
 // Время в секундах, спустя которое запускается новая волна (значение в начале игры)

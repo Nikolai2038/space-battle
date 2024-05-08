@@ -9,6 +9,10 @@ Entity::Entity(const int image_resource_id) :
     x(0),
     y(0),
     angle(DEFAULT_ANGLE),
+    is_rotating_right(false),
+    is_rotating_left(false),
+    is_accelerating(false),
+    is_de_accelerating(false),
     action_movement(ActionMovement::None),
     is_destroyed(false),
     points_earned(0),
@@ -17,6 +21,10 @@ Entity::Entity(const int image_resource_id) :
     owner(nullptr),
     scale(DEFAULT_IMAGE_SCALE),
     speed(DEFAULT_SPEED),
+    min_speed(DEFAULT_SPEED_MIN),
+    max_speed(DEFAULT_SPEED_MAX),
+    acceleration(DEFAULT_ACCELERATION),
+    de_acceleration(DEFAULT_DE_ACCELERATION),
     health(DEFAULT_ENTITY_HEALTH) {
   // Загружаем изображение из ресурса
   CPngImage pngImage;
@@ -71,6 +79,38 @@ double Entity::GetAngle() const {
 
 void Entity::SetAngle(const double new_angle) {
   this->angle = new_angle;
+}
+
+void Entity::StartRotatingRight() {
+  this->is_rotating_right = true;
+}
+
+void Entity::StopRotatingRight() {
+  this->is_rotating_right = false;
+}
+
+void Entity::StartRotatingLeft() {
+  this->is_rotating_left = true;
+}
+
+void Entity::StopRotatingLeft() {
+  this->is_rotating_left = false;
+}
+
+void Entity::StartAccelerating() {
+  this->is_accelerating = true;
+}
+
+void Entity::StopAccelerating() {
+  this->is_accelerating = false;
+}
+
+void Entity::StartDeAccelerating() {
+  this->is_de_accelerating = true;
+}
+
+void Entity::StopDeAccelerating() {
+  this->is_de_accelerating = false;
 }
 
 Entity::ActionMovement Entity::GetActionMovement() const {
@@ -240,6 +280,23 @@ void Entity::ProcessActions(const std::list<Entity*>& entities, const CRect& gam
   // Если сущность поворачивается налево
   else if (!this->is_rotating_right && this->is_rotating_left) {
     this->SetAngle(this->GetAngle() + 0.1);
+  }
+
+  // Если сущность ускоряется
+  if (is_accelerating && !is_de_accelerating) {
+    if (speed + acceleration >= max_speed) {
+      speed = max_speed;
+    } else {
+      speed += acceleration;
+    }
+  }
+  // Если сущность замедляется
+  else if (!is_accelerating && is_de_accelerating) {
+    if (speed - de_acceleration <= min_speed) {
+      speed = min_speed;
+    } else {
+      speed -= de_acceleration;
+    }
   }
 }
 

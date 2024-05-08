@@ -28,6 +28,12 @@ private:
   // Вращается ли сущность в левую сторону
   bool is_rotating_left;
 
+  // Ускоряется ли сущность
+  bool is_accelerating;
+
+  // Замедляется ли сущность
+  bool is_de_accelerating;
+
   // Действие движения, производимое сущностью в данный момент
   ActionMovement action_movement;
 
@@ -61,8 +67,20 @@ protected:
   // Параметр масштабирования сущности (1.0 - без масштабирования)
   double scale;
 
-  // Скорость движения
+  // Текущая скорость движения
   double speed;
+
+  // Минимальная скорость движения
+  double min_speed;
+
+  // Максимальная скорость движения
+  double max_speed;
+
+  // Ускорение - насколько сущность может повысить скорость за единицу времени
+  double acceleration;
+
+  // Замедление - насколько сущность может понизить скорость за единицу времени
+  double de_acceleration;
 
   // Количество единиц здоровья.
   // Одно столкновение отбирает одну единицу здоровья.
@@ -106,24 +124,28 @@ public:
   void SetAngle(double new_angle);
 
   // Сущность начнёт поворачиваться направо
-  void StartRotatingRight() {
-    this->is_rotating_right = true;
-  }
+  void StartRotatingRight();
 
   // Сущность перестанет поворачиваться направо
-  void StopRotatingRight() {
-    this->is_rotating_right = false;
-  }
+  void StopRotatingRight();
 
   // Сущность начнёт поворачиваться налево
-  void StartRotatingLeft() {
-    this->is_rotating_left = true;
-  }
+  void StartRotatingLeft();
 
   // Сущность перестанет поворачиваться налево
-  void StopRotatingLeft() {
-    this->is_rotating_left = false;
-  }
+  void StopRotatingLeft();
+
+  // Сущность начинает ускоряться
+  void StartAccelerating();
+
+  // Сущность перестанет ускоряться
+  void StopAccelerating();
+
+  // Сущность начинает замедляться
+  void StartDeAccelerating();
+
+  // Сущность перестанет замедляться
+  void StopDeAccelerating();
 
   // Возвращает действие движения, производимое сущностью в данный момент
   ActionMovement GetActionMovement() const;
