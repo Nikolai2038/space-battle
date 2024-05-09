@@ -101,33 +101,31 @@ BOOL CSpaceBattleDlgGame::OnEraseBkgnd(CDC* p_dc) {
 }
 
 void CSpaceBattleDlgGame::OnPaint() {
+  // Device context for painting
+  CPaintDC dc(this);
+
+  // Создаём DC в памяти
+  CDC dc_in_memory;
+  const int create_dc_result = dc_in_memory.CreateCompatibleDC(&dc);
+  if (create_dc_result == 0) {
+    throw std::runtime_error("Cannot create memory dc!");
+  }
+
   if (hdc_bits != nullptr) {
     DeleteDC(hdc_bits);
   }
 
-  hdc_bits = CreateCompatibleDC(hdc);
-
-  // Device context for painting
-  CPaintDC dc(this);
-
-  int nRet;
-
-  // Создаём DC в памяти
-  CDC dcMem;
-  nRet = dcMem.CreateCompatibleDC(&dc);
-  if (nRet == 0) {
-    throw std::runtime_error("Cannot create memory dc!");
-  }
+  hdc_bits = CreateCompatibleDC(dc_in_memory);
 
   // Создаём изображение для отрисовки в DC в памяти - Чтобы мы могли рисовать в нём
-  CBitmap bmpMem;
-  nRet = bmpMem.CreateCompatibleBitmap(&dc, game_screen_rectangle.Width(), game_screen_rectangle.Height());
-  if (nRet == 0) {
+  CBitmap bitmap_in_memory;
+  const int create_bitmap_result = bitmap_in_memory.CreateCompatibleBitmap(&dc, game_screen_rectangle.Width(), game_screen_rectangle.Height());
+  if (create_bitmap_result == 0) {
     throw std::runtime_error("Cannot create compatible bitmap!");
   }
 
   // select the bitmap to memory dc
-  CBitmap* pOldBmp = (CBitmap*)(dcMem.SelectObject(&bmpMem));
+  const auto bitmap_in_memory_old = dc_in_memory.SelectObject(&bitmap_in_memory);
 
   // Если нужно очистить фон всего окна - очищаем его.
   // Требуется при изменении размеров окна.
@@ -138,7 +136,7 @@ void CSpaceBattleDlgGame::OnPaint() {
     GetClientRect(game_screen_rectangle_for_dc);
 
     // Очищаем фон всей формы
-    dcMem.Rectangle(game_screen_rectangle_for_dc);
+    dc_in_memory.Rectangle(game_screen_rectangle_for_dc);
 
     // Сбрасываем необходимость очистки фона всего окна
     need_to_clear_screen = false;
@@ -147,29 +145,29 @@ void CSpaceBattleDlgGame::OnPaint() {
   // Закрашиваем поле чёрным цветом
   constexpr COLORREF m_brush_color = RGB(0, 0, 0);
   CBrush m_brush(m_brush_color);
-  dcMem.SelectObject(&m_brush);
-  Rectangle(dcMem, game_screen_rectangle_window.TopLeft().x, game_screen_rectangle_window.TopLeft().y, game_screen_rectangle_window.BottomRight().x, game_screen_rectangle_window.BottomRight().y);
+  dc_in_memory.SelectObject(&m_brush);
+  Rectangle(dc_in_memory, game_screen_rectangle.left, game_screen_rectangle.top, game_screen_rectangle.right, game_screen_rectangle.bottom);
 
-  hdc_bits = CreateCompatibleDC(dcMem);
   // Рисуем все сущности
   for (auto entity : this->entities) {
-    entity->Draw(dcMem, hdc_bits);
+    entity->Draw(dc_in_memory, hdc_bits);
   }
 
   // Отображаем содержимое DC в памяти на реальный DC
-  dc.BitBlt(game_screen_rectangle.left,
-            game_screen_rectangle.top,
-            game_screen_rectangle.Width(),
-            game_screen_rectangle.Height(),
-            &dcMem,
+  dc.BitBlt(game_screen_rectangle_window.left,
+            game_screen_rectangle_window.top,
+            game_screen_rectangle_window.Width(),
+            game_screen_rectangle_window.Height(),
+            &dc_in_memory,
             0,
             0,
             SRCCOPY);
 
-  dcMem.SelectObject(pOldBmp);
-  bmpMem.DeleteObject();
+  // Очищаем память
+  dc_in_memory.SelectObject(bitmap_in_memory_old);
+  bitmap_in_memory.DeleteObject();
 
-  dcMem.DeleteDC();
+  dc_in_memory.DeleteDC();
 
   m_bMyDraw = FALSE;
 

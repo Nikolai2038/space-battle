@@ -178,9 +178,9 @@ void Entity::Draw(const HDC& hdc, const HDC& hdc_bits) const {
 
   // Цвет фона, который будет заменён прозрачным
   auto rgb_quad = RGBQUAD();
-  rgb_quad.rgbRed = 0;
-  rgb_quad.rgbGreen = 255;
-  rgb_quad.rgbBlue = 0;
+  rgb_quad.rgbRed = 0x08;
+  rgb_quad.rgbGreen = 0x08;
+  rgb_quad.rgbBlue = 0x47;
   // Получаем код UINT цвета
   const UINT color = rgb_quad.rgbBlue << 16 | rgb_quad.rgbGreen << 8 | rgb_quad.rgbRed;
 
