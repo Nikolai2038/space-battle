@@ -50,9 +50,6 @@ private:
   // Область всего диалога с игровым полем
   CRect game_screen_rectangle_window;
 
-  // Нужно ли очистить фон всего окна перед следующей отрисовкой объектов
-  bool need_to_clear_screen;
-
   // Состояние игры
   GameState game_state;
 
@@ -100,7 +97,8 @@ private:
   // Количество пройденных волн с момента последнего увеличения количества врагов волны
   int waves_passed_since_last_wave_enemies_count_increase;
 
-  BOOL m_bMyDraw; // the flag for EraseBkgnd
+  // Нужно ли очистить фон
+  BOOL need_to_erase_background;
 protected:
   void DoDataExchange(CDataExchange* p_dx) override; // DDX/DDV support
 

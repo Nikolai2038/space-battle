@@ -17,7 +17,6 @@ CSpaceBattleDlgGame::CSpaceBattleDlgGame(CWnd* p_parent) :
     hdc(nullptr),
     hdc_bits(nullptr),
     game_screen(nullptr),
-    need_to_clear_screen(true),
     time_playing_seconds_passed(0),
     waves_passed(0),
     wave_time(0),
@@ -71,11 +70,11 @@ END_MESSAGE_MAP()
 BOOL CSpaceBattleDlgGame::OnInitDialog() {
   CDialogEx::OnInitDialog();
 
-  m_bMyDraw = FALSE;
+  this->need_to_erase_background = FALSE;
 
-  game_screen = GetDlgItem(IDC_GAME_SCREEN);
+  this->game_screen = GetDlgItem(IDC_GAME_SCREEN);
 
-  hdc = ::GetDC(game_screen->m_hWnd);
+  this->hdc = ::GetDC(this->game_screen->m_hWnd);
 
   UpdateGameScreenInfo();
 
@@ -94,10 +93,11 @@ void CSpaceBattleDlgGame::OnSize(UINT n_type, int cx, int cy) {
 }
 
 BOOL CSpaceBattleDlgGame::OnEraseBkgnd(CDC* p_dc) {
-  if (m_bMyDraw)
+  if (this->need_to_erase_background) {
     return TRUE;
-  else
-    return CDialogEx::OnEraseBkgnd(p_dc);
+  }
+
+  return CDialogEx::OnEraseBkgnd(p_dc);
 }
 
 void CSpaceBattleDlgGame::OnPaint() {
@@ -111,11 +111,11 @@ void CSpaceBattleDlgGame::OnPaint() {
     throw std::runtime_error("Cannot create memory dc!");
   }
 
-  if (hdc_bits != nullptr) {
+  if (this->hdc_bits != nullptr) {
     DeleteDC(hdc_bits);
   }
 
-  hdc_bits = CreateCompatibleDC(dc_in_memory);
+  this->hdc_bits = CreateCompatibleDC(dc_in_memory);
 
   // Создаём изображение для отрисовки в DC в памяти - Чтобы мы могли рисовать в нём
   CBitmap bitmap_in_memory;
@@ -124,40 +124,29 @@ void CSpaceBattleDlgGame::OnPaint() {
     throw std::runtime_error("Cannot create compatible bitmap!");
   }
 
-  // select the bitmap to memory dc
+  // Присоединяем изображение к DC в памяти
   const auto bitmap_in_memory_old = dc_in_memory.SelectObject(&bitmap_in_memory);
-
-  // Если нужно очистить фон всего окна - очищаем его.
-  // Требуется при изменении размеров окна.
-  if (need_to_clear_screen) {
-    // Получаем размеры окна
-    CRect game_screen_rectangle_for_dc;
-    GetWindowRect(&game_screen_rectangle_for_dc);
-    GetClientRect(game_screen_rectangle_for_dc);
-
-    // Очищаем фон всей формы
-    dc_in_memory.Rectangle(game_screen_rectangle_for_dc);
-
-    // Сбрасываем необходимость очистки фона всего окна
-    need_to_clear_screen = false;
-  }
 
   // Закрашиваем поле чёрным цветом
   constexpr COLORREF m_brush_color = RGB(0, 0, 0);
   CBrush m_brush(m_brush_color);
   dc_in_memory.SelectObject(&m_brush);
-  Rectangle(dc_in_memory, game_screen_rectangle.left, game_screen_rectangle.top, game_screen_rectangle.right, game_screen_rectangle.bottom);
+  Rectangle(dc_in_memory,
+            this->game_screen_rectangle.left,
+            this->game_screen_rectangle.top,
+            this->game_screen_rectangle.right,
+            this->game_screen_rectangle.bottom);
 
   // Рисуем все сущности
   for (auto entity : this->entities) {
-    entity->Draw(dc_in_memory, hdc_bits);
+    entity->Draw(dc_in_memory, this->hdc_bits);
   }
 
   // Отображаем содержимое DC в памяти на реальный DC
-  dc.BitBlt(game_screen_rectangle_window.left,
-            game_screen_rectangle_window.top,
-            game_screen_rectangle_window.Width(),
-            game_screen_rectangle_window.Height(),
+  dc.BitBlt(this->game_screen_rectangle_window.left,
+            this->game_screen_rectangle_window.top,
+            this->game_screen_rectangle_window.Width(),
+            this->game_screen_rectangle_window.Height(),
             &dc_in_memory,
             0,
             0,
@@ -169,7 +158,7 @@ void CSpaceBattleDlgGame::OnPaint() {
 
   dc_in_memory.DeleteDC();
 
-  m_bMyDraw = FALSE;
+  this->need_to_erase_background = FALSE;
 
   // CDialogEx::OnPaint();
 }
@@ -227,7 +216,7 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* p_msg) {
 }
 
 void CSpaceBattleDlgGame::OnTimer(UINT_PTR n_id_event) {
-  // CDialogEx::OnTimer(nIDEvent);
+  // CDialogEx::OnTimer(n_id_event);
 
   if (this->game_state == GameState::Playing) {
     if (n_id_event == static_cast<UINT_PTR>(Timers::TimerClock)) {
@@ -239,47 +228,50 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR n_id_event) {
         EndGameAndSaveRecord();
       }
     } else if (n_id_event == static_cast<UINT_PTR>(Timers::TimerRedraw)) {
-      m_bMyDraw = TRUE;
+      this->need_to_erase_background = TRUE;
       // Инициировать исполнение функции OnPaint()
-      InvalidateRect(&game_screen_rectangle_window);
-      // RedrawWindow(game_screen_rectangle_window);
+      RedrawWindow(this->game_screen_rectangle_window);
 
+      // Обновляем текст с количеством очков игрока
       CString text_points_earned;
       text_points_earned.Format(L"Points earned: %d", this->player->GetPointsEarned());
-      cstatic_points_earned.SetWindowText(text_points_earned);
+      this->cstatic_points_earned.SetWindowText(text_points_earned);
 
+      // Обновляем текст с количеством уничтоженных врагов
       CString text_enemies_defeated;
       text_enemies_defeated.Format(L"Enemies defeated: %d", this->player->GetEntitiesDestroyed());
-      cstatic_enemies_defeated.SetWindowText(text_enemies_defeated);
+      this->cstatic_enemies_defeated.SetWindowText(text_enemies_defeated);
 
+      // Обновляем текст с количеством здоровья игрока
       CString text_health_left;
       text_health_left.Format(L"Health: %d", this->player->GetHealth());
-      cstatic_health_left.SetWindowText(text_health_left);
+      this->cstatic_health_left.SetWindowText(text_health_left);
     } else if (n_id_event == static_cast<UINT_PTR>(Timers::TimerPlaying)) {
-      time_playing_seconds_passed++;
-      seconds_passed_since_last_wave++;
+      this->time_playing_seconds_passed++;
+      this->seconds_passed_since_last_wave++;
 
-      if (seconds_passed_since_last_wave >= wave_time) {
+      // Если пришло время следующей волны
+      if (this->seconds_passed_since_last_wave >= wave_time) {
         CreateNewEnemiesWave();
       }
 
-      int seconds = time_playing_seconds_passed % 60;
-      int minutes = (time_playing_seconds_passed - seconds) / 60 % 60;
-      int hours = (time_playing_seconds_passed - seconds - minutes * 60) / 60 / 60;
-
+      // Обновляем текст с временем игры
+      const int seconds = this->time_playing_seconds_passed % 60;
+      const int minutes = (this->time_playing_seconds_passed - seconds) / 60 % 60;
+      const int hours = (this->time_playing_seconds_passed - seconds - minutes * 60) / 60 / 60;
       CString time_playing;
       time_playing.Format(L"Time playing: %.2d:%.2d:%.2d", hours, minutes, seconds);
-      cstatic_time_playing.SetWindowText(time_playing);
+      this->cstatic_time_playing.SetWindowText(time_playing);
     } else if (n_id_event == static_cast<UINT_PTR>(Timers::TimerGarbageCollector)) {
       // Удаляем из памяти уничтоженные сущности
-      entities.erase(std::remove_if(entities.begin(), entities.end(), [](const Entity* entity) {
-                       if (entity->IsDestroyed()) {
-                         delete entity;
-                         return true;
-                       }
-                       return false;
-                     }),
-                     entities.end());
+      this->entities.erase(std::remove_if(this->entities.begin(), this->entities.end(), [](const Entity* entity) {
+                             if (entity->IsDestroyed()) {
+                               delete entity;
+                               return true;
+                             }
+                             return false;
+                           }),
+                           this->entities.end());
     }
   }
 }
@@ -379,9 +371,6 @@ void CSpaceBattleDlgGame::UpdateGameScreenInfo() {
     game_screen->GetClientRect(&game_screen_rectangle);
     game_screen->GetWindowRect(&game_screen_rectangle_window);
     ScreenToClient(&game_screen_rectangle_window);
-
-    // Указываем, что нужно очистить фон всего окна
-    need_to_clear_screen = true;
   }
 }
 
@@ -448,8 +437,8 @@ void CSpaceBattleDlgGame::CreateNewEnemiesWave() {
 void CSpaceBattleDlgGame::CreateNewEnemy() {
   const auto side = static_cast<SideToSpawn>(GetRandom(0, 3));
 
-  double random_x;
-  double random_y;
+  double random_x = 0;
+  double random_y = 0;
 
   switch (side) {
     case SideToSpawn::Left:
@@ -468,8 +457,6 @@ void CSpaceBattleDlgGame::CreateNewEnemy() {
       random_x = GetRandom(0, game_screen_rectangle.Width());
       random_y = game_screen_rectangle.Height() - 50;
       break;
-    default:
-      throw new std::runtime_error("side is unknown!");
   }
 
   const auto enemy = new Enemy();
@@ -482,8 +469,8 @@ void CSpaceBattleDlgGame::OnNcPaint() {
   // TODO: Add your message handler code here
   // Do not call CDialogEx::OnNcPaint() for painting messages
 
-  m_bMyDraw = FALSE; // you can comment out this line of code
-                     // and see what will happen, after you press the "Start" button
-                     //     then resize the window. have fun!
+  need_to_erase_background = FALSE; // you can comment out this line of code
+                                    // and see what will happen, after you press the "Start" button
+                                    //     then resize the window. have fun!
   CWnd::OnNcPaint();
 }
