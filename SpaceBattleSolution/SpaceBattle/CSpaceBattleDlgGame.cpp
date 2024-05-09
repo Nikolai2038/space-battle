@@ -127,15 +127,12 @@ void CSpaceBattleDlgGame::OnPaint() {
   // Присоединяем изображение к DC в памяти
   const auto bitmap_in_memory_old = dc_in_memory.SelectObject(&bitmap_in_memory);
 
+  /*// Цвет фона, который будет заменён прозрачным
+  COLORREF transparent_color = RGB(0, 255, 0);
+  dc_in_memory.FillSolidRect(&game_screen_rectangle, transparent_color);*/
+
   // Закрашиваем поле чёрным цветом
-  constexpr COLORREF m_brush_color = RGB(0, 0, 0);
-  CBrush m_brush(m_brush_color);
-  dc_in_memory.SelectObject(&m_brush);
-  Rectangle(dc_in_memory,
-            this->game_screen_rectangle.left,
-            this->game_screen_rectangle.top,
-            this->game_screen_rectangle.right,
-            this->game_screen_rectangle.bottom);
+  dc_in_memory.FillSolidRect(&game_screen_rectangle, RGB(0, 0, 0));
 
   // Рисуем все сущности
   for (auto entity : this->entities) {
@@ -151,6 +148,18 @@ void CSpaceBattleDlgGame::OnPaint() {
             0,
             0,
             SRCCOPY);
+
+  /* // Отображаем содержимое DC в памяти на реальный DC
+   dc.TransparentBlt(this->game_screen_rectangle_window.left,
+                     this->game_screen_rectangle_window.top,
+                     this->game_screen_rectangle_window.Width(),
+                     this->game_screen_rectangle_window.Height(),
+                     &dc_in_memory,
+                     0,
+                     0,
+                     this->game_screen_rectangle_window.Width(),
+                     this->game_screen_rectangle_window.Height(),
+                     transparent_color);*/
 
   // Очищаем память
   dc_in_memory.SelectObject(bitmap_in_memory_old);
@@ -466,11 +475,6 @@ void CSpaceBattleDlgGame::CreateNewEnemy() {
 }
 
 void CSpaceBattleDlgGame::OnNcPaint() {
-  // TODO: Add your message handler code here
-  // Do not call CDialogEx::OnNcPaint() for painting messages
-
-  need_to_erase_background = FALSE; // you can comment out this line of code
-                                    // and see what will happen, after you press the "Start" button
-                                    //     then resize the window. have fun!
-  CWnd::OnNcPaint();
+  this->need_to_erase_background = FALSE;
+  CDialogEx::OnNcPaint();
 }

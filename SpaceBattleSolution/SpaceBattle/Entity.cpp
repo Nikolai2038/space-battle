@@ -177,12 +177,7 @@ void Entity::Draw(const HDC& hdc, const HDC& hdc_bits) const {
   }
 
   // Цвет фона, который будет заменён прозрачным
-  auto rgb_quad = RGBQUAD();
-  rgb_quad.rgbRed = 0x08;
-  rgb_quad.rgbGreen = 0x08;
-  rgb_quad.rgbBlue = 0x47;
-  // Получаем код UINT цвета
-  const UINT color = rgb_quad.rgbBlue << 16 | rgb_quad.rgbGreen << 8 | rgb_quad.rgbRed;
+  COLORREF transparent_color = RGB(0, 255, 0);
 
   SelectObject(hdc_bits, this->bmp_loaded);
 
@@ -224,10 +219,10 @@ void Entity::Draw(const HDC& hdc, const HDC& hdc_bits) const {
   // Отрисовка картинки с заменой указанного цвета на прозрачный
   TransparentBlt(hdc, entity_center_x, entity_center_y, this->width, this->height,
                  hdc_bits, 0, 0, this->width, this->height,
-                 color);
+                 transparent_color);
 
   // Отрисовка картинки без замены прозрачного цвета
-  // BitBlt(hdc, entity_center_x, entity_center_y, this->width, this->height, hdcBits, 0, 0, SRCCOPY);
+  // BitBlt(hdc, entity_center_x, entity_center_y, this->width, this->height, hdc_bits, 0, 0, SRCCOPY);
 
   // Возврат ротации поля отрисовки
   SetWorldTransform(hdc, &xform_saved);
