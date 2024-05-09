@@ -127,7 +127,13 @@ void CSpaceBattleDlgGame::OnPaint() {
 
   // Рисуем все сущности
   for (auto entity : this->entities) {
-    entity->Draw(hdc, hdc_bits);
+    // entity->Draw(hdc, hdc_bits);
+
+    auto entity_rectangle = CRect(entity->GetIntX(), entity->GetIntY(), entity->GetIntX() + entity->width, entity->GetIntY() + entity->height);
+    const int entity_center_x = entity_rectangle.left - entity->width / 2;
+    const int entity_center_y = entity_rectangle.top - entity->height / 2;
+    SelectObject(hdc_bits, entity->bmp_loaded);
+    BitBlt(hdc, entity_center_x, entity_center_y, entity->width, entity->height, hdc_bits, 0, 0, SRCCOPY);
   }
 
   // CDialogEx::OnPaint();
