@@ -99,6 +99,8 @@ private:
 
   //  оличество пройденных волн с момента последнего увеличени€ количества врагов волны
   int waves_passed_since_last_wave_enemies_count_increase;
+
+  BOOL m_bMyDraw; // the flag for EraseBkgnd
 protected:
   void DoDataExchange(CDataExchange* p_dx) override; // DDX/DDV support
 
@@ -171,4 +173,6 @@ private:
 
   // —оздаЄт нового врага на поле
   void CreateNewEnemy();
+public:
+  afx_msg void OnNcPaint();
 };

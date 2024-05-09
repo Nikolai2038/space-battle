@@ -65,10 +65,13 @@ ON_WM_KEYUP()
 ON_BN_CLICKED(IDC_BUTTON_PAUSE_OR_RESUME_GAME, &CSpaceBattleDlgGame::OnBnClickedButtonPauseOrResumeGame)
 ON_BN_CLICKED(IDC_BUTTON_START_OR_END_GAME, &CSpaceBattleDlgGame::OnBnClickedButtonStartOrEndGame)
 ON_WM_CLOSE()
+ON_WM_NCPAINT()
 END_MESSAGE_MAP()
 
 BOOL CSpaceBattleDlgGame::OnInitDialog() {
   CDialogEx::OnInitDialog();
+
+  m_bMyDraw = FALSE;
 
   game_screen = GetDlgItem(IDC_GAME_SCREEN);
 
@@ -91,7 +94,10 @@ void CSpaceBattleDlgGame::OnSize(UINT n_type, int cx, int cy) {
 }
 
 BOOL CSpaceBattleDlgGame::OnEraseBkgnd(CDC* p_dc) {
-  return true;
+  if (m_bMyDraw)
+    return TRUE;
+  else
+    return CDialogEx::OnEraseBkgnd(p_dc);
 }
 
 void CSpaceBattleDlgGame::OnPaint() {
@@ -104,6 +110,25 @@ void CSpaceBattleDlgGame::OnPaint() {
   // Device context for painting
   CPaintDC dc(this);
 
+  int nRet;
+
+  // Создаём DC в памяти
+  CDC dcMem;
+  nRet = dcMem.CreateCompatibleDC(&dc);
+  if (nRet == 0) {
+    throw std::runtime_error("Cannot create memory dc!");
+  }
+
+  // Создаём изображение для отрисовки в DC в памяти - Чтобы мы могли рисовать в нём
+  CBitmap bmpMem;
+  nRet = bmpMem.CreateCompatibleBitmap(&dc, game_screen_rectangle.Width(), game_screen_rectangle.Height());
+  if (nRet == 0) {
+    throw std::runtime_error("Cannot create compatible bitmap!");
+  }
+
+  // select the bitmap to memory dc
+  CBitmap* pOldBmp = (CBitmap*)(dcMem.SelectObject(&bmpMem));
+
   // Если нужно очистить фон всего окна - очищаем его.
   // Требуется при изменении размеров окна.
   if (need_to_clear_screen) {
@@ -113,7 +138,7 @@ void CSpaceBattleDlgGame::OnPaint() {
     GetClientRect(game_screen_rectangle_for_dc);
 
     // Очищаем фон всей формы
-    dc.Rectangle(game_screen_rectangle_for_dc);
+    dcMem.Rectangle(game_screen_rectangle_for_dc);
 
     // Сбрасываем необходимость очистки фона всего окна
     need_to_clear_screen = false;
@@ -122,19 +147,31 @@ void CSpaceBattleDlgGame::OnPaint() {
   // Закрашиваем поле чёрным цветом
   constexpr COLORREF m_brush_color = RGB(0, 0, 0);
   CBrush m_brush(m_brush_color);
-  dc.SelectObject(&m_brush);
-  Rectangle(dc, game_screen_rectangle_window.TopLeft().x, game_screen_rectangle_window.TopLeft().y, game_screen_rectangle_window.BottomRight().x, game_screen_rectangle_window.BottomRight().y);
+  dcMem.SelectObject(&m_brush);
+  Rectangle(dcMem, game_screen_rectangle_window.TopLeft().x, game_screen_rectangle_window.TopLeft().y, game_screen_rectangle_window.BottomRight().x, game_screen_rectangle_window.BottomRight().y);
 
+  hdc_bits = CreateCompatibleDC(dcMem);
   // Рисуем все сущности
   for (auto entity : this->entities) {
-    // entity->Draw(hdc, hdc_bits);
-
-    auto entity_rectangle = CRect(entity->GetIntX(), entity->GetIntY(), entity->GetIntX() + entity->width, entity->GetIntY() + entity->height);
-    const int entity_center_x = entity_rectangle.left - entity->width / 2;
-    const int entity_center_y = entity_rectangle.top - entity->height / 2;
-    SelectObject(hdc_bits, entity->bmp_loaded);
-    BitBlt(hdc, entity_center_x, entity_center_y, entity->width, entity->height, hdc_bits, 0, 0, SRCCOPY);
+    entity->Draw(dcMem, hdc_bits);
   }
+
+  // Отображаем содержимое DC в памяти на реальный DC
+  dc.BitBlt(game_screen_rectangle.left,
+            game_screen_rectangle.top,
+            game_screen_rectangle.Width(),
+            game_screen_rectangle.Height(),
+            &dcMem,
+            0,
+            0,
+            SRCCOPY);
+
+  dcMem.SelectObject(pOldBmp);
+  bmpMem.DeleteObject();
+
+  dcMem.DeleteDC();
+
+  m_bMyDraw = FALSE;
 
   // CDialogEx::OnPaint();
 }
@@ -204,8 +241,10 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR n_id_event) {
         EndGameAndSaveRecord();
       }
     } else if (n_id_event == static_cast<UINT_PTR>(Timers::TimerRedraw)) {
+      m_bMyDraw = TRUE;
       // Инициировать исполнение функции OnPaint()
-      RedrawWindow(game_screen_rectangle_window);
+      InvalidateRect(&game_screen_rectangle_window);
+      // RedrawWindow(game_screen_rectangle_window);
 
       CString text_points_earned;
       text_points_earned.Format(L"Points earned: %d", this->player->GetPointsEarned());
@@ -439,4 +478,14 @@ void CSpaceBattleDlgGame::CreateNewEnemy() {
   enemy->SetLocation(random_x, random_y);
   enemy->SetAngle(-PI / 4);
   enemy->AddToList(this->entities);
+}
+
+void CSpaceBattleDlgGame::OnNcPaint() {
+  // TODO: Add your message handler code here
+  // Do not call CDialogEx::OnNcPaint() for painting messages
+
+  m_bMyDraw = FALSE; // you can comment out this line of code
+                     // and see what will happen, after you press the "Start" button
+                     //     then resize the window. have fun!
+  CWnd::OnNcPaint();
 }
