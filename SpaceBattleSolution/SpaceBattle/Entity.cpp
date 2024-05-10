@@ -18,6 +18,7 @@ Entity::Entity(const int image_resource_id) :
     points_earned(0),
     entities_destroyed(0),
     self_points(DEFAULT_ENTITY_SELF_POINTS),
+    is_invincible_for_game_field_borders_clocks_left(DEFAULT_INVINCIBLE_FOR_GAME_FIELD_BORDERS_SECONDS_LEFT * 1000 / TIMER_CLOCK_LOOP_IN_MS),
     owner(nullptr),
     scale(DEFAULT_IMAGE_SCALE),
     speed(DEFAULT_SPEED),
@@ -125,12 +126,8 @@ bool Entity::IsDestroyed() const {
   return this->is_destroyed;
 }
 
-LONG Entity::GetWidth() const {
-  return width;
-}
-
-LONG Entity::GetHeight() const {
-  return height;
+LONG Entity::GetMaxVisibleRadiusOnField() const {
+  return static_cast<int>(sqrt(pow(width, 2) + pow(height, 2)) / 2 * scale);
 }
 
 int Entity::GetPointsEarned() const {
@@ -250,22 +247,32 @@ void Entity::ProcessActions(const std::list<Entity*>& entities, const CRect& gam
     }
   }
 
-  // —ущность уничтожаетс€ при выходе за пределы игрового экрана
   if (this->action_movement == ActionMovement::ToAngle) {
-    double new_x = x + cos(angle) * speed;
+    const double new_x = x + cos(angle) * speed;
     if ((new_x + width * scale / 2 <= 0) || (new_x - width * scale / 2 >= game_field.Width())) {
-      this->Destroy();
-      return;
+      // —ущность уничтожаетс€ при выходе за пределы игрового экрана
+      // (если неу€звимость к границам пол€ закончилась)
+      if (this->is_invincible_for_game_field_borders_clocks_left <= 0) {
+        this->Destroy();
+      }
     }
 
-    double new_y = y - sin(angle) * speed;
+    const double new_y = y - sin(angle) * speed;
     if ((new_y + height * scale / 2 <= 0) || (new_y - height * scale / 2 >= game_field.Height())) {
-      this->Destroy();
-      return;
+      // —ущность уничтожаетс€ при выходе за пределы игрового экрана
+      // (если неу€звимость к границам пол€ закончилась)
+      if (this->is_invincible_for_game_field_borders_clocks_left <= 0) {
+        this->Destroy();
+      }
     }
 
     x = new_x;
     y = new_y;
+  }
+
+  // ”меньшаем врем€ дл€ неу€звимости
+  if (this->is_invincible_for_game_field_borders_clocks_left > 0) {
+    this->is_invincible_for_game_field_borders_clocks_left--;
   }
 
   // ≈сли сущность поворачиваетс€ направо

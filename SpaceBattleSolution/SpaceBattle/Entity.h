@@ -46,6 +46,7 @@ private:
 
   // Изображение сущности
   HBITMAP bmp_loaded;
+
   // Ширина сущности
   LONG width;
 
@@ -60,6 +61,9 @@ private:
 
   // Сколько очков стоит эта сущность
   int self_points;
+
+  // Сколько единиц времени сущность ещё будет оставаться неуязвимой для границ игрового поля
+  int is_invincible_for_game_field_borders_clocks_left;
 protected:
   Entity* owner;
 
@@ -156,11 +160,8 @@ public:
   // Является ли сущность уничтоженной
   bool IsDestroyed() const;
 
-  // Возвращает ширину сущности
-  LONG GetWidth() const;
-
-  // Возвращает высоту сущности
-  LONG GetHeight() const;
+  // Возвращает размер радиуса, в котором может быть видна сущность относительно её центра
+  LONG GetMaxVisibleRadiusOnField() const;
 
   // Возвращает количество заработанных очков
   int GetPointsEarned() const;

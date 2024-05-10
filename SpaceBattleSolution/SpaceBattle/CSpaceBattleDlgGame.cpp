@@ -437,26 +437,28 @@ void CSpaceBattleDlgGame::CreateNewEnemy() {
   double random_x = 0;
   double random_y = 0;
 
+  const auto enemy = new Enemy();
+  int max_visible_radius = enemy->GetMaxVisibleRadiusOnField();
+
   switch (side) {
     case SideToSpawn::Left:
-      random_x = 50;
+      random_x = -max_visible_radius;
       random_y = GetRandom(0, game_screen_rectangle.Height());
       break;
     case SideToSpawn::Right:
-      random_x = game_screen_rectangle.Width() - 50;
+      random_x = game_screen_rectangle.Width() + max_visible_radius;
       random_y = GetRandom(0, game_screen_rectangle.Height());
       break;
     case SideToSpawn::Top:
       random_x = GetRandom(0, game_screen_rectangle.Width());
-      random_y = 50;
+      random_y = -max_visible_radius;
       break;
     case SideToSpawn::Bottom:
       random_x = GetRandom(0, game_screen_rectangle.Width());
-      random_y = game_screen_rectangle.Height() - 50;
+      random_y = game_screen_rectangle.Height() + max_visible_radius;
       break;
   }
 
-  const auto enemy = new Enemy();
   enemy->SetLocation(random_x, random_y);
   enemy->SetAngle(-PI / 4);
   enemy->AddToList(this->entities);

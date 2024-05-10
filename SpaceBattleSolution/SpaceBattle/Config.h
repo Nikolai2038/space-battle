@@ -80,3 +80,6 @@ static constexpr int INCREASE_WAVE_ENEMIES_COUNT = 1;
 
 // Максимальное (включительно) количество генерируемых врагов за один раз
 static constexpr int MAX_WAVE_ENEMIES_COUNT = 3;
+
+// Сколько секунд сущность будет оставаться неуязвимой для границ игрового поля после своего создания
+static constexpr int DEFAULT_INVINCIBLE_FOR_GAME_FIELD_BORDERS_SECONDS_LEFT = 3;
