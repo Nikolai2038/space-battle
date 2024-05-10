@@ -143,12 +143,9 @@ int Entity::GetEntitiesDestroyed() const {
 
 Entity* Entity::GetMainOwner() {
   if (this->owner != nullptr) {
-    const Entity* found_owner = this->owner->GetMainOwner();
-    if (found_owner != this) {
-      return this->owner;
-    }
+    return this->owner->GetMainOwner();
   }
-  return nullptr;
+  return this;
 }
 
 double Entity::GetScale() const {
