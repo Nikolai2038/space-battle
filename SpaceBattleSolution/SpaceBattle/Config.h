@@ -26,7 +26,7 @@ static constexpr double DEFAULT_ACCELERATION = 0.1;
 static constexpr double DEFAULT_DE_ACCELERATION = 0.2;
 
 // Скорость пуль по умолчанию
-static constexpr double BULLET_SPEED = DEFAULT_SPEED * 3;
+static constexpr double BULLET_SPEED = DEFAULT_SPEED * 5;
 
 // Множитель для радиуса коллизии сущностей
 static constexpr double INTERSECT_RADIUS_SCALE = 0.8;
@@ -35,13 +35,13 @@ static constexpr double INTERSECT_RADIUS_SCALE = 0.8;
 static constexpr double DEFAULT_IMAGE_SCALE = 1.0;
 
 // Коэффициент масштабирования изображения для игрока
-static constexpr double PLAYER_IMAGE_SCALE = 0.2;
+static constexpr double PLAYER_IMAGE_SCALE = 1;
 
 // Коэффициент масштабирования изображения для врага
-static constexpr double ENEMY_IMAGE_SCALE = 0.2;
+static constexpr double ENEMY_IMAGE_SCALE = 1;
 
 // Коэффициент масштабирования изображения для пули
-static constexpr double BULLET_IMAGE_SCALE = 0.5;
+static constexpr double BULLET_IMAGE_SCALE = 1;
 
 // Количество единиц здоровья по умолчанию у сущности
 static constexpr int DEFAULT_ENTITY_HEALTH = 1;

@@ -90,8 +90,13 @@ protected:
   int health;
 
   /// Создаёт новую сущность
+  explicit Entity();
+
+  /// Создаёт новую сущность
   /// @param image_resource_id ID ресурса изображения сущности
   explicit Entity(int image_resource_id);
+
+  void SetImage(int image_resource_id);
 public:
   ~Entity();
 

@@ -5,7 +5,7 @@
 #include "Globals.h"
 #include <stdexcept>
 
-Entity::Entity(const int image_resource_id) :
+Entity::Entity() :
     x(0),
     y(0),
     angle(DEFAULT_ANGLE),
@@ -15,6 +15,10 @@ Entity::Entity(const int image_resource_id) :
     is_de_accelerating(false),
     action_movement(ActionMovement::None),
     is_destroyed(false),
+    bmp_info(),
+    bmp_loaded(nullptr),
+    width(0),
+    height(0),
     points_earned(0),
     entities_destroyed(0),
     self_points(DEFAULT_ENTITY_SELF_POINTS),
@@ -27,22 +31,30 @@ Entity::Entity(const int image_resource_id) :
     acceleration(DEFAULT_ACCELERATION),
     de_acceleration(DEFAULT_DE_ACCELERATION),
     health(DEFAULT_ENTITY_HEALTH) {
+}
+
+Entity::Entity(const int image_resource_id) :
+    Entity() {
+  this->SetImage(image_resource_id);
+}
+
+Entity::~Entity() {
+  DeleteObject(this->bmp_loaded);
+}
+
+void Entity::SetImage(const int image_resource_id) {
   // Загружаем изображение из ресурса
-  CPngImage pngImage;
-  pngImage.Load(image_resource_id, AfxGetResourceHandle());
+  CPngImage png_image;
+  png_image.Load(image_resource_id, AfxGetResourceHandle());
 
   // Получаем объект изображения
-  this->bmp_loaded = static_cast<HBITMAP>(pngImage.Detach());
+  this->bmp_loaded = static_cast<HBITMAP>(png_image.Detach());
 
   // Получаем информацию об изображении
   GetObject(this->bmp_loaded, sizeof(BITMAP), &this->bmp_info);
 
   this->width = bmp_info.bmWidth;
   this->height = bmp_info.bmHeight;
-}
-
-Entity::~Entity() {
-  DeleteObject(this->bmp_loaded);
 }
 
 double Entity::GetX() const {

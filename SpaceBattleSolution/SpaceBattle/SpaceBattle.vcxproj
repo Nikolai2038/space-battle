@@ -228,6 +228,9 @@
   <ItemGroup>
     <Image Include="res\Images\Bullet.png" />
     <Image Include="res\Images\Enemy.png" />
+    <Image Include="res\Images\Enemy_1.png" />
+    <Image Include="res\Images\Enemy_2.png" />
+    <Image Include="res\Images\Enemy_3.png" />
     <Image Include="res\Images\Player.png" />
     <Image Include="res\Icons\Enemies.ico" />
     <Image Include="res\Icons\Health.ico" />

@@ -9,7 +9,7 @@
 #define IDD_DIALOG_GAME                 131
 #define IDD_DIALOG_RECORDS              133
 #define IDB_BULLET                      135
-#define IDB_ENEMY                       136
+#define IDB_ENEMY_1                     136
 #define IDB_PLAYER                      137
 #define IDI_POINT                       141
 #define IDI_ENEMIES                     142
@@ -17,6 +17,10 @@
 #define IDI_HEALTH                      144
 #define IDB_PNG1                        145
 #define IDB_BACKGROUND                  145
+#define IDB_PNG2                        146
+#define IDB_ENEMY_2                     146
+#define IDB_PNG3                        147
+#define IDB_ENEMY_3                     147
 #define IDC_BUTTON_PLAY                 1000
 #define IDC_BUTTON_RULES                1001
 #define IDC_BUTTON_PAUSE_GAME           1001
@@ -41,7 +45,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        146
+#define _APS_NEXT_RESOURCE_VALUE        148
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1015
 #define _APS_NEXT_SYMED_VALUE           101

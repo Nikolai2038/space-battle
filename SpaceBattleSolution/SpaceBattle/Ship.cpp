@@ -3,6 +3,10 @@
 #include "Ship.h"
 #include <list>
 
+Ship::Ship() :
+    Entity() {
+}
+
 Ship::Ship(const int image_resource_id) :
     Entity(image_resource_id) {
 }
