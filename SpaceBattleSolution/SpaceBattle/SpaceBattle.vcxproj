@@ -226,7 +226,6 @@
     <None Include="res\SpaceBattle.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\Images\Background.png" />
     <Image Include="res\Images\Bullet.png" />
     <Image Include="res\Images\Enemy.png" />
     <Image Include="res\Images\Player.png" />
