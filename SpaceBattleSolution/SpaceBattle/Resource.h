@@ -21,6 +21,7 @@
 #define IDB_ENEMY_2                     146
 #define IDB_PNG3                        147
 #define IDB_ENEMY_3                     147
+#define IDB_INTRO                       148
 #define IDC_BUTTON_PLAY                 1000
 #define IDC_BUTTON_RULES                1001
 #define IDC_BUTTON_PAUSE_GAME           1001
@@ -38,6 +39,7 @@
 #define IDC_TEXT_RULES_1                1013
 #define IDC_POINT                       1014
 #define IDC_POINT2                      1015
+#define IDC_INTRO                       1015
 #define IDC_POINT3                      1016
 #define IDC_POINT4                      1017
 
@@ -45,9 +47,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        148
+#define _APS_NEXT_RESOURCE_VALUE        149
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

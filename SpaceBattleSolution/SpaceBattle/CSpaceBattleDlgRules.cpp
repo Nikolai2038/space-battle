@@ -12,9 +12,20 @@ IMPLEMENT_DYNAMIC(CSpaceBattleDlgRules, CDialogEx)
 
 CSpaceBattleDlgRules::CSpaceBattleDlgRules(CWnd* pParent /*=nullptr*/) :
     CDialogEx(IDD_DIALOG_RULES, pParent) {
+  // Загрузка иконки окна
+  window_icon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 CSpaceBattleDlgRules::~CSpaceBattleDlgRules() {
+}
+
+BOOL CSpaceBattleDlgRules::OnInitDialog() {
+  CDialogEx::OnInitDialog();
+
+  // Установка иконки окна
+  SetIcon(window_icon, FALSE);
+
+  return TRUE;
 }
 
 void CSpaceBattleDlgRules::DoDataExchange(CDataExchange* pDX) {

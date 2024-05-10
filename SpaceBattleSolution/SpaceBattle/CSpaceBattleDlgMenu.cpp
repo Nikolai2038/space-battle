@@ -15,11 +15,23 @@
 
 CSpaceBattleDlgMenu::CSpaceBattleDlgMenu(CWnd* pParent /*=nullptr*/) :
     CDialogEx(IDD_SPACEBATTLE_DIALOG, pParent) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  // Загрузка иконки окна
+  window_icon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
+  // Загружаем изображение из ресурса
+  CPngImage intro_image;
+  intro_image.Load(IDB_INTRO, AfxGetResourceHandle());
+  // Получаем объект изображения
+  this->intro_image_bitmap = static_cast<HBITMAP>(intro_image.Detach());
 }
 
-void CSpaceBattleDlgMenu::DoDataExchange(CDataExchange* pDX) {
-  CDialogEx::DoDataExchange(pDX);
+CSpaceBattleDlgMenu::~CSpaceBattleDlgMenu() {
+  DeleteObject(this->intro_image_bitmap);
+}
+
+void CSpaceBattleDlgMenu::DoDataExchange(CDataExchange* p_dx) {
+  CDialogEx::DoDataExchange(p_dx);
+  DDX_Control(p_dx, IDC_INTRO, cstatic_intro_image);
 }
 
 BEGIN_MESSAGE_MAP(CSpaceBattleDlgMenu, CDialogEx)
@@ -34,8 +46,10 @@ END_MESSAGE_MAP()
 BOOL CSpaceBattleDlgMenu::OnInitDialog() {
   CDialogEx::OnInitDialog();
 
-  // Set icon
-  SetIcon(m_hIcon, FALSE);
+  // Установка иконки окна
+  SetIcon(window_icon, FALSE);
+
+  this->cstatic_intro_image.SetBitmap(this->intro_image_bitmap);
 
   // return TRUE unless you set the focus to a control
   return TRUE;
@@ -58,7 +72,7 @@ void CSpaceBattleDlgMenu::OnPaint() {
     const int y = (rect.Height() - cy_icon + 1) / 2;
 
     // Draw the icon
-    dc.DrawIcon(x, y, m_hIcon);
+    dc.DrawIcon(x, y, window_icon);
   } else {
     CDialogEx::OnPaint();
   }
@@ -66,7 +80,7 @@ void CSpaceBattleDlgMenu::OnPaint() {
 
 // The system calls this function to obtain the cursor to display while the user drags the minimized window.
 HCURSOR CSpaceBattleDlgMenu::OnQueryDragIcon() {
-  return static_cast<HCURSOR>(m_hIcon);
+  return static_cast<HCURSOR>(window_icon);
 }
 
 // Событие нажатия на кнопку начала игры

@@ -106,17 +106,17 @@ IDI_HEALTH              ICON                    "res\\Icons\\health.ico"
 // Dialog
 //
 
-IDD_DIALOG_MENU DIALOGEX 0, 0, 132, 126
+IDD_DIALOG_MENU DIALOGEX 0, 0, 199, 184
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "Space Battle - Menu"
 FONT 12, "Microsoft Sans Serif", 400, 0, 0xCC
 BEGIN
-    PUSHBUTTON      "Play",IDC_BUTTON_PLAY,7,54,118,14
-    PUSHBUTTON      "Rules",IDC_BUTTON_RULES,7,71,118,14
-    PUSHBUTTON      "Exit",IDC_BUTTON_EXIT,7,105,118,14
-    PUSHBUTTON      "Records",IDC_BUTTON_RECORDS,7,88,118,14
-    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,7,7,118,41
+    PUSHBUTTON      "Play",IDC_BUTTON_PLAY,7,112,185,14
+    PUSHBUTTON      "Rules",IDC_BUTTON_RULES,7,129,185,14
+    PUSHBUTTON      "Exit",IDC_BUTTON_EXIT,7,163,185,14
+    PUSHBUTTON      "Records",IDC_BUTTON_RECORDS,7,146,185,14
+    CONTROL         "",IDC_INTRO,"Static",SS_BITMAP,7,7,10,8
 END
 
 IDD_DIALOG_RULES DIALOGEX 0, 0, 246, 68
@@ -207,9 +207,9 @@ BEGIN
     IDD_DIALOG_MENU, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 125
+        RIGHTMARGIN, 192
         TOPMARGIN, 7
-        BOTTOMMARGIN, 119
+        BOTTOMMARGIN, 177
     END
 
     IDD_DIALOG_RULES, DIALOG
@@ -252,7 +252,7 @@ BEGIN
     0, 100, 100, 0,
     0, 100, 100, 0,
     0, 100, 100, 0,
-    0, 0, 100, 100
+    50, 0, 0, 0
 END
 
 IDD_DIALOG_RULES AFX_DIALOG_LAYOUT
@@ -302,6 +302,8 @@ IDB_PLAYER              PNG                     "res\\Images\\Player.png"
 IDB_ENEMY_2             PNG                     "res\\Images\\Enemy_2.png"
 
 IDB_ENEMY_3             PNG                     "res\\Images\\Enemy_3.png"
+
+IDB_INTRO               PNG                     "res\\Images\\Intro.png"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

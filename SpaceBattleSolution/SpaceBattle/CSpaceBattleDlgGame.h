@@ -102,6 +102,9 @@ private:
   // Нужно ли очистить фон
   BOOL need_to_erase_background;
 protected:
+  // Иконка окна
+  HICON window_icon;
+
   void DoDataExchange(CDataExchange* p_dx) override; // DDX/DDV support
 
   DECLARE_MESSAGE_MAP()

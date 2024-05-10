@@ -180,5 +180,8 @@
     <Image Include="res\Images\Enemy_1.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\Images\Intro.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

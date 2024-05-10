@@ -24,6 +24,9 @@ CSpaceBattleDlgGame::CSpaceBattleDlgGame(CWnd* p_parent) :
     seconds_passed_since_last_wave(0),
     waves_passed_since_last_wave_time_decrease(0),
     waves_passed_since_last_wave_enemies_count_increase(0) {
+  // Загрузка иконки окна
+  window_icon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
   this->game_state = GameState::Created;
 
   this->entities = std::list<Entity*>();
@@ -69,6 +72,9 @@ END_MESSAGE_MAP()
 
 BOOL CSpaceBattleDlgGame::OnInitDialog() {
   CDialogEx::OnInitDialog();
+
+  // Установка иконки окна
+  SetIcon(window_icon, FALSE);
 
   this->need_to_erase_background = FALSE;
 

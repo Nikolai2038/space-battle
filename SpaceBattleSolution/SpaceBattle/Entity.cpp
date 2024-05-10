@@ -38,10 +38,6 @@ Entity::Entity(const int image_resource_id) :
   this->SetImage(image_resource_id);
 }
 
-Entity::~Entity() {
-  DeleteObject(this->bmp_loaded);
-}
-
 void Entity::SetImage(const int image_resource_id) {
   // Загружаем изображение из ресурса
   CPngImage png_image;
@@ -55,6 +51,10 @@ void Entity::SetImage(const int image_resource_id) {
 
   this->width = bmp_info.bmWidth;
   this->height = bmp_info.bmHeight;
+}
+
+Entity::~Entity() {
+  DeleteObject(this->bmp_loaded);
 }
 
 double Entity::GetX() const {

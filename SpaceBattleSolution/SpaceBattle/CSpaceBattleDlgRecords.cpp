@@ -12,9 +12,20 @@ IMPLEMENT_DYNAMIC(CSpaceBattleDlgRecords, CDialogEx)
 
 CSpaceBattleDlgRecords::CSpaceBattleDlgRecords(CWnd* pParent /*=nullptr*/) :
     CDialogEx(IDD_DIALOG_RECORDS, pParent) {
+  // Загрузка иконки окна
+  window_icon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 CSpaceBattleDlgRecords::~CSpaceBattleDlgRecords() {
+}
+
+BOOL CSpaceBattleDlgRecords::OnInitDialog() {
+  CDialogEx::OnInitDialog();
+
+  // Установка иконки окна
+  SetIcon(window_icon, FALSE);
+
+  return TRUE;
 }
 
 void CSpaceBattleDlgRecords::DoDataExchange(CDataExchange* pDX) {
