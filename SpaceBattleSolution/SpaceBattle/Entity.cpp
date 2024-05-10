@@ -176,9 +176,6 @@ void Entity::Draw(const HDC& hdc, const HDC& hdc_bits) const {
     return;
   }
 
-  // Цвет фона, который будет заменён прозрачным
-  COLORREF transparent_color = RGB(0, 255, 0);
-
   SelectObject(hdc_bits, this->bmp_loaded);
 
   // Сохранение параметров ротации поля отрисовки
@@ -216,13 +213,15 @@ void Entity::Draw(const HDC& hdc, const HDC& hdc_bits) const {
   const int entity_center_x = entity_rectangle.left - this->width / 2;
   const int entity_center_y = entity_rectangle.top - this->height / 2;
 
-  // Отрисовка картинки с заменой указанного цвета на прозрачный
-  TransparentBlt(hdc, entity_center_x, entity_center_y, this->width, this->height,
-                 hdc_bits, 0, 0, this->width, this->height,
-                 transparent_color);
-
-  // Отрисовка картинки без замены прозрачного цвета
-  // BitBlt(hdc, entity_center_x, entity_center_y, this->width, this->height, hdc_bits, 0, 0, SRCCOPY);
+  BLENDFUNCTION blend_function;
+  blend_function.AlphaFormat = AC_SRC_ALPHA;
+  blend_function.BlendFlags = 0;
+  blend_function.BlendOp = AC_SRC_OVER;
+  blend_function.SourceConstantAlpha = 255;
+  // Отрисовка картинки с прозрачным цветом
+  AlphaBlend(hdc, entity_center_x, entity_center_y, this->width, this->height,
+             hdc_bits, 0, 0, this->width, this->height,
+             blend_function);
 
   // Возврат ротации поля отрисовки
   SetWorldTransform(hdc, &xform_saved);
