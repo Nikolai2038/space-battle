@@ -181,6 +181,9 @@ public:
   // Возвращает скорость сущности
   double GetSpeed() const;
 
+  // Устанавливает скорость сущности
+  void SetSpeed(double new_speed);
+
   // Возвращает количество здоровья сущности
   int GetHealth() const;
 

@@ -157,6 +157,10 @@ double Entity::GetSpeed() const {
   return this->speed;
 }
 
+void Entity::SetSpeed(const double new_speed) {
+  this->speed = new_speed;
+}
+
 int Entity::GetHealth() const {
   return this->health;
 }

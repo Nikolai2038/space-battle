@@ -432,35 +432,58 @@ void CSpaceBattleDlgGame::CreateNewEnemiesWave() {
 }
 
 void CSpaceBattleDlgGame::CreateNewEnemy() {
-  const auto side = static_cast<SideToSpawn>(GetRandom(0, 3));
-
-  double random_x = 0;
-  double random_y = 0;
+  const auto side_to_spawn = static_cast<SideToSpawn>(GetRandom(0, 3));
 
   const auto enemy = new Enemy();
-  int max_visible_radius = enemy->GetMaxVisibleRadiusOnField();
+  const int max_visible_radius = enemy->GetMaxVisibleRadiusOnField();
 
-  switch (side) {
+  // Позиция сущности
+  double random_x;
+  double random_y;
+  switch (side_to_spawn) {
     case SideToSpawn::Left:
       random_x = -max_visible_radius;
-      random_y = GetRandom(0, game_screen_rectangle.Height());
+      random_y = GetRandom(PADDING_ON_SIDE_TO_SPAWN_ENEMY, this->game_screen_rectangle.Height() - PADDING_ON_SIDE_TO_SPAWN_ENEMY);
       break;
     case SideToSpawn::Right:
-      random_x = game_screen_rectangle.Width() + max_visible_radius;
-      random_y = GetRandom(0, game_screen_rectangle.Height());
+      random_x = this->game_screen_rectangle.Width() + max_visible_radius;
+      random_y = GetRandom(PADDING_ON_SIDE_TO_SPAWN_ENEMY, this->game_screen_rectangle.Height() - PADDING_ON_SIDE_TO_SPAWN_ENEMY);
       break;
     case SideToSpawn::Top:
-      random_x = GetRandom(0, game_screen_rectangle.Width());
+      random_x = GetRandom(PADDING_ON_SIDE_TO_SPAWN_ENEMY, this->game_screen_rectangle.Width() - PADDING_ON_SIDE_TO_SPAWN_ENEMY);
       random_y = -max_visible_radius;
       break;
     case SideToSpawn::Bottom:
-      random_x = GetRandom(0, game_screen_rectangle.Width());
-      random_y = game_screen_rectangle.Height() + max_visible_radius;
+    default: // NOLINT(clang-diagnostic-covered-switch-default)
+      random_x = GetRandom(PADDING_ON_SIDE_TO_SPAWN_ENEMY, this->game_screen_rectangle.Width() - PADDING_ON_SIDE_TO_SPAWN_ENEMY);
+      random_y = this->game_screen_rectangle.Height() + max_visible_radius;
       break;
   }
-
   enemy->SetLocation(random_x, random_y);
-  enemy->SetAngle(-PI / 4);
+
+  // Направление, в котором будет смотреть враг
+  double angle;
+  switch (side_to_spawn) {
+    case SideToSpawn::Left:
+      angle = GetRandom(-ENEMY_ANGLE_RANGE, ENEMY_ANGLE_RANGE);
+      break;
+    case SideToSpawn::Right:
+      angle = GetRandom(PI - ENEMY_ANGLE_RANGE, PI + ENEMY_ANGLE_RANGE);
+      break;
+    case SideToSpawn::Top:
+      angle = GetRandom(-PI / 2 - ENEMY_ANGLE_RANGE, -PI / 2 + ENEMY_ANGLE_RANGE);
+      break;
+    case SideToSpawn::Bottom:
+    default: // NOLINT(clang-diagnostic-covered-switch-default)
+      angle = GetRandom(PI / 2 - ENEMY_ANGLE_RANGE, PI / 2 + ENEMY_ANGLE_RANGE);
+      break;
+  }
+  enemy->SetAngle(angle);
+
+  // Скорость врага
+  enemy->SetSpeed(GetRandom(DEFAULT_SPEED, DEFAULT_SPEED_MAX));
+
+  // Добавляем врага на поле
   enemy->AddToList(this->entities);
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "Globals.h"
 
 // Время в миллисекундах для между итерациями таймера действий сущностей
 static constexpr int TIMER_CLOCK_LOOP_IN_MS = 10;
@@ -79,7 +80,14 @@ static constexpr int WAVES_TILL_INCREASE_WAVE_ENEMIES_COUNT = 2;
 static constexpr int INCREASE_WAVE_ENEMIES_COUNT = 1;
 
 // Максимальное (включительно) количество генерируемых врагов за один раз
-static constexpr int MAX_WAVE_ENEMIES_COUNT = 3;
+static constexpr int MAX_WAVE_ENEMIES_COUNT = 10;
 
 // Сколько секунд сущность будет оставаться неуязвимой для границ игрового поля после своего создания
 static constexpr int DEFAULT_INVINCIBLE_FOR_GAME_FIELD_BORDERS_SECONDS_LEFT = 3;
+
+// Отступ на стороне игрового поля, в котором появляются враги
+static constexpr int PADDING_ON_SIDE_TO_SPAWN_ENEMY = 100;
+
+// Допустимый угол поворота для врага (в каждую из сторон от направления движения)
+// Не выставлять больше, чем PI / 2
+static const double ENEMY_ANGLE_RANGE = PI / 3;

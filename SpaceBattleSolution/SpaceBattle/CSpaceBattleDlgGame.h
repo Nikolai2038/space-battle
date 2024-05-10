@@ -4,6 +4,8 @@
 #include "Player.h"
 #include <list>
 
+#include "Globals.h"
+
 class CSpaceBattleDlgGame : public CDialogEx {
 private:
   DECLARE_DYNAMIC(CSpaceBattleDlgGame)
