@@ -1,18 +1,19 @@
 #pragma once
 
-class CSpaceBattleDlgMenu : public CDialogEx {
+class CSpaceBattleDlgMenu final : public CDialogEx {
 private:
   // »зображение-превью игры в меню
   CStatic cstatic_intro_image;
 public:
-  CSpaceBattleDlgMenu(CWnd* pParent = nullptr);
-  ~CSpaceBattleDlgMenu();
+  explicit CSpaceBattleDlgMenu(CWnd* p_parent = nullptr);
+  ~CSpaceBattleDlgMenu() override;
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
   enum { IDD = IDD_SPACEBATTLE_DIALOG };
 #endif
 protected:
-  virtual void DoDataExchange(CDataExchange* p_dx); // DDX/DDV support
+  // DDX/DDV support
+  void DoDataExchange(CDataExchange* p_dx) override;
 protected:
   // »конка окна
   HICON window_icon;
@@ -21,7 +22,7 @@ protected:
   HBITMAP intro_image_bitmap;
 
   // Generated message map functions
-  virtual BOOL OnInitDialog();
+  BOOL OnInitDialog() override;
   afx_msg void OnPaint();
   afx_msg HCURSOR OnQueryDragIcon();
   DECLARE_MESSAGE_MAP()

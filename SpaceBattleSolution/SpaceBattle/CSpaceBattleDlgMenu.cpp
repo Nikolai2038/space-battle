@@ -13,8 +13,8 @@
 // ReSharper restore CppInconsistentNaming
 #endif
 
-CSpaceBattleDlgMenu::CSpaceBattleDlgMenu(CWnd* pParent /*=nullptr*/) :
-    CDialogEx(IDD_SPACEBATTLE_DIALOG, pParent) {
+CSpaceBattleDlgMenu::CSpaceBattleDlgMenu(CWnd* p_parent /*=nullptr*/) :
+    CDialogEx(IDD_SPACEBATTLE_DIALOG, p_parent) {
   // Загрузка иконки окна
   window_icon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 

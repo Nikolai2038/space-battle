@@ -1,23 +1,17 @@
-// CSpaceBattleDlgRecords.cpp : implementation file
-//
-
 #include "pch.h"
 #include "afxdialogex.h"
 #include "CSpaceBattleDlgRecords.h"
 #include "SpaceBattle.h"
 
-// CSpaceBattleDlgRecords dialog
-
 IMPLEMENT_DYNAMIC(CSpaceBattleDlgRecords, CDialogEx)
 
-CSpaceBattleDlgRecords::CSpaceBattleDlgRecords(CWnd* pParent /*=nullptr*/) :
-    CDialogEx(IDD_DIALOG_RECORDS, pParent) {
+CSpaceBattleDlgRecords::CSpaceBattleDlgRecords(CWnd* p_parent /*=nullptr*/) :
+    CDialogEx(IDD_DIALOG_RECORDS, p_parent) {
   // Загрузка иконки окна
   window_icon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-CSpaceBattleDlgRecords::~CSpaceBattleDlgRecords() {
-}
+CSpaceBattleDlgRecords::~CSpaceBattleDlgRecords() = default;
 
 BOOL CSpaceBattleDlgRecords::OnInitDialog() {
   CDialogEx::OnInitDialog();
@@ -28,15 +22,13 @@ BOOL CSpaceBattleDlgRecords::OnInitDialog() {
   return TRUE;
 }
 
-void CSpaceBattleDlgRecords::DoDataExchange(CDataExchange* pDX) {
-  CDialogEx::DoDataExchange(pDX);
+void CSpaceBattleDlgRecords::DoDataExchange(CDataExchange* p_dx) {
+  CDialogEx::DoDataExchange(p_dx);
 }
 
 BEGIN_MESSAGE_MAP(CSpaceBattleDlgRecords, CDialogEx)
 ON_BN_CLICKED(IDC_BUTTON_RETURN_TO_THE_MENU, &CSpaceBattleDlgRecords::OnBnClickedButtonReturnToTheMenu)
 END_MESSAGE_MAP()
-
-// CSpaceBattleDlgRecords message handlers
 
 void CSpaceBattleDlgRecords::OnBnClickedButtonReturnToTheMenu() {
   this->OnOK();

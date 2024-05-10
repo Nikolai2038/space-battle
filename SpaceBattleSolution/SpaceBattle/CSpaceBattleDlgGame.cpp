@@ -2,12 +2,10 @@
 #include "afxdialogex.h"
 #include "Config.h"
 #include "CSpaceBattleDlgGame.h"
-
-#include <stdexcept>
-
 #include "Enemy.h"
 #include "Globals.h"
 #include "SpaceBattle.h"
+#include <stdexcept>
 #include <string>
 
 IMPLEMENT_DYNAMIC(CSpaceBattleDlgGame, CDialogEx)
@@ -23,7 +21,8 @@ CSpaceBattleDlgGame::CSpaceBattleDlgGame(CWnd* p_parent) :
     wave_enemies_count(0),
     seconds_passed_since_last_wave(0),
     waves_passed_since_last_wave_time_decrease(0),
-    waves_passed_since_last_wave_enemies_count_increase(0) {
+    waves_passed_since_last_wave_enemies_count_increase(0),
+    need_to_erase_background(FALSE) {
   // Загрузка иконки окна
   window_icon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -40,7 +39,7 @@ CSpaceBattleDlgGame::~CSpaceBattleDlgGame() {
   DeleteObject(this->hdc_bits);
   DeleteObject(this->game_screen);
 
-  for (auto entity : this->entities) {
+  for (const auto entity : this->entities) {
     delete entity;
   }
   DeleteObject(this->player);

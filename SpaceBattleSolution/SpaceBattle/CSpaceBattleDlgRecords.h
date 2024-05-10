@@ -1,13 +1,12 @@
 #pragma once
+
 #include "afxdialogex.h"
 
-// CSpaceBattleDlgRecords dialog
-
-class CSpaceBattleDlgRecords : public CDialogEx {
+class CSpaceBattleDlgRecords final : public CDialogEx {
   DECLARE_DYNAMIC(CSpaceBattleDlgRecords)
 public:
-  CSpaceBattleDlgRecords(CWnd* pParent = nullptr); // standard constructor
-  virtual ~CSpaceBattleDlgRecords();
+  explicit CSpaceBattleDlgRecords(CWnd* p_parent = nullptr); // standard constructor
+  ~CSpaceBattleDlgRecords() override;
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
@@ -17,10 +16,11 @@ protected:
   // »конка окна
   HICON window_icon;
 
-  virtual void DoDataExchange(CDataExchange* pDX); // DDX/DDV support
+  // DDX/DDV support
+  void DoDataExchange(CDataExchange* p_dx) override;
 
   DECLARE_MESSAGE_MAP()
 public:
   afx_msg void OnBnClickedButtonReturnToTheMenu();
-  virtual BOOL OnInitDialog();
+  BOOL OnInitDialog() override;
 };
