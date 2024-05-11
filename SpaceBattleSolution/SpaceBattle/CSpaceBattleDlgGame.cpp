@@ -193,7 +193,8 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* p_msg) {
         case VK_SPACE:
           this->player->Shoot(this->entities);
         default:
-          return CDialogEx::PreTranslateMessage(p_msg);
+          // Здесь не вызываем обработку CDialogEx, чтобы, например, нажатие пробела не вызывало нажатие сфокусированной кнопки
+          break;
       }
       return true;
     case WM_KEYUP:
