@@ -51,7 +51,7 @@ BOOL CSpaceBattleDlgMenu::OnInitDialog() {
 
   this->cstatic_intro_image.SetBitmap(this->intro_image_bitmap);
 
-  // return TRUE unless you set the focus to a control
+  // Фокусируемся на первой кнопке
   return TRUE;
 }
 

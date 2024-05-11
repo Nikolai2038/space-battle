@@ -49,8 +49,8 @@ void Entity::SetImage(const int image_resource_id) {
   // Получаем информацию об изображении
   GetObject(this->bmp_loaded, sizeof(BITMAP), &this->bmp_info);
 
-  this->width = bmp_info.bmWidth;
-  this->height = bmp_info.bmHeight;
+  this->width = this->bmp_info.bmWidth;
+  this->height = this->bmp_info.bmHeight;
 }
 
 Entity::~Entity() {
@@ -58,7 +58,7 @@ Entity::~Entity() {
 }
 
 double Entity::GetX() const {
-  return x;
+  return this->x;
 }
 
 int Entity::GetIntX() const {
@@ -70,7 +70,7 @@ void Entity::SetX(const double new_x) {
 }
 
 double Entity::GetY() const {
-  return y;
+  return this->y;
 }
 
 int Entity::GetIntY() const {
@@ -139,7 +139,7 @@ bool Entity::IsDestroyed() const {
 }
 
 LONG Entity::GetMaxVisibleRadiusOnField() const {
-  return static_cast<int>(sqrt(pow(width, 2) + pow(height, 2)) / 2 * scale);
+  return static_cast<int>(sqrt(pow(this->width, 2) + pow(this->height, 2)) / 2 * this->scale);
 }
 
 int Entity::GetPointsEarned() const {
@@ -178,10 +178,11 @@ int Entity::GetHealth() const {
 }
 
 int Entity::GetIntersectRadius() const {
-  return static_cast<int>(max(width, height) * scale * INTERSECT_RADIUS_SCALE / 2);
+  return static_cast<int>(max(this->width, this->height) * this->scale * INTERSECT_RADIUS_SCALE / 2);
 }
 
 void Entity::Draw(const HDC& hdc, const HDC& hdc_bits) const {
+  // Уничтоженные сущности не рисуем
   if (this->is_destroyed) {
     return;
   }
@@ -243,29 +244,46 @@ void Entity::ProcessActions(const std::list<Entity*>& entities, const CRect& gam
     return;
   }
 
-  // Проверяем сущности на столкновения
-  for (auto entity : entities) {
-    // Сущность сама с собой не столкнётся
-    if (this == entity) {
-      continue;
-    }
+  // ----------------------------------------
+  // Обработка поворота
+  // ----------------------------------------
+  // Если сущность поворачивается направо
+  if (this->is_rotating_right && !this->is_rotating_left) {
+    this->SetAngle(this->GetAngle() - 0.1);
+  }
+  // Если сущность поворачивается налево
+  else if (!this->is_rotating_right && this->is_rotating_left) {
+    this->SetAngle(this->GetAngle() + 0.1);
+  }
+  // ----------------------------------------
 
-    // Если одна сущность является владельцем другой - они друг на друга не влияют.
-    // Пример - пуля не может уничтожить корабль, из которого вылетела.
-    if (this->owner == entity || entity->owner == this) {
-      continue;
-    }
-
-    if (this->IsIntersectsWith(*entity)) {
-      this->Hit(entity);
-      entity->Hit(this);
-      return;
+  // ----------------------------------------
+  // Обработка ускорения
+  // ----------------------------------------
+  // Если сущность ускоряется
+  if (this->is_accelerating && !this->is_de_accelerating) {
+    if (this->speed + this->acceleration >= this->max_speed) {
+      this->speed = this->max_speed;
+    } else {
+      this->speed += this->acceleration;
     }
   }
+  // Если сущность замедляется
+  else if (!this->is_accelerating && this->is_de_accelerating) {
+    if (this->speed - this->de_acceleration <= this->min_speed) {
+      this->speed = this->min_speed;
+    } else {
+      this->speed -= this->de_acceleration;
+    }
+  }
+  // ----------------------------------------
 
+  // ----------------------------------------
+  // Обработка передвижения
+  // ----------------------------------------
   if (this->action_movement == ActionMovement::ToAngle) {
-    const double new_x = x + cos(angle) * speed;
-    if ((new_x + width * scale / 2 <= 0) || (new_x - width * scale / 2 >= game_field.Width())) {
+    const double new_x = x + cos(this->angle) * this->speed;
+    if ((new_x + this->width * this->scale / 2 <= 0) || (new_x - this->width * this->scale / 2 >= game_field.Width())) {
       // Сущность уничтожается при выходе за пределы игрового экрана
       // (если неуязвимость к границам поля закончилась)
       if (this->is_invincible_for_game_field_borders_clocks_left <= 0) {
@@ -273,8 +291,8 @@ void Entity::ProcessActions(const std::list<Entity*>& entities, const CRect& gam
       }
     }
 
-    const double new_y = y - sin(angle) * speed;
-    if ((new_y + height * scale / 2 <= 0) || (new_y - height * scale / 2 >= game_field.Height())) {
+    const double new_y = y - sin(this->angle) * this->speed;
+    if ((new_y + this->height * this->scale / 2 <= 0) || (new_y - this->height * this->scale / 2 >= game_field.Height())) {
       // Сущность уничтожается при выходе за пределы игрового экрана
       // (если неуязвимость к границам поля закончилась)
       if (this->is_invincible_for_game_field_borders_clocks_left <= 0) {
@@ -291,31 +309,28 @@ void Entity::ProcessActions(const std::list<Entity*>& entities, const CRect& gam
     this->is_invincible_for_game_field_borders_clocks_left--;
   }
 
-  // Если сущность поворачивается направо
-  if (this->is_rotating_right && !this->is_rotating_left) {
-    this->SetAngle(this->GetAngle() - 0.1);
-  }
-  // Если сущность поворачивается налево
-  else if (!this->is_rotating_right && this->is_rotating_left) {
-    this->SetAngle(this->GetAngle() + 0.1);
-  }
+  // Проверяем сущности на столкновения
+  for (const auto entity : entities) {
+    // Сущность сама с собой не столкнётся
+    if (this == entity) {
+      continue;
+    }
 
-  // Если сущность ускоряется
-  if (is_accelerating && !is_de_accelerating) {
-    if (speed + acceleration >= max_speed) {
-      speed = max_speed;
-    } else {
-      speed += acceleration;
+    // Если одна сущность является владельцем другой - они друг на друга не влияют.
+    // Пример - пуля не может уничтожить корабль, из которого вылетела.
+    if (this->owner == entity || entity->owner == this) {
+      continue;
+    }
+
+    // Если сущности столкнулись - наносим урон каждой.
+    // Так будет происходить, пока одна или сразу обе сущности не будут уничтожены.
+    if (this->IsIntersectsWith(*entity)) {
+      this->Hit(entity);
+      entity->Hit(this);
+      return;
     }
   }
-  // Если сущность замедляется
-  else if (!is_accelerating && is_de_accelerating) {
-    if (speed - de_acceleration <= min_speed) {
-      speed = min_speed;
-    } else {
-      speed -= de_acceleration;
-    }
-  }
+  // ----------------------------------------
 }
 
 void Entity::Hit(Entity* by_whom) {
@@ -334,7 +349,7 @@ void Entity::Destroy(Entity* by_whom) {
   }
 
   // Иначе - добавим очки сущности, что уничтожила эту - уничтожителю
-  Entity* points_from_whom = this->GetMainOwner();
+  const Entity* points_from_whom = this->GetMainOwner();
   Entity* points_to_who = by_whom->GetMainOwner();
   // Также проверяем, что сущность не была дочерней от уничтожителя.
   // Иначе можно было бы создавать свои объекты и уничтожать их, получая очки.

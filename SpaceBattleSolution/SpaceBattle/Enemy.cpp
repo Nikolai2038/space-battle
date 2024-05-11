@@ -8,7 +8,7 @@ Enemy::Enemy() :
   this->scale = ENEMY_IMAGE_SCALE;
   this->health = DEFAULT_ENEMY_HEALTH;
 
-  int image_id = GetRandom(0, 2);
+  const int image_id = GetRandom(0, 2);
   switch (image_id) {
     case 0:
       SetImage(IDB_ENEMY_1);

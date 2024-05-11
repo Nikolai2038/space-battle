@@ -47,12 +47,12 @@ CSpaceBattleDlgGame::~CSpaceBattleDlgGame() {
 
 void CSpaceBattleDlgGame::DoDataExchange(CDataExchange* p_dx) {
   CDialogEx::DoDataExchange(p_dx);
-  DDX_Control(p_dx, IDC_BUTTON_PAUSE_OR_RESUME_GAME, button_pause_or_resume_game);
-  DDX_Control(p_dx, IDC_BUTTON_START_OR_END_GAME, button_start_or_end_game);
-  DDX_Control(p_dx, IDC_TEXT_POINTS_EARNED, cstatic_points_earned);
-  DDX_Control(p_dx, IDC_TEXT_ENEMIES_DEFEATED, cstatic_enemies_defeated);
-  DDX_Control(p_dx, IDC_TEXT_HEALTH_LEFT, cstatic_health_left);
-  DDX_Control(p_dx, IDC_TEXT_TIME_PLAYING, cstatic_time_playing);
+  DDX_Control(p_dx, IDC_BUTTON_PAUSE_OR_RESUME_GAME, this->button_pause_or_resume_game);
+  DDX_Control(p_dx, IDC_BUTTON_START_OR_END_GAME, this->button_start_or_end_game);
+  DDX_Control(p_dx, IDC_TEXT_POINTS_EARNED, this->cstatic_points_earned);
+  DDX_Control(p_dx, IDC_TEXT_ENEMIES_DEFEATED, this->cstatic_enemies_defeated);
+  DDX_Control(p_dx, IDC_TEXT_HEALTH_LEFT, this->cstatic_health_left);
+  DDX_Control(p_dx, IDC_TEXT_TIME_PLAYING, this->cstatic_time_playing);
 }
 
 BEGIN_MESSAGE_MAP(CSpaceBattleDlgGame, CDialogEx)
@@ -73,7 +73,7 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
   CDialogEx::OnInitDialog();
 
   // Установка иконки окна
-  SetIcon(window_icon, FALSE);
+  SetIcon(this->window_icon, FALSE);
 
   this->need_to_erase_background = FALSE;
 
@@ -85,7 +85,8 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
 
   CenterPlayer();
 
-  return TRUE;
+  // Не фокусируемся на первой кнопке
+  return FALSE;
 }
 
 void CSpaceBattleDlgGame::OnSize(UINT n_type, int cx, int cy) {
@@ -117,14 +118,14 @@ void CSpaceBattleDlgGame::OnPaint() {
   }
 
   if (this->hdc_bits != nullptr) {
-    DeleteDC(hdc_bits);
+    DeleteDC(this->hdc_bits);
   }
 
   this->hdc_bits = CreateCompatibleDC(dc_in_memory);
 
   // Создаём изображение для отрисовки в DC в памяти - Чтобы мы могли рисовать в нём
   CBitmap bitmap_in_memory;
-  const int create_bitmap_result = bitmap_in_memory.CreateCompatibleBitmap(&dc, game_screen_rectangle.Width(), game_screen_rectangle.Height());
+  const int create_bitmap_result = bitmap_in_memory.CreateCompatibleBitmap(&dc, this->game_screen_rectangle.Width(), this->game_screen_rectangle.Height());
   if (create_bitmap_result == 0) {
     throw std::runtime_error("Cannot create compatible bitmap!");
   }
@@ -137,10 +138,10 @@ void CSpaceBattleDlgGame::OnPaint() {
   // dc_in_memory.FillSolidRect(&game_screen_rectangle, transparent_color);
 
   // Закрашиваем поле чёрным цветом
-  dc_in_memory.FillSolidRect(&game_screen_rectangle, RGB(0, 0, 0));
+  dc_in_memory.FillSolidRect(&this->game_screen_rectangle, RGB(0, 0, 0));
 
   // Рисуем все сущности
-  for (auto entity : this->entities) {
+  for (const auto entity : this->entities) {
     entity->Draw(dc_in_memory, this->hdc_bits);
   }
 
@@ -166,6 +167,10 @@ void CSpaceBattleDlgGame::OnPaint() {
 }
 
 BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* p_msg) {
+  if (this->game_state != GameState::Playing) {
+    return CDialogEx::PreTranslateMessage(p_msg);
+  }
+
   switch (p_msg->message) {
     case WM_KEYDOWN:
       switch (p_msg->wParam) {
@@ -188,7 +193,7 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* p_msg) {
         case VK_SPACE:
           this->player->Shoot(this->entities);
         default:
-          break;
+          return CDialogEx::PreTranslateMessage(p_msg);
       }
       return true;
     case WM_KEYUP:
@@ -209,7 +214,7 @@ BOOL CSpaceBattleDlgGame::PreTranslateMessage(MSG* p_msg) {
           this->player->StopDeAccelerating();
           break;
         default:
-          break;
+          return CDialogEx::PreTranslateMessage(p_msg);
       }
       return true;
     default:
@@ -253,7 +258,7 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR n_id_event) {
       this->seconds_passed_since_last_wave++;
 
       // Если пришло время следующей волны
-      if (this->seconds_passed_since_last_wave >= wave_time) {
+      if (this->seconds_passed_since_last_wave >= this->wave_time) {
         CreateNewEnemiesWave();
       }
 
@@ -283,15 +288,29 @@ void CSpaceBattleDlgGame::OnClose() {
 }
 
 void CSpaceBattleDlgGame::OnBnClickedButtonReturnToTheMenu() {
-  PauseGame();
-  int dialog_result = MessageBox(
+  // Сохраняем текущее состояние игры
+  const GameState saved_game_state = this->game_state;
+  // Если игра идёт - ставим игру на паузу
+  if (saved_game_state == GameState::Playing) {
+    PauseGame();
+  }
+
+  // Показываем диалог с подтверждением выхода
+  const int dialog_result = MessageBox(
     L"Return to the menu?\nYour progress will be lost!",
     L"Return to the menu",
     MB_YESNO + MB_ICONQUESTION);
+
+  // Если подтвердили выход
   if (dialog_result == IDYES) {
     EndGameAndDoNotSaveRecord();
-  } else {
-    ResumeGame();
+  }
+  // Если отменили выход
+  else {
+    // Если игра шла - возобновляем игру
+    if (saved_game_state == GameState::Playing) {
+      ResumeGame();
+    }
   }
 }
 
@@ -310,75 +329,74 @@ void CSpaceBattleDlgGame::OnBnClickedButtonPauseOrResumeGame() {
 
 void CSpaceBattleDlgGame::OnBnClickedButtonStartOrEndGame() {
   if (this->game_state == GameState::Created) {
-    this->game_state = GameState::Playing;
+    // Меняем текст и доступность кнопок
     this->button_pause_or_resume_game.EnableWindow(true);
     this->button_start_or_end_game.SetWindowTextW(L"End game");
 
-    waves_passed = 0;
-    wave_time = INITIAL_WAVE_TIME;
-    wave_enemies_count = INITIAL_WAVE_ENEMIES_COUNT;
+    // Сбрасываем нужные переменные
+    this->game_state = GameState::Playing;
+    this->waves_passed = 0;
+    this->wave_time = INITIAL_WAVE_TIME;
+    this->wave_enemies_count = INITIAL_WAVE_ENEMIES_COUNT;
+    this->time_playing_seconds_passed = 0;
 
-    UINT_PTR create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerClock), TIMER_CLOCK_LOOP_IN_MS, nullptr);
-    if (create_timer_result == FALSE) {
-      MessageBox(
-        L"Cannot install timer",
-        L"Error message",
-        MB_OK + MB_ICONERROR);
+    // Создаём все необходимые таймеры
+    if (!SetTimer(static_cast<UINT_PTR>(Timers::TimerClock), TIMER_CLOCK_LOOP_IN_MS, nullptr)) {
+      throw std::runtime_error("Failed to create timer TimerClock!");
     }
-    time_playing_seconds_passed = 0;
-
-    create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerRedraw), TIMER_REDRAW_LOOP_IN_MS, nullptr);
-    if (create_timer_result == FALSE) {
-      MessageBox(
-        L"Cannot install timer",
-        L"Error message",
-        MB_OK + MB_ICONERROR);
+    if (!SetTimer(static_cast<UINT_PTR>(Timers::TimerRedraw), TIMER_REDRAW_LOOP_IN_MS, nullptr)) {
+      throw std::runtime_error("Failed to create timer TimerRedraw!");
     }
-
-    create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerPlaying), 1000, nullptr);
-    if (create_timer_result == FALSE) {
-      MessageBox(
-        L"Cannot install timer",
-        L"Error message",
-        MB_OK + MB_ICONERROR);
+    if (!SetTimer(static_cast<UINT_PTR>(Timers::TimerPlaying), 1000, nullptr)) {
+      throw std::runtime_error("Failed to create timer TimerPlaying!");
     }
-
-    create_timer_result = SetTimer(static_cast<UINT_PTR>(Timers::TimerGarbageCollector), TIMER_GARBAGE_COLLECTOR_LOOP_IN_MS, nullptr);
-    if (create_timer_result == FALSE) {
-      MessageBox(
-        L"Cannot install timer",
-        L"Error message",
-        MB_OK + MB_ICONERROR);
+    if (!SetTimer(static_cast<UINT_PTR>(Timers::TimerGarbageCollector), TIMER_GARBAGE_COLLECTOR_LOOP_IN_MS, nullptr)) {
+      throw std::runtime_error("Failed to create timer TimerGarbageCollector!");
     }
 
     CreateNewEnemiesWave();
   } else {
-    PauseGame();
+    // Сохраняем текущее состояние игры
+    const GameState saved_game_state = this->game_state;
+    // Если игра идёт - ставим игру на паузу
+    if (saved_game_state == GameState::Playing) {
+      PauseGame();
+    }
+
+    // Показываем диалог с подтверждением завершения игры
     const int dialog_result = MessageBox(
       L"End the game?\nYour progress will be saved in records.",
       L"End the game",
       MB_YESNO + MB_ICONQUESTION);
 
+    // Если подтвердили завершение игры
     if (dialog_result == IDYES) {
       EndGameAndSaveRecord();
-    } else {
-      ResumeGame();
+    }
+    // Если отменили завершение игры
+    else {
+      // Если игра шла - возобновляем игру
+      if (saved_game_state == GameState::Playing) {
+        ResumeGame();
+      }
     }
   }
 }
 
 void CSpaceBattleDlgGame::UpdateGameScreenInfo() {
-  if (game_screen != nullptr) {
+  if (this->game_screen != nullptr) {
     // Получаем информацию об игровом поле
-    game_screen->GetClientRect(&game_screen_rectangle);
-    game_screen->GetWindowRect(&game_screen_rectangle_window);
-    ScreenToClient(&game_screen_rectangle_window);
+    this->game_screen->GetClientRect(&this->game_screen_rectangle);
+    this->game_screen->GetWindowRect(&this->game_screen_rectangle_window);
+    ScreenToClient(&this->game_screen_rectangle_window);
   }
 }
 
 void CSpaceBattleDlgGame::PauseGame() {
   if (this->game_state == GameState::Playing) {
     this->game_state = GameState::Paused;
+
+    // Меняем текст кнопки
     this->button_pause_or_resume_game.SetWindowTextW(L"Resume game");
   }
 }
@@ -386,6 +404,8 @@ void CSpaceBattleDlgGame::PauseGame() {
 void CSpaceBattleDlgGame::ResumeGame() {
   if (this->game_state == GameState::Paused) {
     this->game_state = GameState::Playing;
+
+    // Меняем текст кнопки
     this->button_pause_or_resume_game.SetWindowTextW(L"Pause game");
   }
 }
@@ -407,31 +427,31 @@ void CSpaceBattleDlgGame::EndGameAndSaveRecord() {
 void CSpaceBattleDlgGame::CenterPlayer() const {
   // Центрируем игрока только, если игра не началась
   if (this->game_state == GameState::Created) {
-    this->player->SetLocation(static_cast<double>(game_screen_rectangle.Width()) / 2, static_cast<double>(game_screen_rectangle.Height()) / 2);
+    this->player->SetLocation(static_cast<double>(this->game_screen_rectangle.Width()) / 2, static_cast<double>(game_screen_rectangle.Height()) / 2);
   }
 }
 
 void CSpaceBattleDlgGame::CreateNewEnemiesWave() {
-  waves_passed++;
-  waves_passed_since_last_wave_time_decrease++;
-  waves_passed_since_last_wave_enemies_count_increase++;
+  this->waves_passed++;
+  this->waves_passed_since_last_wave_time_decrease++;
+  this->waves_passed_since_last_wave_enemies_count_increase++;
 
-  seconds_passed_since_last_wave = 0;
+  this->seconds_passed_since_last_wave = 0;
 
   // Уменьшаем время до следующей волны
-  if (waves_passed_since_last_wave_time_decrease >= WAVES_TILL_DECREASE_WAVE_TIME && wave_time - DECREASE_WAVE_TIME >= MIN_WAVE_TIME) {
-    waves_passed_since_last_wave_time_decrease = 0;
-    wave_time -= DECREASE_WAVE_TIME;
+  if (this->waves_passed_since_last_wave_time_decrease >= WAVES_TILL_DECREASE_WAVE_TIME && this->wave_time - DECREASE_WAVE_TIME >= MIN_WAVE_TIME) {
+    this->waves_passed_since_last_wave_time_decrease = 0;
+    this->wave_time -= DECREASE_WAVE_TIME;
   }
 
   // Увеличиваем количество врагов
-  if (waves_passed_since_last_wave_enemies_count_increase >= WAVES_TILL_INCREASE_WAVE_ENEMIES_COUNT && wave_enemies_count + INCREASE_WAVE_ENEMIES_COUNT <= MAX_WAVE_ENEMIES_COUNT) {
-    waves_passed_since_last_wave_enemies_count_increase = 0;
-    wave_enemies_count += INCREASE_WAVE_ENEMIES_COUNT;
+  if (this->waves_passed_since_last_wave_enemies_count_increase >= WAVES_TILL_INCREASE_WAVE_ENEMIES_COUNT && this->wave_enemies_count + INCREASE_WAVE_ENEMIES_COUNT <= MAX_WAVE_ENEMIES_COUNT) {
+    this->waves_passed_since_last_wave_enemies_count_increase = 0;
+    this->wave_enemies_count += INCREASE_WAVE_ENEMIES_COUNT;
   }
 
   // Создаём необходимое количество врагов
-  for (int i = 0; i < wave_enemies_count; ++i) {
+  for (int i = 0; i < this->wave_enemies_count; ++i) {
     CreateNewEnemy();
   }
 }
