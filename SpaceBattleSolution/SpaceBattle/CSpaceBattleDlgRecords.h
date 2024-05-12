@@ -23,4 +23,6 @@ protected:
 public:
   afx_msg void OnBnClickedButtonReturnToTheMenu();
   BOOL OnInitDialog() override;
+private:
+  CListBox clistbox_records;
 };

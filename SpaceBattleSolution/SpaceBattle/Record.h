@@ -14,7 +14,12 @@ public:
          int enemies_destroyed,
          int time_playing_seconds_passed);
 
+  // Сохраняет рекорд в файл рекордов
   void Save() const;
 
+  // Возвращает список рекордов из файла рекордов
   static std::list<Record> GetRecords();
+
+  // Возвращает запись рекорда в виде строки
+  CString ToString() const;
 };
