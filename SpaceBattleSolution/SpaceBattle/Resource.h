@@ -42,6 +42,8 @@
 #define IDC_INTRO                       1015
 #define IDC_POINT3                      1016
 #define IDC_POINT4                      1017
+#define IDC_EDIT1                       1018
+#define IDC_EDIT_PLAYER_NAME            1018
 
 // Next default values for new objects
 // 
@@ -49,7 +51,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        149
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1016
+#define _APS_NEXT_CONTROL_VALUE         1019
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

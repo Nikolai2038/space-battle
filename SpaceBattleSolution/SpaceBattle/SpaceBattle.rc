@@ -125,19 +125,19 @@ CAPTION "Space Battle - Rules"
 FONT 12, "Microsoft Sans Serif", 400, 0, 0xCC
 BEGIN
     PUSHBUTTON      "Return to the menu",IDC_BUTTON_RETURN_TO_THE_MENU,7,79,76,14
-    LTEXT           "Fight the enemies as long as you can!\n\nPress ""W"" to move forward. Press ""S"" to move backwards.\nPress ""Q"" to turn left. Press ""E"" to turn right.\nPress ""Space"" to shoot.\n\nEach enemy has 3 health. You will have 10.\nIf you hit enemy, your health will be decreased by enemy's left health.",IDC_TEXT_RULES_1,7,7,232,64
+    LTEXT           "Fight the enemies as long as you can!\n\nPress ""W"" to move forward. Press ""S"" to move backwards.\nPress ""Q"" to turn left. Press ""E"" to turn right.\nPress ""Space"" to shoot.\n\nEach enemy has 3 health. You will have 10.\nIf you hit enemy, your health will be decre",IDC_TEXT_RULES_1,7,7,232,64
 END
 
-IDD_DIALOG_GAME DIALOGEX 0, 0, 397, 258
+IDD_DIALOG_GAME DIALOGEX 0, 0, 519, 258
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "Space Battle - Game"
 FONT 12, "Microsoft Sans Serif", 400, 0, 0xCC
 BEGIN
-    CONTROL         "",IDC_GAME_SCREEN,"Static",SS_BLACKFRAME,7,21,383,210
+    CONTROL         "",IDC_GAME_SCREEN,"Static",SS_BLACKFRAME,7,21,505,210
     PUSHBUTTON      "Return to the menu",IDC_BUTTON_RETURN_TO_THE_MENU,7,236,76,14
-    PUSHBUTTON      "Pause game",IDC_BUTTON_PAUSE_OR_RESUME_GAME,239,236,73,14,WS_DISABLED | NOT WS_TABSTOP
-    PUSHBUTTON      "Start game",IDC_BUTTON_START_OR_END_GAME,317,236,73,14
-    CTEXT           "Health: 10",IDC_TEXT_HEALTH_LEFT,286,6,104,9,SS_SUNKEN
+    PUSHBUTTON      "Pause game",IDC_BUTTON_PAUSE_OR_RESUME_GAME,439,236,73,14,WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Start game",IDC_BUTTON_START_OR_END_GAME,360,236,73,14
+    CTEXT           "Health: 10",IDC_TEXT_HEALTH_LEFT,408,6,104,9,SS_SUNKEN
     CTEXT           "Time playing: 00:00:00",IDC_TEXT_TIME_PLAYING,120,239,104,9,SS_SUNKEN
     CTEXT           "Enemies defeated: 0",IDC_TEXT_ENEMIES_DEFEATED,155,6,104,9,SS_SUNKEN
     CTEXT           "Points earned: 0",IDC_TEXT_POINTS_EARNED,22,6,104,9,SS_SUNKEN
@@ -145,6 +145,8 @@ BEGIN
     ICON            IDI_ENEMIES,IDC_POINT2,139,4,20,20
     ICON            IDI_HEALTH,IDC_POINT3,270,4,20,20
     ICON            IDI_TIME,IDC_POINT4,103,236,20,20
+    LTEXT           "Player's name:",IDC_STATIC,235,238,46,8
+    EDITTEXT        IDC_EDIT_PLAYER_NAME,284,236,66,14,ES_CENTER | ES_AUTOHSCROLL
 END
 
 IDD_DIALOG_RECORDS DIALOGEX 0, 0, 309, 176
@@ -223,7 +225,7 @@ BEGIN
     IDD_DIALOG_GAME, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 390
+        RIGHTMARGIN, 512
         TOPMARGIN, 7
         BOTTOMMARGIN, 250
         HORZGUIDE, 18
@@ -276,7 +278,9 @@ BEGIN
     0, 0, 0, 0,
     0, 0, 0, 0,
     100, 0, 0, 0,
-    0, 100, 0, 0
+    0, 100, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0
 END
 
 IDD_DIALOG_RECORDS AFX_DIALOG_LAYOUT

@@ -73,6 +73,9 @@ private:
   // Текстовое поле со временем игры
   CStatic cstatic_time_playing;
 
+  // Текстовое поле для ввода имени игрока
+  CEdit cedit_player_name;
+
   // Список всех сущностей (включая игрока)
   std::list<Entity*> entities;
 

@@ -37,3 +37,19 @@ inline std::string GetExeDirectory() {
   }
   return directory;
 }
+
+// Function to convert LPCWSTR to std::string
+inline std::string ConvertLPCWSTRToString(const LPCWSTR lpcwsz_str) {
+  // Determine the length of the converted string
+  // - 1 at the end - to remove NULL-terminator
+  const int str_length = WideCharToMultiByte(CP_UTF8, 0, lpcwsz_str, -1, nullptr, 0, nullptr, nullptr) - 1;
+
+  // Create a std::string with the determined length
+  std::string str(str_length, 0);
+
+  // Perform the conversion from LPCWSTR to std::string
+  WideCharToMultiByte(CP_UTF8, 0, lpcwsz_str, -1, &str[0], str_length, nullptr, nullptr);
+
+  // Return the converted std::string
+  return str;
+}

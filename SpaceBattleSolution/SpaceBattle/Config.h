@@ -97,6 +97,9 @@ static const double ENEMY_ANGLE_RANGE = PI / 3;
 // Имя сущности по умолчанию
 static const std::string ENTITY_DEFAULT_NAME = "Unnamed";
 
+// Имя игрока по умолчанию
+static const auto PLAYER_DEFAULT_NAME = L"Player";
+
 // Путь к файлу с рекордами относительно исполняемого файла
 static const std::string RECORDS_FILE_PATH = "./records.txt";
 

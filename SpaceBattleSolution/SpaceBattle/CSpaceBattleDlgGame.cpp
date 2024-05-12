@@ -55,6 +55,7 @@ void CSpaceBattleDlgGame::DoDataExchange(CDataExchange* p_dx) {
   DDX_Control(p_dx, IDC_TEXT_ENEMIES_DEFEATED, this->cstatic_enemies_defeated);
   DDX_Control(p_dx, IDC_TEXT_HEALTH_LEFT, this->cstatic_health_left);
   DDX_Control(p_dx, IDC_TEXT_TIME_PLAYING, this->cstatic_time_playing);
+  DDX_Control(p_dx, IDC_EDIT_PLAYER_NAME, this->cedit_player_name);
 }
 
 BEGIN_MESSAGE_MAP(CSpaceBattleDlgGame, CDialogEx)
@@ -76,6 +77,9 @@ BOOL CSpaceBattleDlgGame::OnInitDialog() {
 
   // Установка иконки окна
   SetIcon(this->window_icon, FALSE);
+
+  // Устанавливаем имя игрока по умолчанию
+  this->cedit_player_name.SetWindowTextW(PLAYER_DEFAULT_NAME);
 
   this->need_to_erase_background = FALSE;
 
@@ -342,6 +346,14 @@ void CSpaceBattleDlgGame::OnBnClickedButtonStartOrEndGame() {
     this->wave_time = INITIAL_WAVE_TIME;
     this->wave_enemies_count = INITIAL_WAVE_ENEMIES_COUNT;
     this->time_playing_seconds_passed = 0;
+
+    // Блокируем поле ввода имени игрока
+    this->cedit_player_name.EnableWindow(false);
+
+    // Получаем имя игрока и сохраняем его
+    CString entered_player_name;
+    this->cedit_player_name.GetWindowTextW(entered_player_name);
+    this->player->SetName(ConvertLPCWSTRToString(entered_player_name.GetString()));
 
     // Создаём все необходимые таймеры
     if (!SetTimer(static_cast<UINT_PTR>(Timers::TimerClock), TIMER_CLOCK_LOOP_IN_MS, nullptr)) {
