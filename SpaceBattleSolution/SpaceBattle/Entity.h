@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <string>
 
 // Сущность на поле игры
 class Entity {
@@ -64,6 +65,9 @@ private:
 
   // Сколько единиц времени сущность ещё будет оставаться неуязвимой для границ игрового поля
   int is_invincible_for_game_field_borders_clocks_left;
+
+  // Имя сущности
+  std::string name;
 protected:
   Entity* owner;
 
@@ -194,6 +198,13 @@ public:
 
   // Возвращает радиус круга коллизии объекта (от его центра)
   int GetIntersectRadius() const;
+
+  // Возвращает имя сущности
+  std::string GetName();
+
+  /// Устанавливает новое имя сущности
+  /// @param new_name Новое имя сущности
+  void SetName(std::string new_name);
 
   // Отрисовывает сущность
   void Draw(const HDC& hdc, const HDC& hdc_bits) const;

@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include "Globals.h"
 #include <stdexcept>
+#include <utility>
 
 Entity::Entity() :
     x(0),
@@ -30,7 +31,8 @@ Entity::Entity() :
     max_speed(DEFAULT_SPEED_MAX),
     acceleration(DEFAULT_ACCELERATION),
     de_acceleration(DEFAULT_DE_ACCELERATION),
-    health(DEFAULT_ENTITY_HEALTH) {
+    health(DEFAULT_ENTITY_HEALTH),
+    name(ENTITY_DEFAULT_NAME) {
 }
 
 Entity::Entity(const int image_resource_id) :
@@ -179,6 +181,14 @@ int Entity::GetHealth() const {
 
 int Entity::GetIntersectRadius() const {
   return static_cast<int>(max(this->width, this->height) * this->scale * INTERSECT_RADIUS_SCALE / 2);
+}
+
+std::string Entity::GetName() {
+  return this->name;
+}
+
+void Entity::SetName(std::string new_name) {
+  this->name = std::move(new_name);
 }
 
 void Entity::Draw(const HDC& hdc, const HDC& hdc_bits) const {

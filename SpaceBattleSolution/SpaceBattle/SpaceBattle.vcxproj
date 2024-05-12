@@ -191,6 +191,7 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="Record.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="pch.h" />
@@ -206,6 +207,7 @@
     <ClCompile Include="CSpaceBattleDlgRecords.cpp" />
     <ClCompile Include="CSpaceBattleDlgRules.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Record.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="pch.cpp">

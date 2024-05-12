@@ -49,6 +49,9 @@
     <Filter Include="Resource Files\Images">
       <UniqueIdentifier>{3115e583-90ce-4ed1-935f-04f8d5ef6f75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Other">
+      <UniqueIdentifier>{414a5fe7-1d34-476d-a1ed-3fd7d6f7094d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SpaceBattle.h">
@@ -99,6 +102,9 @@
     <ClInclude Include="Config.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
+    <ClInclude Include="Record.h">
+      <Filter>Header Files\Other</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SpaceBattle.cpp">
@@ -133,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="Bullet.cpp">
       <Filter>Source Files\Entities\EntityChilds</Filter>
+    </ClCompile>
+    <ClCompile Include="Record.cpp">
+      <Filter>Source Files\Other</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <windows.h>
+
 // Число Пи = 3.14...
 const double PI = atan(1) * 4;
 
@@ -19,3 +22,18 @@ enum class SideToSpawn {
   Top,
   Bottom
 };
+
+// Возвращает путь к директории с EXE-файлом
+inline std::string GetExeDirectory() {
+  // Получаем путь к EXE-файлу
+  char result[MAX_PATH];
+  const auto exe_path = std::basic_string<char>(result, GetModuleFileNameA(nullptr, result, MAX_PATH));
+
+  // Получаем путь к директории с ним
+  std::string directory;
+  const size_t last_slash_idx = exe_path.rfind('\\');
+  if (std::string::npos != last_slash_idx) {
+    directory = exe_path.substr(0, last_slash_idx);
+  }
+  return directory;
+}

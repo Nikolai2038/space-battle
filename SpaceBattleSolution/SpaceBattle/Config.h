@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+
 #include "Globals.h"
 
 // Время в миллисекундах для между итерациями таймера действий сущностей
@@ -91,3 +93,12 @@ static constexpr int PADDING_ON_SIDE_TO_SPAWN_ENEMY = 100;
 // Допустимый угол поворота для врага (в каждую из сторон от направления движения)
 // Не выставлять больше, чем PI / 2
 static const double ENEMY_ANGLE_RANGE = PI / 3;
+
+// Имя сущности по умолчанию
+static const std::string ENTITY_DEFAULT_NAME = "Unnamed";
+
+// Путь к файлу с рекордами относительно исполняемого файла
+static const std::string RECORDS_FILE_PATH = "./records.txt";
+
+// Разделитель столбцов в файле с рекордами
+static constexpr char RECORDS_FILE_DELIMITER = '|';

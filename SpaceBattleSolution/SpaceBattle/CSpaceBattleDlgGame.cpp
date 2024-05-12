@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "Record.h"
+
 IMPLEMENT_DYNAMIC(CSpaceBattleDlgGame, CDialogEx)
 
 CSpaceBattleDlgGame::CSpaceBattleDlgGame(CWnd* p_parent) :
@@ -419,8 +421,18 @@ void CSpaceBattleDlgGame::EndGameAndDoNotSaveRecord() {
 void CSpaceBattleDlgGame::EndGameAndSaveRecord() {
   this->game_state = GameState::Finished;
 
-  // TODO: Save record
-  // ...
+  // Сохранение рекорда
+  const Record record(this->player->GetName(),
+                      this->player->GetPointsEarned(),
+                      this->player->GetEntitiesDestroyed(),
+                      this->time_playing_seconds_passed);
+  record.Save();
+
+  // Выводим сообщение
+  MessageBox(
+    L"Your record has been saved!",
+    L"Record saved",
+    MB_OK + MB_ICONINFORMATION);
 
   OnOK();
 }
