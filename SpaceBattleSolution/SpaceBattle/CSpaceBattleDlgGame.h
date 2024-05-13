@@ -177,6 +177,9 @@ private:
 
   // Создаёт нового врага на поле
   void CreateNewEnemy();
+
+  // Обновляет текст в поле, если он отличается от текущего
+  static void UpdateTextIfDifferent(CStatic& text_field, const CString& new_text);
 public:
   afx_msg void OnNcPaint();
 };

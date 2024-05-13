@@ -249,17 +249,17 @@ void CSpaceBattleDlgGame::OnTimer(UINT_PTR n_id_event) {
       // Обновляем текст с количеством очков игрока
       CString text_points_earned;
       text_points_earned.Format(L"Points earned: %d", this->player->GetPointsEarned());
-      this->cstatic_points_earned.SetWindowText(text_points_earned);
+      UpdateTextIfDifferent(this->cstatic_points_earned, text_points_earned);
 
       // Обновляем текст с количеством уничтоженных врагов
       CString text_enemies_defeated;
       text_enemies_defeated.Format(L"Enemies defeated: %d", this->player->GetEntitiesDestroyed());
-      this->cstatic_enemies_defeated.SetWindowText(text_enemies_defeated);
+      UpdateTextIfDifferent(this->cstatic_enemies_defeated, text_enemies_defeated);
 
       // Обновляем текст с количеством здоровья игрока
       CString text_health_left;
       text_health_left.Format(L"Health: %d", this->player->GetHealth());
-      this->cstatic_health_left.SetWindowText(text_health_left);
+      UpdateTextIfDifferent(this->cstatic_health_left, text_health_left);
     } else if (n_id_event == static_cast<UINT_PTR>(Timers::TimerPlaying)) {
       this->time_playing_seconds_passed++;
       this->seconds_passed_since_last_wave++;
@@ -538,6 +538,15 @@ void CSpaceBattleDlgGame::CreateNewEnemy() {
 
   // Добавляем врага на поле
   enemy->AddToList(this->entities);
+}
+
+void CSpaceBattleDlgGame::UpdateTextIfDifferent(CStatic& text_field, const CString& new_text) { // Текст, который был
+  CString previous_text;
+  text_field.GetWindowTextW(previous_text);
+  // Обновляем текст, только если он поменялся (чтобы избежать мерцания)
+  if (previous_text != new_text) {
+    text_field.SetWindowTextW(new_text);
+  }
 }
 
 void CSpaceBattleDlgGame::OnNcPaint() {
