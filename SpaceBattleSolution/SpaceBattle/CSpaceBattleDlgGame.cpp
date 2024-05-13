@@ -4,11 +4,11 @@
 #include "CSpaceBattleDlgGame.h"
 #include "Enemy.h"
 #include "Globals.h"
+#include "Record.h"
 #include "SpaceBattle.h"
+#include <ctime>
 #include <stdexcept>
 #include <string>
-
-#include "Record.h"
 
 IMPLEMENT_DYNAMIC(CSpaceBattleDlgGame, CDialogEx)
 
@@ -339,6 +339,9 @@ void CSpaceBattleDlgGame::OnBnClickedButtonStartOrEndGame() {
     // ћен€ем текст и доступность кнопок
     this->button_pause_or_resume_game.EnableWindow(true);
     this->button_start_or_end_game.SetWindowTextW(L"End game");
+
+    // —брос генератора псевдослучайных чисел
+    std::srand(std::time(nullptr));
 
     // —брасываем нужные переменные
     this->game_state = GameState::Playing;

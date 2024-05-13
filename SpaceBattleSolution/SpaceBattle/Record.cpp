@@ -64,12 +64,10 @@ std::list<Record> Record::GetRecords() {
 
   records_file.close();
 
-  // —ортируем список рекордов от меньших к большим
+  // —ортируем список рекордов от больших к меньшим
   records.sort([](const Record& record_1, const Record& record_2) -> bool {
     return record_1.points_earned > record_2.points_earned;
   });
-  // ¬ обратном пор€дке
-  records.reverse();
 
   return records;
 }

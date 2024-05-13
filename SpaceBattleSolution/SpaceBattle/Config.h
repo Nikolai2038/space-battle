@@ -64,16 +64,16 @@ static constexpr int DEFAULT_ENTITY_SELF_POINTS = 10;
 static constexpr int INITIAL_WAVE_TIME = 5;
 
 // Количество генерируемых врагов за один раз (значение в начале игры)
-static constexpr int INITIAL_WAVE_ENEMIES_COUNT = 1;
+static constexpr int INITIAL_WAVE_ENEMIES_COUNT = 3;
 
 // Количество волн, спустя которое время до следующей волны уменьшается
-static constexpr int WAVES_TILL_DECREASE_WAVE_TIME = 2;
+static constexpr int WAVES_TILL_DECREASE_WAVE_TIME = 5;
 
 // Время, на которое уменьшается время до следующей волны
 static constexpr int DECREASE_WAVE_TIME = 1;
 
 // Минимально (включительно) возможное время в секундах, спустя которое запускается новая волна
-static constexpr int MIN_WAVE_TIME = 1;
+static constexpr int MIN_WAVE_TIME = 2;
 
 // Количество волн, спустя которое количество врагов волны увеличивается
 static constexpr int WAVES_TILL_INCREASE_WAVE_ENEMIES_COUNT = 2;

@@ -38,11 +38,12 @@
 #define IDC_GAME_SCREEN                 1012
 #define IDC_TEXT_RULES_1                1013
 #define IDC_POINT                       1014
+#define IDC_TEXT_RULES_2                1014
 #define IDC_POINT2                      1015
 #define IDC_INTRO                       1015
+#define IDC_TEXT_RULES_3                1015
 #define IDC_POINT3                      1016
 #define IDC_POINT4                      1017
-#define IDC_EDIT1                       1018
 #define IDC_EDIT_PLAYER_NAME            1018
 
 // Next default values for new objects
